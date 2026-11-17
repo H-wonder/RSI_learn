@@ -1056,9 +1056,13 @@ LLM 节点、工具节点、循环、动态扇出、重试/降级、状态映射
   \item M6 收尾校验 $\rightarrow$ \texttt{VerifierNode}。
 \end{itemize}
 
-最小闭环只需先加 \texttt{LlmNode}、\texttt{ToolNode}、\texttt{FinalActionNode} 与
-\texttt{VerifierNode}，就能对 \code{sales.multi_hop_lookup} 做 direct vs structured 对比。
-验证假设与判定标准见 \texttt{docs/structure-validation-plan.md}：
+截至 2026-11-18，最小闭环的四个节点已在 rsi-flow 的 \texttt{test} 分支实现：
+\texttt{LlmNode}、\texttt{ToolNode}、\texttt{FinalActionNode}、\texttt{VerifierNode}
+（含 \texttt{ToolRegistry} / \texttt{FinalActionRegistry}），
+\texttt{mvn-rsi.sh -pl flow-test -am test} 为 \textbf{20/20} 通过。
+尚未完成的是 AutomationBench \texttt{WorldState} 的工具桥接、3 个任务的 flow JSON，
+以及 direct vs structured 对比；验证假设与判定标准见
+\texttt{docs/structure-validation-plan.md}：
 
 \begin{itemize}
   \item H1：FinalAction/Verifier 减少“最后一步缺失”；
@@ -1092,13 +1096,14 @@ LLM 节点、工具节点、循环、动态扇出、重试/降级、状态映射
 \subsection{下一步}
 
 \begin{enumerate}
-  \item 按《结构验证方案》在 rsi-flow 的 \texttt{test} 分支实现
-  \texttt{LlmNode}、\texttt{ToolNode}、\texttt{FinalActionNode}、\texttt{VerifierNode}；
+  \item 四个最小节点已在 rsi-flow \texttt{test} 分支实现（20/20 测试通过）；
+  下一步写 \texttt{flow-multi-hop.json}、接 AutomationBench \texttt{WorldState}，
   先对 \code{sales.multi_hop_lookup} 做最小对比；
   \item 对 3 个任务各跑 3 次 direct vs structured，做节点消融与步数对照；
   \item 补 M1--M6 的第二人复核（至少 5 个案例 + 5 道 P4b 标签）；
   \item 决定是否跑全量 600 题，或改用更便宜的模型（如 \texttt{gpt-5.6-terra}）；
-  \item 把代码与报告 push 到可访问的远程仓库（失败则保留本地 commit）。
+  \item 任务一代码与报告已 push 到远程；任务二代码保留在 rsi-flow 本地
+  \texttt{test} 分支（官方仓库无写权限，不 push）。
 \end{enumerate}
 
 \appendix

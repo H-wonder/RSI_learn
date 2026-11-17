@@ -172,3 +172,26 @@ start
 约 **$18–54**。先跑 1 个任务验证 runner，再扩到 3 个，避免一次性烧预算。
 
 > 这是任务二“设计复杂超长 Agent 结构”的起点；先做最小闭环，再扩展循环/动态扇出/重试。
+
+## 9. 实现进度（2026-11-18）
+
+已在 rsi-flow **`test` 分支**落地最小节点（未动 `dev_rsi`）：
+
+| 组件 | 文件 | 状态 |
+|---|---|---|
+| `LlmNode` | `flow-core/.../agent/LlmNode.java` | 已实现；OpenAI-compatible Chat Completions，支持 env / system property 配置 |
+| `ToolNode` + registry | `agent/ToolNode.java`、`ToolRegistry.java` | 已实现；工具由调用方注册，app/action 固定 |
+| `FinalActionNode` + registry | `agent/FinalActionNode.java`、`FinalActionRegistry.java` | 已实现；未注册动作会失败，防止流程提前结束 |
+| `VerifierNode` | `agent/VerifierNode.java` | 已实现；检查 expected fragments 并返回 `{passed, missing}` |
+| 测试 | `FLOW_AGENT/FlowAgentTest.java` | 3 个测试：tool flow、LLM mock、final+verifier |
+| 构建 | `../scripts/mvn-rsi.sh -pl flow-test -am test` | **20/20 通过**（原 17 + 新增 3） |
+
+**还没做**：
+
+- AutomationBench `WorldState` 与 ToolRegistry 的桥接（需要把 47 个模拟 SaaS 工具映射成 handler）；
+- 3 个任务的 flow JSON（`flow-multi-hop.json` 等）；
+- direct vs structured 的 3 次对比、节点消融与步数对照；
+- 循环/动态扇出/checkpoint 仍是缺口（当前 3 个任务先写死节点数）。
+
+下一步先写 `sales.multi_hop_lookup` 的 flow JSON，把一个 AutomationBench 任务
+端到端跑通，再扩到另外两个任务。

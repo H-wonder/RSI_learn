@@ -16,7 +16,7 @@
 | 详细分析为什么跑不满 | 断言级分类 + M1–M6 机制编码 + 14 个案例 | PDF 失败分析章、[docs/failure-mechanisms.md](docs/failure-mechanisms.md)、[reports/medium-max.mechanisms.md](reports/medium-max.mechanisms.md) | 完成 |
 | 默认 vs max 对照 | 同一批 60 题的配对对比、McNemar、bootstrap CI | [reports/compare-default-vs-max.md](reports/compare-default-vs-max.md) | 完成 |
 | refusal 敏感性 | 含 refusal / 排除 / 重跑替换三种口径；重跑 0.8、无 refusal | `results/refusal-retry/`、PDF 失败分析章 | 完成 |
-| 熟悉 rsi-flow、下一步验证结构 | 构建/测试记录、3 任务 flow 设计、H1–H4、对比协议 | [docs/structure-validation-plan.md](docs/structure-validation-plan.md) | 方案完成；实现是任务二 |
+| 熟悉 rsi-flow、下一步验证结构 | 构建/测试记录、3 任务 flow 设计、H1–H4、对比协议 | [docs/structure-validation-plan.md](docs/structure-validation-plan.md) | 方案完成；最小节点已实现（test 分支 20/20），完整对比待做 |
 | 配置对齐官方 | public 600 表、max effort、toolset、max_steps、API 路径逐项核对 | [docs/config-audit.md](docs/config-audit.md)、PDF 第 4/7 章 | 完成 |
 | 可复现 | 从零复现步骤、run manifest、原始轨迹 | [docs/reproduce.md](docs/reproduce.md)、[reports/raw-results-2026-11-18.tar.gz](reports/raw-results-2026-11-18.tar.gz) | 完成 |
 

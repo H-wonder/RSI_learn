@@ -264,4 +264,5 @@ python scripts/run_batch.py --name full --domains all --per-domain 100
 - [x] 完整轨迹归档（max / calibration / refusal）
 - [x] 从零复现文档
 - [ ] 全量 600 题（上界约 $1,200；缓存折扣后约 $350，待预算）
-- [ ] 任务二：rsi-flow 结构实现
+- [x] 任务二最小节点：rsi-flow `test` 分支 `LlmNode`/`ToolNode`/`FinalActionNode`/`VerifierNode`，20/20 测试通过
+- [ ] 任务二完整对比：3 个 flow + AutomationBench WorldState 桥接 + direct vs structured
