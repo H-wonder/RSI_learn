@@ -19,6 +19,20 @@ python scripts/analyze_results.py --dir results/<name> \
   --out-md reports/<name>.md --out-issues reports/<name>.issues.csv
 ```
 
+标注表填完后，再生成“问题类型 × 通过率”（表 2）：
+
+```bash
+python scripts/analyze_by_type.py --dir results/<name> \
+  --annotation data/annotation/tasks_to_label.csv \
+  --out-md reports/<name>.by_type.md --out-csv reports/<name>.by_type.csv
+```
+
+需要重算数据集规模时（不需要 API）：
+
+```bash
+uv run --project ../datasets/AutomationBench python scripts/dataset_stats.py
+```
+
 ## 小批量记录怎么做
 
 1. 跑完 18 题；
