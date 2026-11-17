@@ -35,6 +35,7 @@ automationbench-baseline/
 │   ├── problem-taxonomy.md  # P1–P9 问题分类
 │   ├── how-to-review-labels.md # 怎么复核 P1–P9 标注
 │   ├── experiment-tables.md # 表 1/2/3/4 模板
+│   ├── structure-validation-plan.md # 在 rsi-flow 里验证结构的方案
 │   └── report-template.md   # 最终报告模板
 ├── experiments/             # 每次实验的 README 与问题记录
 ├── data/annotation/         # 60 题人工标注表
