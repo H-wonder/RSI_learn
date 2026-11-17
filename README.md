@@ -22,6 +22,25 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 
 具体流程见 [docs/workflow.md](docs/workflow.md)。
 
+## 基线代码说明
+
+本仓库的 baseline 是官方 AutomationBench 的 direct agent（`auto-bench` CLI），不是我们重写的 agent loop。我们提供的是：
+
+- 按域运行、复用、合并的 wrapper 与 `configs/`；
+- 结果分析、失败归类、问题类型汇总；
+- 60 题标注、失败案例与报告。
+
+上游代码：[zapier/AutomationBench](https://github.com/zapier/AutomationBench)（本报告基于 commit `4a8e106`）。复现需要 clone 上游数据集仓库；本仓库不重复打包数据集和模型客户端。
+
+## 实验结果在哪里
+
+- **23 页报告**：根目录 [AutomationBench-Baseline-Report.pdf](AutomationBench-Baseline-Report.pdf)
+- **完整分析**：[reports/medium-60.md](reports/medium-60.md)
+- **逐题结果 / 失败断言**：[medium-60.tasks.csv](reports/medium-60.tasks.csv)、[medium-60.issues.csv](reports/medium-60.issues.csv)
+- **紧凑结果 JSON**：[medium-60.compact.json](reports/medium-60.compact.json)、[small-18.compact.json](reports/small-18.compact.json)
+- **运行配置与成本**：[reports/run-manifest.md](reports/run-manifest.md)
+- **14 个失败案例**：[experiments/exp-002-small/failure-analysis.md](experiments/exp-002-small/failure-analysis.md)
+
 ## 目录
 
 ```
@@ -51,12 +70,13 @@ automationbench-baseline/
 │   ├── how-to-review-labels.md # 怎么复核 P1–P9 标注
 │   ├── experiment-tables.md # 表 1/2/3/4 模板
 │   ├── structure-validation-plan.md # 在 rsi-flow 里验证结构的方案
+│   ├── reproduce.md         # 从零复现步骤
 │   └── report-template.md   # 报告模板
 ├── experiments/             # smoke / small / medium 的实验记录与失败案例
 ├── data/annotation/         # 60 题标注表与标签 JSON
 ├── results/                 # 运行结果 JSON（不入 git）
 ├── logs/                    # 运行日志（不入 git）
-├── reports/                 # markdown / csv / LaTeX 源（入 git）
+├── reports/                 # markdown / csv / LaTeX / compact JSON / run manifest
 └── tests/fixtures/          # 分析脚本测试样本
 ```
 
@@ -71,6 +91,8 @@ automationbench-baseline/
 export PATH="$HOME/.local/bin:$PATH"
 cd ../datasets/AutomationBench && uv sync
 ```
+
+从零复现（含 clone 上游、`.env`、代理、完整命令）见 [docs/reproduce.md](docs/reproduce.md)。
 
 运行前加载 key，并清掉会干扰 httpx 的 SOCKS 代理：
 
@@ -165,5 +187,7 @@ python scripts/run_batch.py --name full --domains all --per-domain 100
 - [x] 60 题正式基线（11.7% 通过，部分分 0.509）
 - [x] 14 个失败案例与根因分析
 - [x] 23 页 PDF 报告（根目录）
+- [x] 紧凑结果 JSON + 运行清单（run manifest）
+- [x] 从零复现文档
 - [ ] 全量 600 题（约 $700，待预算）
 - [ ] 任务二：rsi-flow 结构实现
