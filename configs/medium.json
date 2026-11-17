@@ -1,0 +1,11 @@
+{
+  "dataset_dir": "../datasets/AutomationBench",
+  "model": "gpt-5.6-sol",
+  "base_url": "https://intlapi.thingo.com.cn/v1",
+  "api_key_var": "OPENAI_API_KEY",
+  "toolset": "api",
+  "max_steps": 50,
+  "max_concurrent": 5,
+  "domains": ["sales", "marketing", "operations", "support", "finance", "hr"],
+  "per_domain": 10
+}

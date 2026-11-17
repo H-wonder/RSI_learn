@@ -1,10 +1,10 @@
 {
   "dataset_dir": "../datasets/AutomationBench",
-  "model": "TBD",
-  "base_url": null,
+  "model": "gpt-5.6-sol",
+  "base_url": "https://intlapi.thingo.com.cn/v1",
   "api_key_var": "OPENAI_API_KEY",
   "toolset": "api",
-  "max_steps": 50,
+  "max_steps": 20,
   "max_concurrent": 2,
   "domains": ["simple"],
   "per_domain": 5
