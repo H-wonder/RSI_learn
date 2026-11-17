@@ -2,6 +2,12 @@
 
 AutomationBench 基线实验的代码、运行记录和分析报告。仓库只包含我们自己写的代码与结果摘要，不包含数据集本身。
 
+## 任务一交付物
+
+- **PDF 报告**：[AutomationBench-Baseline-Report.pdf](reports/AutomationBench-Baseline-Report.pdf)（11 页）
+- **LaTeX 源码**：[reports/report.tex](reports/report.tex)
+- **实验数据**：[reports/medium-60.tasks.csv](reports/medium-60.tasks.csv)、[reports/medium-60.issues.csv](reports/medium-60.issues.csv)
+
 ## 这个仓库解决什么
 
 基线不是"跑一次拿个分数"，而是：

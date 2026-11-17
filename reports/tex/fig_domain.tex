@@ -1,0 +1,10 @@
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, width=0.92\textwidth, height=6.2cm, ymin=0, ymax=40,
+  ylabel={通过率 (\%)}, symbolic x coords={sales,marketing,operations,support,finance,hr},
+  xtick=data, nodes near coords, bar width=14pt,
+  enlarge x limits=0.12, tick label style={font=\small},
+]
+\addplot coordinates {(sales,0.0) (marketing,10.0) (operations,10.0) (support,0.0) (finance,30.0) (hr,20.0)};
+\end{axis}
+\end{tikzpicture}

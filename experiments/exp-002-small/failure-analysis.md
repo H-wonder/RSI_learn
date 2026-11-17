@@ -123,8 +123,33 @@
 - 失败重试/降级；
 - 运行时上下文覆盖（policy override）。
 
+## 60 题补充案例（2026-11-17）
+
+| 任务 | 分数 | 现象 | 根因 |
+|---|---:|---|---|
+| `sales.create_contact_for_account` | 0/3 | 读完邮件、打了 PROCESSED 标签，但没建联系人、没发完成邮件，还查了 HubSpot | 动作目标错 + 最后动作缺失 |
+| `sales.sheets_reconciliation` | 0.25 | 把第 4 行金额改成 112,000（未换算），断言要求 140,000 且禁止 112,000 | 漏做汇率换算 |
+| `operations.vendor_compliance_audit` | 0/6 | 查 Salesforce 的 `Status__c` 得到 null；读了错的 worksheet；没发 Slack | 字段/工作表错 |
+| `support.reamaze_intercom_sync` | 0.095 | 把 `ss_sync` 当成 Airtable，401 后只发了“0 synced” | 选错数据源 |
+| `sales.calendly_sla_monitoring` | 0/6 | 读了 tier 表，但 Salesforce 没有 open case，于是什么都不做 | 数据读取不全 + 提前终止 |
+| `finance.qb_invoice_from_orders` | 0/5 | QuickBooks 用了 `{companyId}` 占位符，也没找到 orders feed | 工具参数/数据源错 |
+| `sales.partnership_contract` | 0/7 | 找到 opportunity，但没建 DocuSign envelope、没建 Calendly event、没改 stage | 长链最后动作缺失 |
+| `support.hiver_csat_analysis` | 0/24 | 找不到 survey 与 agent 的关联字段，报告没生成 | 字段/数据源错 |
+| `marketing.win_loss_analysis` | 0.938 | 16 条断言只差正文里的 `27,000` | 收尾校验缺失 |
+| `sales.overdue_followup_flag` | 0.889 | 邮件里多带了非逾期的 Cobalt Industries | 过滤后未做最终排除 |
+
+## 失败模式归纳
+
+| 根因 | 典型任务 | 对结构的启示 |
+|---|---|---|
+| 选错应用/数据源 | multi_hop_lookup、generator_load_testing、reamaze_sync | 把数据源写进节点参数，禁止模型在相似工具间自由试错 |
+| 规则/公告缺失或未执行 | social_engagement、workforce_planning | 增加“规则查找/最新公告覆盖”节点 |
+| 最后动作缺失 | create_contact、partnership_contract | 流程强制经过“写回/通知”节点，不能提前结束 |
+| 值/币种/字段错 | sheets_reconciliation、vendor_compliance | 增加单位换算与字段校验节点 |
+| 部分完成 | win_loss_analysis、overdue_followup | 增加最终逐条断言自检节点 |
+
 ## 下一步
 
-- 用这四类问题设计 rsi-flow 的节点和路由；
-- 在 medium 60 题里统计这四类各占多少；
+- 用这五类问题设计 rsi-flow 的节点和路由；
+- 在 medium 60 题里统计这五类各占多少；
 - 选 1–2 个任务做“direct agent vs structured flow”的最小对比。

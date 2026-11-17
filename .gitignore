@@ -17,3 +17,9 @@ config*.local.json
 .DS_Store
 .idea/
 .vscode/
+
+# LaTeX intermediates (keep the PDF and .tex sources)
+reports/*.aux
+reports/*.log
+reports/*.out
+reports/*.toc
