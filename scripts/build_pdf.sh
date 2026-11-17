@@ -7,7 +7,7 @@ cd "$ROOT/reports"
 
 xelatex -interaction=nonstopmode -halt-on-error report.tex > /tmp/report-build-1.log
 xelatex -interaction=nonstopmode -halt-on-error report.tex > /tmp/report-build-2.log
-cp report.pdf AutomationBench-Baseline-Report.pdf
+cp report.pdf ../AutomationBench-Baseline-Report.pdf
 rm -f report.pdf report.aux report.log report.out report.toc
 
-echo "built: $ROOT/reports/AutomationBench-Baseline-Report.pdf"
+echo "built: $ROOT/AutomationBench-Baseline-Report.pdf"
