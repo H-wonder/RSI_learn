@@ -2,6 +2,8 @@
 
 AutomationBench 基线实验的代码、运行记录和分析报告。仓库只包含我们自己写的代码与结果摘要，不包含数据集本身。
 
+远程仓库：<https://github.com/H-wonder/RSI_learn>
+
 ## 任务一交付物
 
 - **PDF 报告**：[AutomationBench-Baseline-Report.pdf](reports/AutomationBench-Baseline-Report.pdf)（23 页）
