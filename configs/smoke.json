@@ -3,6 +3,7 @@
   "model": "gpt-5.6-sol",
   "base_url": "https://intlapi.thingo.com.cn/v1",
   "api_key_var": "OPENAI_API_KEY",
+  "api": "chat_completions",
   "toolset": "api",
   "max_steps": 20,
   "max_concurrent": 2,

@@ -21,7 +21,19 @@ import statistics
 from collections import defaultdict
 from pathlib import Path
 
-TYPE_ORDER = [f"P{i}" for i in range(1, 10)] + ["unlabeled"]
+TYPE_ORDER = [
+    "P1",
+    "P2",
+    "P3",
+    "P4a",
+    "P4b",
+    "P5",
+    "P6",
+    "P7",
+    "P8",
+    "P9",
+    "unlabeled",
+]
 
 
 def load_tasks(paths: list[Path]) -> dict[str, dict]:
@@ -48,6 +60,7 @@ def load_annotation(path: Path) -> dict[str, dict]:
                 continue
             result[name] = {
                 "primary": (row.get("primary_type") or "").strip(),
+                "subtype": (row.get("primary_subtype") or "").strip(),
                 "secondary": (row.get("secondary_types") or "").strip(),
             }
     return result
@@ -95,7 +108,10 @@ def main() -> None:
 
     groups: dict[str, list[dict]] = defaultdict(list)
     for name, task in tasks.items():
-        primary = annotation.get(name, {}).get("primary") or "unlabeled"
+        ann = annotation.get(name, {})
+        primary = ann.get("subtype") or ann.get("primary") or "unlabeled"
+        if primary == "P4" and not ann.get("subtype"):
+            raise SystemExit(f"P4 task without primary_subtype: {name}")
         if primary not in TYPE_ORDER:
             primary = "unlabeled"
         groups[primary].append(task)

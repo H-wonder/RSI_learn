@@ -21,8 +21,21 @@
 | 任务 | 问题类 | 为什么选它 | 需要的结构 |
 |---|---|---|---|
 | `sales.multi_hop_lookup` | P2 | 信息跨 Gmail/Sheets/Salesforce，且要按 tier 条件路由 | 顺序 + 并行 + 条件 |
-| `operations.generator_load_testing_schedule` | P4 | 多条频率/跳过规则，再建日历 | 条件 + 时间节点 |
+| `operations.generator_load_testing_schedule` | P4a | 多条频率/跳过规则，再建日历 | 条件 + 时间节点 |
 | `support.zendesk_sf_case_sync` | P3 | 读 3 个配置表、过滤、同步到 Salesforce | 并行读取 + 汇聚 |
+
+### 2.1 可证伪假设
+
+| 编号 | 假设 | 主要观测 | 如果成立 |
+|---|---|---|---|
+| H1 | 显式 FinalAction/Verifier 节点能减少“最后一步缺失” | P9/P3 的最后动作断言失败数 | structured 的 pass 提升集中在长链任务 |
+| H2 | 显式路由表能减少 P4b 的收件人/tier 错误 | P4b 的路由断言失败数 | P4b 提升，P4a 不应同等提升（区分效度） |
+| H3 | 规则抽取 + 确定性过滤能减少 P4a 的集合成员错误 | P4a 的集合/数量断言 | P4a 提升，错误类型从“集合错”转为“规则抽取错” |
+| H4 | 结构化的收益不是“多跑几步” | 步数/token/成本对照 | 控制步数后仍提升，才归因于结构 |
+
+如果四条假设都不成立，或者所有类型同等提升，优先怀疑：
+模型只是多跑了步数/多调了工具，而不是结构本身起作用。这时需要做
+“步数匹配”的对照（给 direct agent 同样的步数预算）或节点消融。
 
 ## 3. 结构设计
 
@@ -110,24 +123,33 @@ start
    - 跑 flow，拿 `end_state`；
    - 用 `rubric` 的 assertions 评分。
 4. **对比实验**
-   - direct agent：已有 `results/small/*.json`；
-   - structured：跑同一任务 10 次；
-   - 报 pass/partial/steps/token/cost。
+   - direct agent：用 `results/medium-max/` 的同配置结果作为基准；
+   - structured：同一任务、同一模型/工具集/max_steps；
+   - 先每任务每条件 3 次；方差大再补到 5 次；
+   - 报 pass/partial/steps/token/cost，逐任务报，不只报均值。
 
 ## 6. 对比协议（公平性）
 
-- 同模型（`gpt-5.6-sol`）、同 toolset、同 max_steps（50）；
-- 同任务、同初始状态；
-- 每个任务至少 10 次，报均值 ± 标准差；
-- structured 的 token 成本要单独报，不能只报通过率；
-- 如果 structured 通过率高但成本翻倍，要写清“性价比”。
+- 同模型（`gpt-5.6-sol`）、同 toolset（`api`）、同 max_steps（50）、同 reasoning effort（`max`）、同 API 路径（`chat_completions`）；
+- 同任务、同初始状态、同 prompt；
+- 先每任务每条件 **3 次**；方差大再补到 5 次；报均值与范围（n 小，不做强显著性）；
+- structured 的 token/成本要单独报，不能只报通过率；
+- 如果 structured 通过率高但成本翻倍，要写清“性价比”；
+- 额外做**节点消融**：去掉 Verifier / FinalAction / Router 各跑一次，看收益是否来自预期节点；
+- 额外做**步数对照**：给 direct agent 相同的步数上限，排除“只是多跑了几步”。
+
+**判定标准**：
+
+- 强证据：3 个任务中至少 2 个 pass 提升，且对应机制的断言失败数下降；
+- 中等证据：partial 提升但 pass 不变；
+- 负结果：structured 更差或成本 >2× 且无 pass 提升——也要如实报告。
 
 ## 7. 预期与风险
 
 **预期**：
 
 - P2/P3 任务：structured 的 pass rate 明显上升，因为不会漏掉“发邮件/写回”步骤；
-- P4 任务：structured 在规则复杂时更稳，但规则抽取节点仍可能错；
+- P4a/P4b 任务：structured 在规则复杂时更稳，但规则抽取/路由表节点仍可能错；
 - 成本：structured 的 token 可能更高（多节点调用），但步数更少。
 
 **风险**：
@@ -143,6 +165,10 @@ start
 | 第 1 步 | 加 `LlmNode` + `ToolNode` | 能跑一个“读 → 判断 → 写”的 3 节点 flow |
 | 第 2 步 | 写 `flow-multi-hop.json` | 能跑 `sales.multi_hop_lookup` |
 | 第 3 步 | 最小 runner + 评分 | 一次 structured 结果 |
-| 第 4 步 | 10 次对比 | 表 3：direct vs structured |
+| 第 4 步 | 3 次对比（每任务每条件） | 表 3：direct vs structured |
+| 第 5 步 | 节点消融 + 步数对照 | 收益归因：结构 vs 步数 |
+
+**成本粗估**：3 任务 × 2 条件 × 3 次 = 18 次运行；按 max effort 每题 $1–3 估算，
+约 **$18–54**。先跑 1 个任务验证 runner，再扩到 3 个，避免一次性烧预算。
 
 > 这是任务二“设计复杂超长 Agent 结构”的起点；先做最小闭环，再扩展循环/动态扇出/重试。

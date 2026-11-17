@@ -4,17 +4,47 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 
 远程仓库：[https://github.com/H-wonder/RSI_learn](https://github.com/H-wonder/RSI_learn)
 
+提交清单（要求 → 文件 → 状态）：[SUBMISSION.md](SUBMISSION.md)
+
 ## 任务一交付物
 
-- **PDF 报告（根目录）**：[AutomationBench-Baseline-Report.pdf](AutomationBench-Baseline-Report.pdf)（23 页）
+- **PDF 报告（根目录）**：[AutomationBench-Baseline-Report.pdf](AutomationBench-Baseline-Report.pdf)（30 页）
 - **LaTeX 源码**：[reports/report.tex](reports/report.tex)
-- **实验数据**：[reports/medium-60.tasks.csv](reports/medium-60.tasks.csv)、[reports/medium-60.issues.csv](reports/medium-60.issues.csv)
+- **主结果**：[reports/medium-max.tasks.csv](reports/medium-max.tasks.csv)、[reports/medium-max.issues.csv](reports/medium-max.issues.csv)
+- **默认 vs max**：[reports/compare-default-vs-max.md](reports/compare-default-vs-max.md)
+- **机制编码**：[reports/medium-max.mechanisms.md](reports/medium-max.mechanisms.md)
 - **重新生成 PDF**：`scripts/build_pdf.sh`（需要 XeLaTeX + ctex）
 
-## 重要说明：与官方榜单的差异
+## 主结果（max effort，60 题）
+
+| 指标 | 默认 effort（A 组） | `max` effort（主结果） |
+|---|---:|---:|
+| 通过率 | 11.7%（7/60） | **33.3%（20/60，95% CI [22.7, 45.9]）** |
+| 平均部分分 | 0.509 | **0.715** |
+| 平均步数 | 15.2 | 15.2 |
+| 平均输出 token | 2,982 | 9,714 |
+| 成本（框架上界） | $71.78 | **$120.41** |
+
+同一批 60 题的配对对比：+21.7 个百分点，McNemar **p = 0.00098**；
+14 题失败→通过，1 题通过→失败。部分分配对差 +0.206，95% bootstrap CI [+0.112, +0.303]。
+
+> 成本是“所有 input 按原价”的上界；cached input 占 **92.6%**，按缓存价 10% 估算约 **$34.63**，
+> 真实账单以中转站为准。
+>
+> 1 个任务被中转站安全分类器 refusal（`operations.drive_slack_dock_schedule`），
+> 按 0 分计入；单独重跑成功（0.8，无 refusal）。敏感性分析：含 refusal 33.3% / 0.715，
+> 排除 33.9% / 0.727，替换 33.3% / 0.728——通过率结论不变。
+
+## 重要说明：与官方参考成绩的差异
 
 官方 README 的 public 600 题榜单使用**最高 reasoning effort**（GPT-5.6 Sol 45.83%）。
-本仓库的 60 题运行**没有显式设置 reasoning effort**，所以 11.7% 不能直接对标官方。
+需要区分：官方排名榜（zapier.com/benchmarks）用的是**私有 held-out 集**，README 里的
+45.83% 是 **public 600 题**成绩；本地只能跑 public，因此只能做方向性比较。
+
+本仓库第一次 60 题运行**没有显式设置 reasoning effort**，得到 11.7%，不能直接对标官方。
+之后做了配置核对与校准，并用 `max` 重跑了全部 60 题；**主结果以 max 重跑为准**，
+默认 effort 的 11.7% 保留为 A 组对照。配置核对与实测证据见
+[docs/config-audit.md](docs/config-audit.md)。
 
 3 题校准（其余配置不变，只加 `--reasoning-effort max`）：
 
@@ -26,8 +56,9 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 | 平均部分分 | 0.083 | **0.667** |
 | 通过数 | 0/3 | **1/3** |
 
-因此 11.7% 是**默认 effort 下的下界**。下一步应使用 max effort 重跑 60 题（约 $50–70，1–1.5 小时），
-重跑后的数字才能与官方榜单做方向性比较。`configs/` 已默认写入 `reasoning_effort: max`。
+3 题样本很小，这组校准只说明**配置差异是主要原因之一**；60 题配对对比才给出主结论。
+`configs/` 已默认写入 `reasoning_effort: max` 和 `api: chat_completions`；复现命令见
+[docs/reproduce.md](docs/reproduce.md)。
 
 ## 这个仓库解决什么
 
@@ -52,13 +83,16 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 
 ## 实验结果在哪里
 
-- **23 页报告**：根目录 [AutomationBench-Baseline-Report.pdf](AutomationBench-Baseline-Report.pdf)
-- **完整分析**：[reports/medium-60.md](reports/medium-60.md)
-- **逐题结果 / 失败断言**：[medium-60.tasks.csv](reports/medium-60.tasks.csv)、[medium-60.issues.csv](reports/medium-60.issues.csv)
-- **紧凑结果 JSON**：[medium-60.compact.json](reports/medium-60.compact.json)、[small-18.compact.json](reports/small-18.compact.json)
+- **30 页报告**：根目录 [AutomationBench-Baseline-Report.pdf](AutomationBench-Baseline-Report.pdf)
+- **主结果分析**：[reports/medium-max.md](reports/medium-max.md)
+- **逐题结果 / 失败断言**：[medium-max.tasks.csv](reports/medium-max.tasks.csv)、[medium-max.issues.csv](reports/medium-max.issues.csv)
+- **问题类型（P4a/P4b）**：[reports/medium-max.by_type.md](reports/medium-max.by_type.md)
+- **默认 vs max**：[reports/compare-default-vs-max.md](reports/compare-default-vs-max.md)
+- **失败机制 M1–M6**：[reports/medium-max.mechanisms.md](reports/medium-max.mechanisms.md)
+- **紧凑结果 JSON**：[medium-max-60.compact.json](reports/medium-max-60.compact.json)
 - **运行配置与成本**：[reports/run-manifest.md](reports/run-manifest.md)
-- **完整轨迹**：[reports/raw-results-2026-11-17.tar.gz](reports/raw-results-2026-11-17.tar.gz)（1.3MB，含 small/medium 的完整对话 JSON）
-- **14 个失败案例**：[experiments/exp-002-small/failure-analysis.md](experiments/exp-002-small/failure-analysis.md)
+- **完整轨迹**：[reports/raw-results-2026-11-18.tar.gz](reports/raw-results-2026-11-18.tar.gz)（含 max / calibration / refusal 的完整对话 JSON）
+- **14 个失败案例**：PDF 第 8 章
 
 ## 目录
 
@@ -73,6 +107,10 @@ automationbench-baseline/
 │   ├── select_tasks.py      # 从数据集里抽样任务
 │   ├── analyze_results.py   # 指标、失败类型、问题比例、报告
 │   ├── analyze_by_type.py   # 结果 × 标注 → 问题类型 × 通过率（表 2）
+│   ├── check_aborts.py      # 检查中途中断（--tasks 模式不会自动补跑）
+│   ├── compare_runs.py      # 两次运行的配对对比（McNemar + bootstrap CI）
+│   ├── show_trace.py        # 查看单题完整轨迹
+│   ├── failure_digest.py    # 一屏摘要所有失败任务，便于写案例
 │   ├── apply_ai_labels.py   # 合并标注 JSON 到 CSV
 │   ├── annotation_summary.py# 标注分布统计
 │   ├── export_for_labeling.py # 导出 60 题完整信息
@@ -85,10 +123,12 @@ automationbench-baseline/
 │   ├── failure-taxonomy.md  # 失败分类标准
 │   ├── metrics.md           # 指标与“免费断言”
 │   ├── dataset-card.md      # 数据集规模/复杂度
-│   ├── problem-taxonomy.md  # P1–P9 问题分类
+│   ├── problem-taxonomy.md  # P1–P9 问题分类（P4 拆成 P4a/P4b）
+│   ├── failure-mechanisms.md # M1–M6 失败机制编码手册
 │   ├── how-to-review-labels.md # 怎么复核 P1–P9 标注
 │   ├── experiment-tables.md # 表 1/2/3/4 模板
 │   ├── structure-validation-plan.md # 在 rsi-flow 里验证结构的方案
+│   ├── config-audit.md      # 官方配置 vs 本仓库逐项核对 + 实测证据
 │   ├── reproduce.md         # 从零复现步骤
 │   └── report-template.md   # 报告模板
 ├── experiments/             # smoke / small / medium 的实验记录与失败案例
@@ -147,24 +187,35 @@ python scripts/analyze_results.py --dir results/small \
 
 跑完后先看 `experiments/exp-002-small/issues.md`，确认失败原因再放量。
 
-### 3）中批量：60 题（复用 small 的 12 题，只跑缺的 48 题）
+### 3）主结果：60 题，max effort
 
 ```bash
-python scripts/run_batch.py --name medium \
-  --tasks-file data/tasks/medium_missing.csv
+python scripts/run_batch.py --name medium-max --config configs/medium.json \
+  --tasks-file data/tasks/medium_from_annotation.csv
+
+python scripts/check_aborts.py --dir results/medium-max
 
 python scripts/analyze_results.py \
-  --dir results/small --dir results/medium \
+  --dir results/medium-max \
   --tasks-file data/tasks/medium_from_annotation.csv \
-  --out-md reports/medium-60.md --out-issues reports/medium-60.issues.csv \
-  --out-tasks reports/medium-60.tasks.csv
+  --out-md reports/medium-max.md --out-issues reports/medium-max.issues.csv \
+  --out-tasks reports/medium-max.tasks.csv
 
 python scripts/analyze_by_type.py \
-  --dir results/small --dir results/medium \
+  --dir results/medium-max \
   --tasks-file data/tasks/medium_from_annotation.csv \
   --annotation data/annotation/tasks_to_label.csv \
-  --out-md reports/medium-60.by_type.md --out-csv reports/medium-60.by_type.csv
+  --out-md reports/medium-max.by_type.md --out-csv reports/medium-max.by_type.csv
+
+python scripts/compare_runs.py \
+  --a-dir results/small --a-dir results/medium \
+  --b-dir results/medium-max \
+  --tasks-file data/tasks/medium_from_annotation.csv \
+  --annotation data/annotation/tasks_to_label.csv \
+  --out-md reports/compare-default-vs-max.md
 ```
+
+默认 effort 的旧 60 题保留在 `results/small/` + `results/medium/`，只作 A 组对照。
 
 ### 4）生成 PDF
 
@@ -181,7 +232,8 @@ scripts/build_pdf.sh             # XeLaTeX 编译并复制到根目录
 python scripts/run_batch.py --name full --domains all --per-domain 100
 ```
 
-按 60 题 $71.78 估算，全量约 $700。
+按 max 60 题的成本上界 $120.41 估算，全量 600 题约 $1,200；
+按 cached input 10% 估算约 $350。跑之前先做 10 题预算检查。
 
 ## 结果分析器会输出什么
 
@@ -201,13 +253,15 @@ python scripts/run_batch.py --name full --domains all --per-domain 100
 ## 现状
 
 - [x] 仓库结构、运行脚本、分析脚本
-- [x] 数据集卡片、P1–P9 分类、60 题标注
-- [x] 18 题小批量与失败记录
-- [x] 60 题正式基线（11.7% 通过，部分分 0.509）
-- [x] 14 个失败案例与根因分析
-- [x] 23 页 PDF 报告（根目录）
+- [x] 数据集卡片、P1–P9 分类（P4 拆成 P4a/P4b）、60 题标注
+- [x] 失败机制编码 M1–M6（工具/规则/路由/长链/负约束/收尾）
+- [x] 18 题小批量过程记录
+- [x] **60 题 max 主结果（33.3% 通过，部分分 0.715；95% CI [22.7, 45.9]）**
+- [x] 默认 vs max 配对对比（McNemar p=0.00098）
+- [x] 14 个机制案例与 refusal 敏感性分析
+- [x] 30 页 PDF 报告（根目录）
 - [x] 紧凑结果 JSON + 运行清单（run manifest）
-- [x] 完整轨迹归档（1.3MB tarball）
+- [x] 完整轨迹归档（max / calibration / refusal）
 - [x] 从零复现文档
-- [ ] 全量 600 题（约 $700，待预算）
+- [ ] 全量 600 题（上界约 $1,200；缓存折扣后约 $350，待预算）
 - [ ] 任务二：rsi-flow 结构实现

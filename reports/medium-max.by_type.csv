@@ -1,0 +1,9 @@
+problem_type,n,pass_rate,partial_credit,avg_steps,examples
+P2,10,0.1000,0.4717,15.1,"finance.invoice_email_extract, finance.payment_terms_tracking, marketing.seasonal_campaign"
+P3,7,0.1429,0.7545,13.1,"hr.benefits_enrollment_audit, operations.vendor_compliance_audit, sales.sheets_reconciliation"
+P4a,16,0.5625,0.7809,15.3,"finance.qb_invoice_from_orders, finance.expense_reclassification, finance.vendor_insurance_verification"
+P4b,9,0.3333,0.7966,17.7,"finance.invoice_aging_followup, hr.offboarding_automation, hr.policy_update_distribution"
+P5,3,0.3333,0.4815,14.7,"hr.monday_onboarding_pipeline, marketing.link_building, sales.overdue_followup_flag"
+P7,1,0.0000,0.8333,18.0,sales.calendly_reschedule_chain
+P8,12,0.4167,0.8425,12.2,"finance.revenue_recognition, finance.profit_margin_analysis, finance.annual_budget_prep"
+P9,2,0.0000,0.4286,29.0,"finance.fiscal_year_rollover, sales.partnership_contract"

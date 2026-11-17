@@ -1,0 +1,41 @@
+task,type,score,mechanism,evidence
+finance.payment_terms_tracking,P2,0.000,M4,terms verified but no emails sent
+operations.drive_slack_dock_schedule,P2,0.000,R,provider safety refusal
+sales.champion_change_alert,P2,0.250,M4,found contacts but no task/Slack alert
+sales.multi_hop_lookup,P2,0.333,M2,tier/currency/notification rule misapplied
+finance.invoice_email_extract,P2,0.400,M6,invoice rows/amounts wrong
+sales.calendly_multi_stakeholder_scheduling,P2,0.600,M3,invitee set wrong
+sales.create_contact_for_account,P2,0.667,M6,contact fields do not match
+marketing.seasonal_campaign,P2,0.667,M4,Buffer post missing
+operations.asana_fire_drill,P2,0.800,M4,Asana action missing
+operations.vendor_compliance_audit,P3,0.231,M1,Salesforce fields empty; wrong compliance set; negative assertions
+support.zendesk_sf_case_sync,P3,0.750,M4,one case + Slack counts missing
+support.zoho_multitenant_isolation,P3,0.750,M4,ticket comments missing
+support.gorgias_fraud_detection,P3,0.765,M5,extra sheet row/message/channel
+hr.benefits_enrollment_audit,P3,0.833,M5,posted Slack message that should not exist
+support.reamaze_intercom_sync,P3,0.952,M4,Slack summary missing
+sales.calendly_sla_monitoring,P4a,0.000,M2,breach detection/notification rules
+finance.qb_invoice_from_orders,P4a,0.000,M1,Salesforce 401; orders source never resolved
+hr.mandatory_meeting_scheduling,P4a,0.167,M2,exemption/eligibility and recipients wrong
+operations.mailchimp_ecommerce_sync,P4a,0.714,M4,Slack summary missing
+finance.vendor_insurance_verification,P4a,0.833,M4,notification missing
+operations.generator_load_testing_schedule,P4a,0.857,M4,email notification missing
+marketing.seo_brief_prioritization,P4a,0.923,M6,email body missing a keyword/number
+hr.policy_update_distribution,P4b,0.250,M1,employee directory unavailable; individual emails missing
+hr.zoom_orientation_sessions,P4b,0.667,M3,wrong session/email body for two hires
+support.helpscout_auto_categorization,P4b,0.778,M3,wrong tag/note/channel
+sales.zoom_regional_webinar_coordinator,P4b,0.800,M4,Slack summary missing
+support.hiver_slack_digest,P4b,0.818,M3,drafts/emails/channel routing wrong
+hr.offboarding_automation,P4b,0.857,M4,sheet write-back missing
+hr.monday_onboarding_pipeline,P5,0.000,M1,no connected HRIS source; Monday items missing
+sales.overdue_followup_flag,P5,0.444,M4,tasks/email missing for three accounts
+sales.calendly_reschedule_chain,P7,0.833,M4,Salesforce note missing
+marketing.engagement_optimization,P8,0.455,M5,rows that should not exist; Slack missing
+operations.docusign_contractor_offboard,P8,0.600,M4,Trello card/Notion page missing
+operations.space_utilization_analysis,P8,0.600,M6,email body missing room/count
+finance.revenue_recognition,P8,0.750,M5,row CTR-003 should not exist (regression)
+support.hiver_csat_analysis,P8,0.840,M6,sheet rows/email body wrong
+marketing.analyst_mention_tracking,P8,0.917,M6,email body missing content
+marketing.social_benchmark,P8,0.949,M6,email body missing content
+sales.partnership_contract,P9,0.143,M4,DocuSign/Calendly/stage missing
+finance.fiscal_year_rollover,P9,0.714,M6,email body amount/restatement wrong

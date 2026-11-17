@@ -97,6 +97,19 @@ def pct(num: float, den: float) -> str:
     return f"{100 * num / den:.1f}%" if den else "-"
 
 
+def wilson_ci(k: int, n: int, z: float = 1.96) -> str:
+    """95% Wilson score interval, formatted as '[low, high]%'."""
+    if n == 0:
+        return "-"
+    p = k / n
+    denom = 1 + z * z / n
+    center = (p + z * z / (2 * n)) / denom
+    half = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / denom
+    lo = 100 * max(0.0, center - half)
+    hi = 100 * min(1.0, center + half)
+    return f"[{lo:.1f}, {hi:.1f}]%"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -186,6 +199,7 @@ def main() -> None:
                 "input_tokens": t.get("input_tokens", ""),
                 "output_tokens": t.get("output_tokens", ""),
                 "cost": t.get("cost", ""),
+                "refusal": "1" if t.get("died_on_refusal") else "0",
                 "failed_types": ";".join(sorted({a.get("type", "?") for a in fails})),
             }
         )
@@ -207,13 +221,24 @@ def main() -> None:
     lines.append("| metric | value |")
     lines.append("|---|---:|")
     lines.append(f"| tasks | {n} |")
-    lines.append(f"| pass rate (`score == 1`) | {pct(len(passed), n)} |")
+    lines.append(
+        f"| pass rate (`score == 1`) | {pct(len(passed), n)} "
+        f"(95% CI {wilson_ci(len(passed), n)}) |"
+    )
     lines.append(f"| avg partial credit | {statistics.mean(scores):.3f} |")
     lines.append(f"| avg steps | {statistics.mean(steps):.1f} |")
     lines.append(f"| input tokens | {in_tokens:,} |")
     lines.append(f"| output tokens | {out_tokens:,} |")
     lines.append(f"| cost | {cost:.4f} |")
+    refusals = [t for t in tasks if t.get("died_on_refusal")]
+    lines.append(f"| refusal-stopped | {len(refusals)} |")
     lines.append("")
+    if refusals:
+        lines.append(
+            "> Refusal-stopped tasks (provider safety classifier; scored 0): "
+            + ", ".join(f"`{t.get('name')}`" for t in refusals)
+        )
+        lines.append("")
 
     lines.append("## 2. By domain")
     lines.append("")

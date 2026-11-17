@@ -1,0 +1,13 @@
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, width=0.92\textwidth, height=6.2cm, ymin=0, ymax=60,
+  ylabel={通过率 (\%)}, symbolic x coords={sales,marketing,operations,support,finance,hr},
+  xtick=data, bar width=9pt, enlarge x limits=0.12,
+  tick label style={font=\small},
+  legend style={at={(0.5,1.02)}, anchor=south, legend columns=2, font=\small},
+]
+\addplot coordinates {(sales,0.0) (marketing,10.0) (operations,10.0) (support,0.0) (finance,30.0) (hr,20.0)};
+\addplot coordinates {(sales,10.0) (marketing,50.0) (operations,30.0) (support,30.0) (finance,40.0) (hr,40.0)};
+\legend{默认 effort, max effort}
+\end{axis}
+\end{tikzpicture}

@@ -76,6 +76,7 @@ def build_command(
     api_key_var: str,
     base_url: str | None,
     reasoning_effort: str | None,
+    api: str | None,
     per_domain: int,
     task_names: list[str] | None,
 ) -> list[str]:
@@ -102,6 +103,8 @@ def build_command(
         cmd += ["--base-url", base_url]
     if reasoning_effort:
         cmd += ["--reasoning-effort", reasoning_effort]
+    if api:
+        cmd += ["--api", api]
     if task_names:
         cmd += ["--tasks", ",".join(task_names)]
     else:
@@ -139,6 +142,7 @@ def main() -> None:
     parser.add_argument("--model")
     parser.add_argument("--base-url")
     parser.add_argument("--reasoning-effort")
+    parser.add_argument("--api", help="auto, chat_completions, responses, ...")
     parser.add_argument("--api-key-var")
     parser.add_argument("--toolset")
     parser.add_argument("--max-steps", type=int)
@@ -163,6 +167,7 @@ def main() -> None:
     model = args.model or config.get("model") or "TBD"
     base_url = args.base_url or config.get("base_url")
     reasoning_effort = args.reasoning_effort or config.get("reasoning_effort")
+    api = args.api or config.get("api")
     api_key_var = args.api_key_var or config.get("api_key_var") or "OPENAI_API_KEY"
     toolset = args.toolset or config.get("toolset") or "api"
     max_steps = args.max_steps or config.get("max_steps") or 50
@@ -195,6 +200,7 @@ def main() -> None:
         "model": model,
         "base_url": base_url,
         "reasoning_effort": reasoning_effort,
+        "api": api or "auto",
         "toolset": toolset,
         "max_steps": max_steps,
         "max_concurrent": max_concurrent,
@@ -220,6 +226,7 @@ def main() -> None:
             api_key_var=api_key_var,
             base_url=base_url,
             reasoning_effort=reasoning_effort,
+            api=api,
             per_domain=per_domain,
             task_names=task_names,
         )

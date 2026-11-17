@@ -13,12 +13,13 @@ OUT = ROOT / "reports" / "tex"
 OUT.mkdir(parents=True, exist_ok=True)
 
 DOMAIN_ORDER = ["sales", "marketing", "operations", "support", "finance", "hr"]
-TYPE_ORDER = [f"P{i}" for i in range(1, 10)]
+TYPE_ORDER = ["P1", "P2", "P3", "P4a", "P4b", "P5", "P6", "P7", "P8", "P9"]
 TYPE_NAMES = {
     "P1": "P1 单工具 CRUD",
     "P2": "P2 多跳检索",
     "P3": "P3 跨应用同步",
-    "P4": "P4 条件路由/规则",
+    "P4a": "P4a 资格筛选/规则判定",
+    "P4b": "P4b 分支路由/优先级",
     "P5": "P5 排除/冲突",
     "P6": "P6 模糊匹配",
     "P7": "P7 时间/日程",
@@ -49,6 +50,17 @@ def esc_name(name: str) -> str:
     return name.replace("_", r"\_")
 
 
+def wilson_ci(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """95% Wilson score interval for a binomial pass rate, in percent."""
+    if n == 0:
+        return (0.0, 0.0)
+    p = k / n
+    denom = 1 + z * z / n
+    center = (p + z * z / (2 * n)) / denom
+    half = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / denom
+    return (100 * max(0.0, center - half), 100 * min(1.0, center + half))
+
+
 def read_rows(path: Path) -> list[dict]:
     with open(path, newline="", encoding="utf-8-sig") as fh:
         return list(csv.DictReader(fh))
@@ -56,7 +68,10 @@ def read_rows(path: Path) -> list[dict]:
 
 def main() -> None:
     tasks = read_rows(ROOT / "reports" / "medium-60.tasks.csv")
-    ann = {r["task_name"]: r["primary_type"] for r in read_rows(ROOT / "data" / "annotation" / "tasks_to_label.csv")}
+    ann = {
+        r["task_name"]: (r.get("primary_subtype") or r["primary_type"])
+        for r in read_rows(ROOT / "data" / "annotation" / "tasks_to_label.csv")
+    }
     issues = read_rows(ROOT / "reports" / "medium-60.issues.csv")
 
     n = len(tasks)
@@ -68,9 +83,11 @@ def main() -> None:
     cost = sum(float(t["cost"] or 0) for t in tasks)
 
     # metrics macros
+    pass_lo, pass_hi = wilson_ci(len(passes), n)
     macros = [
         rf"\newcommand{{\MetricN}}{{{n}}}",
         rf"\newcommand{{\MetricPass}}{{{100 * len(passes) / n:.1f}\%}}",
+        rf"\newcommand{{\MetricPassCI}}{{[{pass_lo:.1f}, {pass_hi:.1f}]\%}}",
         rf"\newcommand{{\MetricPassCount}}{{{len(passes)}}}",
         rf"\newcommand{{\MetricPartial}}{{{statistics.mean(scores):.3f}}}",
         rf"\newcommand{{\MetricSteps}}{{{statistics.mean(steps):.1f}}}",
@@ -148,19 +165,24 @@ def main() -> None:
     lines = []
     for t in sorted(tasks, key=lambda x: (x["domain"], float(x["score"]))):
         ptype = ann.get(t["task"], "?")
+        refusal = t.get("refusal", "")
         lines.append(
-            f"\\code{{{t['task']}}} & {t['domain']} & {ptype} & {float(t['score']):.3f} & {t['steps']} \\\\"
+            f"\\code{{{t['task']}}} & {t['domain']} & {ptype} & {float(t['score']):.3f} & "
+            f"{t['steps']} & {refusal} \\\\"
         )
     (OUT / "per_task.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     # figures
-    domain_coords = " ".join(
-        f"({d},{100 * sum(1 for t in by_domain[d] if t['passed'] == '1') / len(by_domain[d]):.1f})"
+    domain_rates = {
+        d: 100 * sum(1 for t in by_domain[d] if t["passed"] == "1") / len(by_domain[d])
         for d in DOMAIN_ORDER
-    )
+        if by_domain[d]
+    }
+    domain_coords = " ".join(f"({d},{rate:.1f})" for d, rate in domain_rates.items())
+    domain_ymax = max(40, int(max(domain_rates.values(), default=0) // 10 * 10) + 10)
     fig = rf"""\begin{{tikzpicture}}
 \begin{{axis}}[
-  ybar, width=0.92\textwidth, height=6.2cm, ymin=0, ymax=40,
+  ybar, width=0.92\textwidth, height=6.2cm, ymin=0, ymax={domain_ymax},
   ylabel={{通过率 (\%)}}, symbolic x coords={{{','.join(DOMAIN_ORDER)}}},
   xtick=data, nodes near coords, bar width=14pt,
   enlarge x limits=0.12, tick label style={{font=\small}},
@@ -173,6 +195,7 @@ def main() -> None:
 
     type_coords = []
     type_ticks = []
+    type_rates = []
     for ptype in TYPE_ORDER:
         group = by_type.get(ptype, [])
         if not group:
@@ -180,9 +203,11 @@ def main() -> None:
         rate = 100 * sum(1 for t in group if t["passed"] == "1") / len(group)
         type_coords.append(f"({ptype},{rate:.1f})")
         type_ticks.append(ptype)
+        type_rates.append(rate)
+    type_ymax = max(40, int(max(type_rates, default=0) // 10 * 10) + 10)
     fig = rf"""\begin{{tikzpicture}}
 \begin{{axis}}[
-  ybar, width=0.92\textwidth, height=6.2cm, ymin=0, ymax=40,
+  ybar, width=0.92\textwidth, height=6.2cm, ymin=0, ymax={type_ymax},
   ylabel={{通过率 (\%)}}, symbolic x coords={{{','.join(type_ticks)}}},
   xtick=data, nodes near coords, bar width=14pt,
   enlarge x limits=0.12, tick label style={{font=\small}},
@@ -203,9 +228,11 @@ def main() -> None:
     s_cost = sum(float(t["cost"] or 0) for t in small_tasks)
     s_in = sum(int(t["input_tokens"] or 0) for t in small_tasks)
     s_out = sum(int(t["output_tokens"] or 0) for t in small_tasks)
+    small_lo, small_hi = wilson_ci(len(spasses), sn)
     small_metrics = [
         rf"\newcommand{{\SmallN}}{{{sn}}}",
         rf"\newcommand{{\SmallPass}}{{{100 * len(spasses) / sn:.1f}\%}}",
+        rf"\newcommand{{\SmallPassCI}}{{[{small_lo:.1f}, {small_hi:.1f}]\%}}",
         rf"\newcommand{{\SmallPassCount}}{{{len(spasses)}}}",
         rf"\newcommand{{\SmallPartial}}{{{statistics.mean(sscores):.3f}}}",
         rf"\newcommand{{\SmallSteps}}{{{statistics.mean(ssteps):.1f}}}",
@@ -287,9 +314,13 @@ def main() -> None:
             continue
         coords.append(f"({100 * cat_assert[cat] / total_fail:.1f},{short[cat]})")
         ticks.append(short[cat])
+    failure_xmax = min(
+        100,
+        max(50, int(max((100 * c / total_fail for c in cat_assert.values()), default=0) // 10 * 10) + 10),
+    )
     fig = rf"""\begin{{tikzpicture}}
 \begin{{axis}}[
-  xbar, width=0.92\textwidth, height=7.0cm, xmin=0, xmax=50,
+  xbar, width=0.92\textwidth, height=7.0cm, xmin=0, xmax={failure_xmax},
   xlabel={{占失败断言比例 (\%)}}, symbolic y coords={{{','.join(ticks)}}},
   ytick=data, nodes near coords, bar width=10pt,
   enlarge y limits=0.12,

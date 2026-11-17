@@ -78,6 +78,9 @@ def main() -> None:
     medium_paths = sorted(
         p for p in (ROOT / "results" / "medium").glob("*.json") if p.name != "manifest.json"
     )
+    max_paths = sorted(
+        p for p in (ROOT / "results" / "medium-max").glob("*.json") if p.name != "manifest.json"
+    )
 
     small = load_tasks(small_paths)
     write(
@@ -101,6 +104,16 @@ def main() -> None:
         "medium-60",
         [str(p.relative_to(ROOT)) for p in small_paths + medium_paths],
     )
+
+    if max_paths:
+        max_tasks = load_tasks(max_paths)
+        max_medium = [compact(t) for name, t in max_tasks.items() if name in allowed]
+        write(
+            REPORTS / "medium-max-60.compact.json",
+            sorted(max_medium, key=lambda x: x["name"]),
+            "medium-max-60",
+            [str(p.relative_to(ROOT)) for p in max_paths],
+        )
 
 
 if __name__ == "__main__":

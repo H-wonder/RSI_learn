@@ -50,32 +50,50 @@ set -a; . ./.env; set +a
 ## 5. 跑实验
 
 ```bash
-# 烟测
+# 烟测（只验证链路，simple 域不计入 benchmark 分数）
 python scripts/run_batch.py --name smoke --domains simple --per-domain 5
 
-# 18 题小批量
+# 18 题小批量（低成本的流程演练）
 python scripts/run_batch.py --name small \
   --tasks-file data/tasks/small_from_annotation.csv
 
-# 60 题正式实验：复用 small 的 12 题，补跑 48 题
-python scripts/run_batch.py --name medium \
-  --tasks-file data/tasks/medium_missing.csv
+# 60 题正式实验：max reasoning effort，60 题全部重跑
+python scripts/run_batch.py --name medium-max --config configs/medium.json \
+  --tasks-file data/tasks/medium_from_annotation.csv
 ```
 
-## 6. 分析
+历史对照（default effort，12 题复用 + 48 题补跑）仍保留在仓库里：
 
 ```bash
+python scripts/run_batch.py --name medium --tasks-file data/tasks/medium_missing.csv
+```
+
+## 6. 分析与完整性检查
+
+```bash
+# 先确认没有中途中断的任务（--tasks 模式不会自动补跑）
+python scripts/check_aborts.py --dir results/medium-max
+
 python scripts/analyze_results.py \
-  --dir results/small --dir results/medium \
+  --dir results/medium-max \
   --tasks-file data/tasks/medium_from_annotation.csv \
-  --out-md reports/medium-60.md --out-issues reports/medium-60.issues.csv \
-  --out-tasks reports/medium-60.tasks.csv
+  --out-md reports/medium-max.md --out-issues reports/medium-max.issues.csv \
+  --out-tasks reports/medium-max.tasks.csv
 
 python scripts/analyze_by_type.py \
-  --dir results/small --dir results/medium \
+  --dir results/medium-max \
   --tasks-file data/tasks/medium_from_annotation.csv \
   --annotation data/annotation/tasks_to_label.csv \
-  --out-md reports/medium-60.by_type.md --out-csv reports/medium-60.by_type.csv
+  --out-md reports/medium-max.by_type.md --out-csv reports/medium-max.by_type.csv
+
+python scripts/compare_runs.py \
+  --a-dir results/small --a-dir results/medium \
+  --b-dir results/medium-max \
+  --tasks-file data/tasks/medium_from_annotation.csv \
+  --annotation data/annotation/tasks_to_label.csv \
+  --out-md reports/compare-default-vs-max.md \
+  --out-csv reports/compare-default-vs-max.csv \
+  --out-tex reports/tex/compare.tex
 
 python scripts/make_compact_results.py
 ```
@@ -83,6 +101,12 @@ python scripts/make_compact_results.py
 ## 7. 重新生成 PDF
 
 ```bash
+# build_report.py 读取 medium-60.*，先把 max 结果复制过去
+cp reports/medium-max.tasks.csv  reports/medium-60.tasks.csv
+cp reports/medium-max.issues.csv reports/medium-60.issues.csv
+cp reports/medium-max.by_type.md reports/medium-60.by_type.md
+cp reports/medium-max.by_type.csv reports/medium-60.by_type.csv
+
 python scripts/build_report.py
 scripts/build_pdf.sh
 ```
@@ -91,4 +115,6 @@ scripts/build_pdf.sh
 
 ## 8. 成本提示
 
-60 题约 **$71.78**；全量 600 题按此估算约 **$700**。放量前先确认预算。
+60 题 max effort 的框架上界是 **$120.41**；cached input 占 92.6%，
+按缓存价 10% 估算约 **$34.63**（以中转站账单为准）。全量 600 题按上界约 **$1,200**，
+按缓存折扣估算约 **$350**。放量前先确认预算，并先跑 10 题检查单题成本。

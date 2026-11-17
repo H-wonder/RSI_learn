@@ -1,0 +1,60 @@
+\newcommand{\CmpN}{60}
+\newcommand{\CmpPassA}{11.7\%}
+\newcommand{\CmpPassB}{33.3\%}
+\newcommand{\CmpPassCountA}{7}
+\newcommand{\CmpPassCountB}{20}
+\newcommand{\CmpPassACI}{[5.8, 22.2]\%}
+\newcommand{\CmpPassBCI}{[22.7, 45.9]\%}
+\newcommand{\CmpPassDelta}{{+}21.7 pp}
+\newcommand{\CmpPartialA}{0.509}
+\newcommand{\CmpPartialB}{0.715}
+\newcommand{\CmpPartialDelta}{+0.206}
+\newcommand{\CmpPartialCI}{[+0.112, +0.303]}
+\newcommand{\CmpMcNemarP}{0.0009766}
+\newcommand{\CmpBothPass}{6}
+\newcommand{\CmpFailToPass}{14}
+\newcommand{\CmpPassToFail}{1}
+\newcommand{\CmpBothFail}{39}
+\newcommand{\CmpImproved}{35}
+\newcommand{\CmpUnchanged}{18}
+\newcommand{\CmpWorsened}{7}
+\newcommand{\CmpStepsA}{15.2}
+\newcommand{\CmpStepsB}{15.2}
+\newcommand{\CmpOutA}{2,982}
+\newcommand{\CmpOutB}{9,714}
+\newcommand{\CmpCostA}{\$71.78}
+\newcommand{\CmpCostB}{\$120.41}
+\newcommand{\CmpDomainRows}{%
+sales & 10 & 0.0\% & 10.0\% & 0.396 & 0.507 & +0.112 \\
+marketing & 10 & 10.0\% & 50.0\% & 0.614 & 0.891 & +0.277 \\
+operations & 10 & 10.0\% & 30.0\% & 0.458 & 0.680 & +0.222 \\
+support & 10 & 0.0\% & 30.0\% & 0.506 & 0.865 & +0.359 \\
+finance & 10 & 30.0\% & 40.0\% & 0.586 & 0.670 & +0.084 \\
+hr & 10 & 20.0\% & 40.0\% & 0.495 & 0.677 & +0.183 \\
+}
+\newcommand{\CmpTypeRows}{%
+P2 多跳检索 & 10 & 10.0\% & 10.0\% & 0.415 & 0.472 & +0.057 \\
+P3 跨应用同步 & 7 & 0.0\% & 14.3\% & 0.436 & 0.754 & +0.318 \\
+P4a 资格筛选/规则判定 & 16 & 18.8\% & 56.2\% & 0.444 & 0.781 & +0.337 \\
+P4b 分支路由/优先级 & 9 & 0.0\% & 33.3\% & 0.615 & 0.797 & +0.182 \\
+P5 排除/冲突 & 3 & 33.3\% & 33.3\% & 0.630 & 0.481 & -0.148 \\
+P7 时间/日程 & 1 & 0.0\% & 0.0\% & 0.667 & 0.833 & +0.167 \\
+P8 聚合/计算 & 12 & 16.7\% & 41.7\% & 0.632 & 0.842 & +0.210 \\
+P9 长链编排 & 2 & 0.0\% & 0.0\% & 0.286 & 0.429 & +0.143 \\
+}
+\newcommand{\CmpFlipRows}{%
+\code{finance.annual\_budget\_prep} & P8 & 0.70 & 1.00 \\
+\code{finance.invoice\_aging\_followup} & P4b & 0.33 & 1.00 \\
+\code{hr.i9\_verification\_tracking} & P4b & 0.38 & 1.00 \\
+\code{hr.recruitment\_channel\_roi} & P8 & 0.00 & 1.00 \\
+\code{marketing.content\_localization} & P8 & 0.83 & 1.00 \\
+\code{marketing.newsletter\_sponsor\_invoicing} & P4a & 0.84 & 1.00 \\
+\code{marketing.social\_engagement\_response} & P4a & 0.00 & 1.00 \\
+\code{marketing.win\_loss\_analysis} & P8 & 0.94 & 1.00 \\
+\code{operations.mailchimp\_subscriber\_sync} & P4a & 0.17 & 1.00 \\
+\code{operations.perishable\_inventory\_expiry} & P4a & 0.00 & 1.00 \\
+\code{sales.sheets\_reconciliation} & P3 & 0.25 & 1.00 \\
+\code{support.freshdesk\_contract\_renewal} & P4a & 0.29 & 1.00 \\
+\code{support.intercom\_freshdesk\_escalation} & P4a & 0.34 & 1.00 \\
+\code{support.zendesk\_escalation\_waterfall} & P4b & 0.88 & 1.00 \\
+}

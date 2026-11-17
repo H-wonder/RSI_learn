@@ -31,7 +31,16 @@ def main() -> None:
         if not label:
             missing.append(row["task_name"])
             continue
+        old_type = row.get("primary_type", "")
         row["primary_type"] = label["primary"]
+        # P4 has a curated sub-type (P4a eligibility / P4b routing); preserve it
+        # when re-applying AI labels, but clear it if the primary type changes.
+        if row["primary_type"] == "P4":
+            row["primary_subtype"] = label.get("subtype") or (
+                row.get("primary_subtype", "") if old_type == "P4" else ""
+            )
+        else:
+            row["primary_subtype"] = ""
         row["secondary_types"] = label["secondary"]
         row["evidence"] = label["evidence"]
         row["failure_mode"] = label["failure_mode"]
