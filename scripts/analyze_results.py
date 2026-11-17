@@ -108,6 +108,10 @@ def main() -> None:
     parser.add_argument("--out-md", default="reports/report.md")
     parser.add_argument("--out-issues", default=None)
     parser.add_argument("--out-tasks", default=None)
+    parser.add_argument(
+        "--tasks-file",
+        help="CSV with a task_name column; keep only these tasks (for merged runs)",
+    )
     parser.add_argument("--title", default="AutomationBench Baseline Report")
     args = parser.parse_args()
 
@@ -124,6 +128,10 @@ def main() -> None:
         raise SystemExit("no result JSON files found")
 
     tasks, meta = load_tasks(paths)
+    if args.tasks_file:
+        with open(args.tasks_file, newline="", encoding="utf-8-sig") as fh:
+            allowed = {row["task_name"] for row in csv.DictReader(fh)}
+        tasks = [t for t in tasks if t.get("name") in allowed]
     n = len(tasks)
     if n == 0:
         raise SystemExit("result files contain no tasks")

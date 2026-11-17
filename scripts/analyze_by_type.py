@@ -66,6 +66,10 @@ def main() -> None:
     )
     parser.add_argument("files", nargs="*")
     parser.add_argument("--annotation", default="data/annotation/tasks_to_label.csv")
+    parser.add_argument(
+        "--tasks-file",
+        help="CSV with a task_name column; keep only these tasks (for merged runs)",
+    )
     parser.add_argument("--out-md", default="reports/by_type.md")
     parser.add_argument("--out-csv", default="reports/by_type.csv")
     args = parser.parse_args()
@@ -83,6 +87,10 @@ def main() -> None:
         raise SystemExit("no result JSON files found")
 
     tasks = load_tasks(paths)
+    if args.tasks_file:
+        with open(args.tasks_file, newline="", encoding="utf-8-sig") as fh:
+            allowed = {row["task_name"] for row in csv.DictReader(fh)}
+        tasks = {k: v for k, v in tasks.items() if k in allowed}
     annotation = load_annotation(Path(args.annotation))
 
     groups: dict[str, list[dict]] = defaultdict(list)
