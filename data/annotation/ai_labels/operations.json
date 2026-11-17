@@ -1,0 +1,72 @@
+{
+  "operations.asana_fire_drill": {
+    "primary": "P2",
+    "secondary": "P4;P5;P1",
+    "evidence": "asana_action_exists",
+    "failure_mode": "处理了错误邮件、违反邮件策略、任务建错 section/标签",
+    "confidence": "high"
+  },
+  "operations.drive_slack_dock_schedule": {
+    "primary": "P2",
+    "secondary": "P4;P5;P1",
+    "evidence": "google_drive_action_exists",
+    "failure_mode": "认错最新版本、忽略 QA 签核、移动了仓库排期文件",
+    "confidence": "high"
+  },
+  "operations.notion_slack_playbook": {
+    "primary": "P2",
+    "secondary": "P1;P5",
+    "evidence": "notion_action_exists",
+    "failure_mode": "选错版本/生效日期、发布到错误页面或频道",
+    "confidence": "high"
+  },
+  "operations.docusign_contractor_offboard": {
+    "primary": "P8",
+    "secondary": "P4;P5;P9",
+    "evidence": "docusign_envelope_has_signer",
+    "failure_mode": "选错承包商、把不合格的人纳入、漏建 Trello/Notion/DM",
+    "confidence": "high"
+  },
+  "operations.mailchimp_subscriber_sync": {
+    "primary": "P4",
+    "secondary": "P5;P1",
+    "evidence": "mailchimp_subscriber_exists",
+    "failure_mode": "同步了 legal/privacy 排除的人、漏掉合格订阅者、计数错",
+    "confidence": "high"
+  },
+  "operations.mailchimp_ecommerce_sync": {
+    "primary": "P4",
+    "secondary": "P5;P1",
+    "evidence": "mailchimp_subscriber_has_tag",
+    "failure_mode": "标签打错、把退款/退订/测试用户加进去、漏高价值标签",
+    "confidence": "high"
+  },
+  "operations.vendor_compliance_audit": {
+    "primary": "P3",
+    "secondary": "P4;P5;P8",
+    "evidence": "slack_message_exists",
+    "failure_mode": "把 Inactive 供应商算进去、漏过期文档、名称混淆、计数错",
+    "confidence": "high"
+  },
+  "operations.perishable_inventory_expiry": {
+    "primary": "P4",
+    "secondary": "P5;P2;P1",
+    "evidence": "twilio_sms_sent",
+    "failure_mode": "包含已处理/隔离的批次、漏掉临期批次、联系人或批次号错",
+    "confidence": "high"
+  },
+  "operations.space_utilization_analysis": {
+    "primary": "P8",
+    "secondary": "P4;P5",
+    "evidence": "gmail_message_sent",
+    "failure_mode": "包含会议室/装修房间、闲置容量算错、邮件漏房间",
+    "confidence": "high"
+  },
+  "operations.generator_load_testing_schedule": {
+    "primary": "P4",
+    "secondary": "P7;P5;P8",
+    "evidence": "google_calendar_event_exists",
+    "failure_mode": "给未到期/维修中/Event 便携机排测试、日期算错、邮件发错工程师",
+    "confidence": "high"
+  }
+}

