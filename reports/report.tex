@@ -62,7 +62,10 @@
 再用 18 题小批量暴露问题，形成失败记录，最后在 60 题分层样本上放量，统计失败比例。
 基线模型为 \texttt{gpt-5.6-sol}，使用官方 \texttt{api} 工具集，最大步数 50。
 60 题总体通过率为 \MetricPass（\MetricPassCount/\MetricN），平均部分分 \MetricPartial，
-平均步数 \MetricSteps，总成本 \MetricCost。
+平均步数 \MetricSteps，总成本 \MetricCost。注意：这 60 题运行\textbf{未显式设置
+reasoning effort}，而官方榜单使用最高 effort；3 题校准把平均部分分从 0.083 提升到
+0.667，通过数从 0/3 提升到 1/3，因此 \MetricPass 是默认配置下的下界，不能直接对标
+官方 45.83\%。
 
 核心发现：（1）46.7\% 的任务落在部分分 $[0.5,1)$，多数任务只差少数断言；
 （2）失败以“漏做”为主，漏建记录 42.6\%、漏发消息 29.1\%，合计 71.7\%；
@@ -297,6 +300,7 @@ P1--P9 是我们为论文归纳的能力类型，不是数据集官方标签。6
 模型 & \texttt{gpt-5.6-sol} \\
 接口 & \texttt{https://intlapi.thingo.com.cn/v1} \\
 工具集 & \texttt{api} \\
+reasoning effort & default（未显式设置） \\
 最大步数 & 50 \\
 并发 & 5 \\
 数据 & public set，6 域 $\times$ 10 题 = 60 \\
@@ -335,6 +339,39 @@ P1--P9 是我们为论文归纳的能力类型，不是数据集官方标签。6
   \item \textbf{放量}：60 题分层样本；统计失败比例，与 18 题对比；
   \item \textbf{结论}：判断基线是否稳定、是否值得跑全量 600。
 \end{enumerate}
+
+\subsection{与官方榜单配置的差异}
+
+官方 README 的 public 600 题榜单注明“每个模型运行在最高可用 reasoning effort”，
+其中 \texttt{gpt-5.6-sol} 为 45.83\%。本报告的 60 题运行没有显式设置 reasoning effort，
+因此 11.7\% 不能直接对标 45.83\%。
+
+为量化差异，我们在 3 道代表题上做了一次 max effort 校准（其余配置不变）：
+
+\begin{table}[htbp]
+\centering
+\caption{3 题校准：默认 effort vs max effort}
+\begin{tabular}{lrr}
+\toprule
+任务 & 默认 effort & max effort \\
+\midrule
+\code{sales.multi_hop_lookup} & 0.000 & 0.667 \\
+\code{sales.sheets_reconciliation} & 0.250 & 1.000 \\
+\code{operations.vendor_compliance_audit} & 0.000 & 0.333 \\
+\midrule
+平均部分分 & 0.083 & 0.667 \\
+通过数 & 0/3 & 1/3 \\
+成本 & — & \$2.59 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+校准显示：平均部分分从 0.083 提升到 0.667，通过数从 0/3 提升到 1/3；
+其中 sales 的信用卡对账任务从 0.25 直接变为通过。说明当前 11.7\% 主要是
+\textbf{配置差异}，而不是数据或模型完全不可用。
+
+下一步应使用 \texttt{--reasoning-effort max} 重跑 60 题；按 3 题 \$2.59 估算，
+60 题约 \$50--70，时间约 1--1.5 小时。重跑后的数字才能与官方榜单做方向性比较。
 
 \section{小批量实验（18 题）}
 
@@ -810,6 +847,8 @@ orders feed，最后说“无法验证哪些订单符合条件”。根因是\te
 \begin{enumerate}
   \item \textbf{样本量}：60 题分层样本，每类只有 1--25 题，统计不稳定；
   \item \textbf{单模型}：只跑 \texttt{gpt-5.6-sol}，没有多模型、多 seed；
+  \item \textbf{推理配置}：60 题未显式设置 reasoning effort，与官方最高 effort 不一致；
+  3 题校准显示影响很大；
   \item \textbf{标签质量}：P1--P9 为 AI 初标 + 用户复核接受，仍可能有分歧；
   \item \textbf{自动归类}：失败类别基于断言类型名，个别 \texttt{other} 需人工复核；
   \item \textbf{成本}：relay 价格为估算，不能直接对标官方定价；
@@ -833,7 +872,9 @@ LLM 节点、工具节点、循环、动态扇出、重试/降级、状态映射
   \item 最难的类别是 P3 跨应用同步与 P9 长链编排；
   \item 域差异显著：finance 30\%，sales/support 0\%；
   \item 14 个案例的根因集中在数据源、规则、收尾、单位/字段、自检五类；
-  \item 60 题成本 \MetricCost；按此估算全量 600 题约 \$700。
+  \item 60 题成本 \MetricCost；按此估算全量 600 题约 \$700；
+  \item 当前 \MetricPass 是默认 reasoning effort 下的下界；应重跑 60 题（max effort）
+  后再与官方榜单比较。
 \end{enumerate}
 
 \subsection{下一步}

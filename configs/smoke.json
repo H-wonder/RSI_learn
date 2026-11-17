@@ -6,6 +6,9 @@
   "toolset": "api",
   "max_steps": 20,
   "max_concurrent": 2,
-  "domains": ["simple"],
-  "per_domain": 5
+  "domains": [
+    "simple"
+  ],
+  "per_domain": 5,
+  "reasoning_effort": "low"
 }

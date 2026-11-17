@@ -75,6 +75,7 @@ def build_command(
     max_concurrent: int,
     api_key_var: str,
     base_url: str | None,
+    reasoning_effort: str | None,
     per_domain: int,
     task_names: list[str] | None,
 ) -> list[str]:
@@ -99,6 +100,8 @@ def build_command(
     ]
     if base_url:
         cmd += ["--base-url", base_url]
+    if reasoning_effort:
+        cmd += ["--reasoning-effort", reasoning_effort]
     if task_names:
         cmd += ["--tasks", ",".join(task_names)]
     else:
@@ -135,6 +138,7 @@ def main() -> None:
     parser.add_argument("--dataset-dir")
     parser.add_argument("--model")
     parser.add_argument("--base-url")
+    parser.add_argument("--reasoning-effort")
     parser.add_argument("--api-key-var")
     parser.add_argument("--toolset")
     parser.add_argument("--max-steps", type=int)
@@ -158,6 +162,7 @@ def main() -> None:
     dataset = resolve_dataset(config, args.dataset_dir)
     model = args.model or config.get("model") or "TBD"
     base_url = args.base_url or config.get("base_url")
+    reasoning_effort = args.reasoning_effort or config.get("reasoning_effort")
     api_key_var = args.api_key_var or config.get("api_key_var") or "OPENAI_API_KEY"
     toolset = args.toolset or config.get("toolset") or "api"
     max_steps = args.max_steps or config.get("max_steps") or 50
@@ -189,6 +194,7 @@ def main() -> None:
         "started_at": datetime.now(timezone.utc).isoformat(),
         "model": model,
         "base_url": base_url,
+        "reasoning_effort": reasoning_effort,
         "toolset": toolset,
         "max_steps": max_steps,
         "max_concurrent": max_concurrent,
@@ -213,6 +219,7 @@ def main() -> None:
             max_concurrent=max_concurrent,
             api_key_var=api_key_var,
             base_url=base_url,
+            reasoning_effort=reasoning_effort,
             per_domain=per_domain,
             task_names=task_names,
         )

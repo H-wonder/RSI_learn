@@ -11,6 +11,24 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 - **实验数据**：[reports/medium-60.tasks.csv](reports/medium-60.tasks.csv)、[reports/medium-60.issues.csv](reports/medium-60.issues.csv)
 - **重新生成 PDF**：`scripts/build_pdf.sh`（需要 XeLaTeX + ctex）
 
+## 重要说明：与官方榜单的差异
+
+官方 README 的 public 600 题榜单使用**最高 reasoning effort**（GPT-5.6 Sol 45.83%）。
+本仓库的 60 题运行**没有显式设置 reasoning effort**，所以 11.7% 不能直接对标官方。
+
+3 题校准（其余配置不变，只加 `--reasoning-effort max`）：
+
+| 任务 | 默认 effort | max effort |
+|---|---:|---:|
+| multi_hop_lookup | 0.000 | 0.667 |
+| sheets_reconciliation | 0.250 | 1.000 |
+| vendor_compliance_audit | 0.000 | 0.333 |
+| 平均部分分 | 0.083 | **0.667** |
+| 通过数 | 0/3 | **1/3** |
+
+因此 11.7% 是**默认 effort 下的下界**。下一步应使用 max effort 重跑 60 题（约 $50–70，1–1.5 小时），
+重跑后的数字才能与官方榜单做方向性比较。`configs/` 已默认写入 `reasoning_effort: max`。
+
 ## 这个仓库解决什么
 
 基线不是“跑一次拿个分数”，而是：

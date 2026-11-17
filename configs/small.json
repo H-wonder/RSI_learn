@@ -6,6 +6,14 @@
   "toolset": "api",
   "max_steps": 50,
   "max_concurrent": 5,
-  "domains": ["sales", "marketing", "operations", "support", "finance", "hr"],
-  "per_domain": 3
+  "domains": [
+    "sales",
+    "marketing",
+    "operations",
+    "support",
+    "finance",
+    "hr"
+  ],
+  "per_domain": 3,
+  "reasoning_effort": "max"
 }

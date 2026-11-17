@@ -9,6 +9,7 @@
 | 模型 | `gpt-5.6-sol` |
 | 接口 | `https://intlapi.thingo.com.cn/v1` |
 | toolset | `api` |
+| reasoning effort | default（60 题运行未显式设置） |
 | max_steps | 50 |
 | max_concurrent | 5 |
 | 数据集 | [zapier/AutomationBench](https://github.com/zapier/AutomationBench) |
@@ -54,6 +55,21 @@ python scripts/analyze_by_type.py \
 
 - 结果：7/60 通过，通过率 **11.7%**，部分分 **0.509**，60 题成本 **$71.78**
 - 分阶段成本：small 18 题 $21.12；medium 48 题 $56.26；全部运行合计约 **$77.38**
+
+### 校准：max reasoning effort
+
+官方榜单使用最高 reasoning effort，而上面的 60 题运行没有显式设置。用 3 道代表题做校准：
+
+| 任务 | 默认 effort | max effort |
+|---|---:|---:|
+| sales.multi_hop_lookup | 0.000 | 0.667 |
+| sales.sheets_reconciliation | 0.250 | 1.000 |
+| operations.vendor_compliance_audit | 0.000 | 0.333 |
+| 平均部分分 | 0.083 | 0.667 |
+| 通过数 | 0/3 | 1/3 |
+| 成本 | — | $2.59 |
+
+结论：11.7% 是默认 effort 下的下界，不能直接对标官方 45.83%。下一步用 max effort 重跑 60 题。
 
 ## 分析产物
 
