@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Merge the AI draft labels (data/annotation/ai_labels/*.json) into the CSV.
+"""Merge the label JSON files (data/annotation/ai_labels/*.json) into the CSV.
 
-Labels are drafts: notes is set to "AI draft, needs review".
+Existing columns are preserved; label columns are filled in place.
 """
 
 from __future__ import annotations
@@ -35,7 +35,6 @@ def main() -> None:
         row["secondary_types"] = label["secondary"]
         row["evidence"] = label["evidence"]
         row["failure_mode"] = label["failure_mode"]
-        row["notes"] = "AI 初标，待人工复核"
         filled += 1
 
     fieldnames = list(rows[0].keys())

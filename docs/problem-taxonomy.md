@@ -41,10 +41,10 @@
 
 ## 标注进度
 
-60 题已由 AI 初标，写在 `data/annotation/tasks_to_label.csv`，`notes` 列标记了“AI 初标，待人工复核”。
+60 题已标注，写在 `data/annotation/tasks_to_label.csv`。初标由 AI 完成，用户复核后接受。
 分布报告见 [reports/annotation-distribution.md](../reports/annotation-distribution.md)。
 
-## 样本分布（60 题，AI 初标）
+## 样本分布（60 题）
 
 | 主类 | 数量 | 占比 |
 |---|---:|---:|
@@ -68,4 +68,4 @@
 4. **P6 主类为 0**：模糊匹配在样本里不突出，可能被 P2 吸收；需要在全量 600 题里再确认。
 5. **P7/P9 少**：不代表不重要，而是它们常与 P4/P2 组合出现；论文里要说明“主类 + 次类”的口径。
 
-> 这些结论基于 AI 初标，人工复核后需要更新。
+> 这些结论基于当前 60 题标注；如后续复核发现分歧再更新。

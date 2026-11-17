@@ -45,7 +45,6 @@ uv run --project ../datasets/AutomationBench python scripts/inspect_task.py \
 - `secondary_types`：次类，可多个，用 `;` 分隔。
 - `evidence`：我引用的一条断言，用来支撑判断。
 - `failure_mode`：一句话，说明这类任务最容易怎么错。
-- `notes`：现在写着“AI 初标，待人工复核”，你复核完可以改成“已复核”。
 
 **改完不需要重新跑脚本**，CSV 就是最终结果。
 
@@ -77,7 +76,7 @@ uv run --project ../datasets/AutomationBench python scripts/inspect_task.py --do
 2. **有没有规则/阈值/资格判断？** 有 → P4 可能性大。
 3. **有没有“不能做/只能做 N 个/取最新”的约束？** 有 → P5 是重要次类。
 
-三个问题答完，主类基本就定了。拿不准就写在 `notes` 里，不要卡住。
+三个问题答完，主类基本就定了。拿不准就先按最接近的标，回头统一讨论，不要卡住。
 
 ## 一个已核对的例子：`hr.quarterly_termination_queue`
 
