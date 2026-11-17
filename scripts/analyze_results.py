@@ -99,7 +99,11 @@ def pct(num: float, den: float) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dir", help="directory with result JSON files (recursive)")
+    parser.add_argument(
+        "--dir",
+        action="append",
+        help="directory with result JSON files (recursive); repeat to merge runs",
+    )
     parser.add_argument("files", nargs="*", help="explicit result JSON files")
     parser.add_argument("--out-md", default="reports/report.md")
     parser.add_argument("--out-issues", default=None)
@@ -108,9 +112,12 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.dir:
-        paths = sorted(
-            p for p in Path(args.dir).rglob("*.json") if p.name != "manifest.json"
-        )
+        paths = []
+        for directory in args.dir:
+            paths.extend(
+                p for p in Path(directory).rglob("*.json") if p.name != "manifest.json"
+            )
+        paths = sorted(set(paths))
     else:
         paths = [Path(p) for p in args.files]
     if not paths:
