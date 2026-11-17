@@ -25,13 +25,15 @@ automationbench-baseline/
 │   ├── select_tasks.py      # 从数据集里均匀抽样任务，生成任务清单
 │   ├── analyze_results.py   # 结果分析：指标、失败类型、问题比例、报告
 │   ├── analyze_by_type.py   # 结果 × 标注 → 问题类型 × 通过率（表 2）
-│   └── dataset_stats.py     # 重算数据集规模/复杂度（不需要 API）
+│   ├── dataset_stats.py     # 重算数据集规模/复杂度（不需要 API）
+│   └── inspect_task.py      # 查看一道题的完整 prompt/工具/断言
 ├── docs/
 │   ├── workflow.md          # 小批量→记录→放量的流程
 │   ├── failure-taxonomy.md  # 失败分类标准
 │   ├── metrics.md           # 两个指标与"免费断言"的解释
 │   ├── dataset-card.md      # 数据集规模/复杂度
 │   ├── problem-taxonomy.md  # P1–P9 问题分类
+│   ├── how-to-review-labels.md # 怎么复核 P1–P9 标注
 │   ├── experiment-tables.md # 表 1/2/3/4 模板
 │   └── report-template.md   # 最终报告模板
 ├── experiments/             # 每次实验的 README 与问题记录
