@@ -193,6 +193,114 @@ def main() -> None:
 """
     (OUT / "fig_type.tex").write_text(fig, encoding="utf-8")
 
+    # ---------- small batch (18 tasks) ----------
+    small_tasks = read_rows(ROOT / "reports" / "small.tasks.csv")
+    small_issues = read_rows(ROOT / "reports" / "small.issues.csv")
+    sn = len(small_tasks)
+    sscores = [float(t["score"]) for t in small_tasks]
+    spasses = [t for t in small_tasks if t["passed"] == "1"]
+    ssteps = [float(t["steps"] or 0) for t in small_tasks]
+    s_cost = sum(float(t["cost"] or 0) for t in small_tasks)
+    s_in = sum(int(t["input_tokens"] or 0) for t in small_tasks)
+    s_out = sum(int(t["output_tokens"] or 0) for t in small_tasks)
+    small_metrics = [
+        rf"\newcommand{{\SmallN}}{{{sn}}}",
+        rf"\newcommand{{\SmallPass}}{{{100 * len(spasses) / sn:.1f}\%}}",
+        rf"\newcommand{{\SmallPassCount}}{{{len(spasses)}}}",
+        rf"\newcommand{{\SmallPartial}}{{{statistics.mean(sscores):.3f}}}",
+        rf"\newcommand{{\SmallSteps}}{{{statistics.mean(ssteps):.1f}}}",
+        rf"\newcommand{{\SmallInputTokens}}{{{s_in:,}}}",
+        rf"\newcommand{{\SmallOutputTokens}}{{{s_out:,}}}",
+        rf"\newcommand{{\SmallCost}}{{\${s_cost:,.2f}}}",
+    ]
+    (OUT / "small_metrics.tex").write_text("\n".join(small_metrics) + "\n", encoding="utf-8")
+
+    s_by_domain: dict[str, list[dict]] = defaultdict(list)
+    for t in small_tasks:
+        s_by_domain[t["domain"]].append(t)
+    lines = []
+    for d in DOMAIN_ORDER:
+        group = s_by_domain[d]
+        p = sum(1 for t in group if t["passed"] == "1") / len(group)
+        s = statistics.mean(float(t["score"]) for t in group)
+        st = statistics.mean(float(t["steps"] or 0) for t in group)
+        lines.append(f"{d} & {len(group)} & {100 * p:.1f}\\% & {s:.3f} & {st:.1f} \\\\")
+    (OUT / "small_domain.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    lines = []
+    for t in sorted(small_tasks, key=lambda x: (x["domain"], float(x["score"]))):
+        lines.append(
+            f"\\code{{{t['task']}}} & {t['domain']} & {float(t['score']):.3f} & {t['steps']} \\\\"
+        )
+    (OUT / "small_task.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    s_cat_assert = Counter(i["category"] for i in small_issues)
+    s_cat_tasks: dict[str, set[str]] = defaultdict(set)
+    for i in small_issues:
+        s_cat_tasks[i["category"]].add(i["task"])
+    s_total_fail = sum(s_cat_assert.values())
+    lines = []
+    for cat in CAT_ORDER:
+        if not s_cat_assert[cat]:
+            continue
+        lines.append(
+            f"{CAT_NAMES[cat]} & {s_cat_assert[cat]} & {100 * s_cat_assert[cat] / s_total_fail:.1f}\\% & {len(s_cat_tasks[cat])} \\\\"
+        )
+    (OUT / "small_failure.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    # annotation distribution over the 60-task sample
+    ann_counts = Counter(ann.values())
+    lines = []
+    for ptype in TYPE_ORDER:
+        count = ann_counts.get(ptype, 0)
+        lines.append(f"{TYPE_NAMES[ptype]} & {count} & {100 * count / len(ann):.1f}\\% \\\\")
+    (OUT / "annotation_dist.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    # pass list, zero-score list, near misses
+    def task_row(t: dict) -> str:
+        return f"\\code{{{t['task']}}} & {t['domain']} & {ann.get(t['task'], '?')} & {float(t['score']):.3f} & {t['steps']} \\\\"
+
+    pass_rows = [task_row(t) for t in sorted(passes, key=lambda x: x["task"])]
+    (OUT / "pass_tasks.tex").write_text("\n".join(pass_rows) + "\n", encoding="utf-8")
+
+    zero_rows = [task_row(t) for t in sorted(tasks, key=lambda x: x["task"]) if float(t["score"]) == 0]
+    (OUT / "zero_tasks.tex").write_text("\n".join(zero_rows) + "\n", encoding="utf-8")
+
+    near = [t for t in tasks if 0.8 <= float(t["score"]) < 1]
+    near_rows = [task_row(t) for t in sorted(near, key=lambda x: -float(x["score"]))]
+    (OUT / "near_miss.tex").write_text("\n".join(near_rows) + "\n", encoding="utf-8")
+
+    # failure category bar chart (English short labels to avoid CJK in ticks)
+    short = {
+        "missing_record": "missing\\_record",
+        "missing_message_or_note": "missing\\_message",
+        "extra_or_unwanted_action": "extra\\_action",
+        "wrong_value_or_state": "wrong\\_value",
+        "missing_content": "content",
+        "wrong_count": "count",
+        "other": "other",
+    }
+    coords = []
+    ticks = []
+    for cat in CAT_ORDER:
+        if not cat_assert.get(cat):
+            continue
+        coords.append(f"({100 * cat_assert[cat] / total_fail:.1f},{short[cat]})")
+        ticks.append(short[cat])
+    fig = rf"""\begin{{tikzpicture}}
+\begin{{axis}}[
+  xbar, width=0.92\textwidth, height=7.0cm, xmin=0, xmax=50,
+  xlabel={{占失败断言比例 (\%)}}, symbolic y coords={{{','.join(ticks)}}},
+  ytick=data, nodes near coords, bar width=10pt,
+  enlarge y limits=0.12,
+  y tick label style={{font=\small}},
+]
+\addplot coordinates {{{' '.join(coords)}}};
+\end{{axis}}
+\end{{tikzpicture}}
+"""
+    (OUT / "fig_failure.tex").write_text(fig, encoding="utf-8")
+
     # Also provide all row groups as macros.  Including a file *inside* a
     # tabular breaks booktabs' \bottomrule, so report.tex loads these macros in
     # the preamble and expands them inside the tables instead.
@@ -208,6 +316,13 @@ def main() -> None:
             macro("TopAssertionRows", "top_assertions.tex"),
             macro("PartialRows", "partial.tex"),
             macro("PerTaskRows", "per_task.tex"),
+            macro("SmallDomainRows", "small_domain.tex"),
+            macro("SmallTaskRows", "small_task.tex"),
+            macro("SmallFailureRows", "small_failure.tex"),
+            macro("AnnotationRows", "annotation_dist.tex"),
+            macro("PassTaskRows", "pass_tasks.tex"),
+            macro("ZeroTaskRows", "zero_tasks.tex"),
+            macro("NearMissRows", "near_miss.tex"),
         ]
     )
     (OUT / "rows.tex").write_text(rows_tex + "\n", encoding="utf-8")

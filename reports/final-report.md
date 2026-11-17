@@ -1,6 +1,6 @@
 # AutomationBench 基线实验报告（60 题）
 
-> PDF 版：[AutomationBench-Baseline-Report.pdf](AutomationBench-Baseline-Report.pdf)（11 页，XeLaTeX）
+> PDF 版：[AutomationBench-Baseline-Report.pdf](AutomationBench-Baseline-Report.pdf)（23 页，XeLaTeX）
 
 > 模型：`gpt-5.6-sol`（中转站） · 数据：AutomationBench public · 日期：2026-11-17
 > 结果文件：`results/small/*.json` + `results/medium/*.json`

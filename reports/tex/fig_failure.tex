@@ -1,0 +1,11 @@
+\begin{tikzpicture}
+\begin{axis}[
+  xbar, width=0.92\textwidth, height=7.0cm, xmin=0, xmax=50,
+  xlabel={占失败断言比例 (\%)}, symbolic y coords={missing\_record,missing\_message,extra\_action,wrong\_value,content,count,other},
+  ytick=data, nodes near coords, bar width=10pt,
+  enlarge y limits=0.12,
+  y tick label style={font=\small},
+]
+\addplot coordinates {(42.6,missing\_record) (29.1,missing\_message) (10.9,extra\_action) (6.4,wrong\_value) (4.5,content) (0.4,count) (6.0,other)};
+\end{axis}
+\end{tikzpicture}
