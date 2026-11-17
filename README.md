@@ -39,6 +39,7 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 - **逐题结果 / 失败断言**：[medium-60.tasks.csv](reports/medium-60.tasks.csv)、[medium-60.issues.csv](reports/medium-60.issues.csv)
 - **紧凑结果 JSON**：[medium-60.compact.json](reports/medium-60.compact.json)、[small-18.compact.json](reports/small-18.compact.json)
 - **运行配置与成本**：[reports/run-manifest.md](reports/run-manifest.md)
+- **完整轨迹**：[reports/raw-results-2026-11-17.tar.gz](reports/raw-results-2026-11-17.tar.gz)（1.3MB，含 small/medium 的完整对话 JSON）
 - **14 个失败案例**：[experiments/exp-002-small/failure-analysis.md](experiments/exp-002-small/failure-analysis.md)
 
 ## 目录
@@ -188,6 +189,7 @@ python scripts/run_batch.py --name full --domains all --per-domain 100
 - [x] 14 个失败案例与根因分析
 - [x] 23 页 PDF 报告（根目录）
 - [x] 紧凑结果 JSON + 运行清单（run manifest）
+- [x] 完整轨迹归档（1.3MB tarball）
 - [x] 从零复现文档
 - [ ] 全量 600 题（约 $700，待预算）
 - [ ] 任务二：rsi-flow 结构实现

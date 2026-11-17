@@ -65,13 +65,15 @@ python scripts/analyze_by_type.py \
 | 逐题结果 | `reports/medium-60.tasks.csv` |
 | 失败断言明细 | `reports/medium-60.issues.csv` |
 | 紧凑结果 JSON | `reports/medium-60.compact.json`、`reports/small-18.compact.json` |
+| 完整轨迹归档 | `reports/raw-results-2026-11-17.tar.gz`（1.3MB，含完整对话 JSON） |
 | 失败案例 | `experiments/exp-002-small/failure-analysis.md` |
 
 ## 未入库的内容
 
-- `results/` 下的完整 JSON（含每条任务的完整对话，约 9.5MB）；需要时按上面的命令重跑。
-- `logs/` 下的运行日志。
+- `logs/` 下的运行日志（控制台输出）。
 - `.env`（API key）与内网 `settings.xml`。
+
+完整结果已压缩为 `reports/raw-results-2026-11-17.tar.gz`，解压即可看到 `results/small` 与 `results/medium`。
 
 ## 复现
 
