@@ -72,7 +72,7 @@ python scripts/run_batch.py --name smoke --domains simple --per-domain 5
 ### 2）小批量：每域 3 题，共 18 题
 
 ```bash
-python scripts/run_batch.py --name small --domains all --per-domain 3
+python scripts/run_batch.py --name small --tasks-file data/tasks/small_from_annotation.csv
 python scripts/analyze_results.py --dir results/small \
   --out-md reports/small.md --out-issues reports/small.issues.csv
 ```

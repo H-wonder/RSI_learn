@@ -8,7 +8,7 @@
 |---|---|---|---|---|
 | 0 环境自检 | 0 | `python scripts/check_env.py` | 确认 Python/uv/数据集/key | 全部 OK |
 | 1 烟测 | simple 5 题 | `run_batch.py --name smoke --domains simple --per-domain 5` | 验证链路：工具调用、状态、断言、导出 | 有结果 JSON，能打开 |
-| 2 小批量 | 每域 3 题，共 18 | `run_batch.py --name small --domains all --per-domain 3` | **暴露问题**，逐题记录失败原因 | 18 题全部有记录 |
+| 2 小批量 | 每域 3 题，共 18 | `run_batch.py --name small --tasks-file data/tasks/small_from_annotation.csv` | **暴露问题**，逐题记录失败原因 | 18 题全部有记录 |
 | 3 中批量 | 每域 10 题，共 60 | `run_batch.py --name medium --domains all --per-domain 10` | 看问题比例是否稳定 | 比例与 18 题接近 |
 | 4 全量 | 每域 100 题，共 600 | `run_batch.py --name full --domains all --per-domain 100` | 出正式表 | 结果可复现 |
 

@@ -1,0 +1,8 @@
+problem_type,n,pass_rate,partial_credit,avg_steps,examples
+P2,3,0.0000,0.3333,21.3,"finance.invoice_email_extract, operations.asana_fire_drill, sales.multi_hop_lookup"
+P3,2,0.0000,0.4226,13.0,"support.zendesk_sf_case_sync, support.reamaze_intercom_sync"
+P4,2,0.0000,0.0000,9.0,"marketing.social_engagement_response, operations.generator_load_testing_schedule"
+P5,1,0.0000,0.8889,14.0,sales.overdue_followup_flag
+P8,1,0.0000,0.9375,13.0,marketing.win_loss_analysis
+P9,1,0.0000,0.5714,14.0,finance.fiscal_year_rollover
+unlabeled,5,0.4000,0.8014,12.2,"finance.credit_card_reconciliation, marketing.tam_analysis, operations.hubspot_personalized_outreach"
