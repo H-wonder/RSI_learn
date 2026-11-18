@@ -43,6 +43,14 @@ def tex_escape(value: object) -> str:
 
 
 def load_direct(domain: str, task: str) -> dict:
+    # Compact per-task direct records are committed so the report can be
+    # rebuilt from a fresh clone (results/ itself is gitignored).
+    compact = (ROOT / "experiments" / "exp-004-structured"
+               / f"direct-{domain}.json")
+    if compact.exists():
+        row = json.loads(compact.read_text(encoding="utf-8"))
+        if row.get("name") == task:
+            return row
     data = json.loads((ROOT / "results" / "medium-max" / f"{domain}.json")
                       .read_text(encoding="utf-8"))
     for row in data["tasks"]:

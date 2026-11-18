@@ -4,7 +4,7 @@
 > 目标不是马上实现完整引擎，而是先定义**怎么证明结构有用**。
 >
 > 引擎内部结构笔记：[rsi-flow-internals.md](rsi-flow-internals.md)；
-> 任务二 S0–S7 设计方案（待讨论）：[agent-architecture-design.md](agent-architecture-design.md)。
+> 任务二 S0–S7 设计方案（已实现）：[agent-architecture-design.md](agent-architecture-design.md)。
 
 ## 1. 要验证什么
 

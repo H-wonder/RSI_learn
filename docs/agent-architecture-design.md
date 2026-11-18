@@ -1,6 +1,8 @@
 # 任务二设计方案：S0–S7 超长可验证 Agent 结构
 
-> 状态：**设计稿，待讨论**。本文件对应任务二的 5 分“方案”部分；确认后再在
+> 状态：**已实现并在三个任务上验证**（2026-11-18）。本文件保留设计过程；
+> 实现与结果见 [../reports/structured-three-tasks.md](../reports/structured-three-tasks.md)
+> 和根目录 `Task2-Structured-Agent-Report.pdf`。对应任务二的 5 分“方案”部分，原计划在
 > rsi-flow `test` 分支实现（5 分“实现”部分）。
 >
 > 设计基于 rsi-flow 现有的顺序（routes）、条件分支（JEXL condition）、
@@ -336,7 +338,7 @@ rsi-flow 没有循环、动态扇出、重试、checkpoint。设计上用：
   Java `ToolNode` 通过 registry 调用；
 - `FlowScopeContext` 改为 `ConcurrentHashMap`，`Executor` 队列按整队去重，
   修复 async 并行/close 的基础问题；
-- 测试：`mvn-rsi.sh -pl flow-test -am test` **21/21**。
+- 测试：`mvn-rsi.sh -pl flow-test -am test` **22/22**（当前）。
 
 结果（同一题 `sales.multi_hop_lookup`）：
 

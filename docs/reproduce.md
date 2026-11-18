@@ -118,3 +118,39 @@ scripts/build_pdf.sh
 60 题 max effort 的框架上界是 **$120.41**；cached input 占 92.6%，
 按缓存价 10% 估算约 **$34.63**（以中转站账单为准）。全量 600 题按上界约 **$1,200**，
 按缓存折扣估算约 **$350**。放量前先确认预算，并先跑 10 题检查单题成本。
+
+## 9. 任务二：结构化 Agent
+
+任务二的完整说明、结果与消融见
+[../reports/structured-three-tasks.md](../reports/structured-three-tasks.md)
+和根目录 `Task2-Structured-Agent-Report.pdf`。最短复现路径：
+
+```bash
+# 1) 启动某个任务的 WorldState bridge（每次运行前重启，重置初始状态）
+cd automationbench-baseline
+uv run --project ../datasets/AutomationBench python scripts/world_bridge.py \
+  --domain operations \
+  --task operations.generator_load_testing_schedule --port 8765
+
+# 2) 构建一次依赖 classpath
+cd ../rsi-flow
+../scripts/mvn-rsi.sh -q -pl flow-test dependency:build-classpath \
+  -Dmdep.outputFile=/tmp/rsi-cp.txt
+
+# 3) 运行 flow（需先 export OPENAI_BASE_URL / OPENAI_API_KEY）
+CP="flow-test/target/test-classes:flow-test/target/classes:\
+flow-core/target/classes:flow-route/target/classes:$(cat /tmp/rsi-cp.txt)"
+$JAVA_HOME/bin/java -cp "$CP" -Dbridge.url=http://127.0.0.1:8765 \
+  -Dtask.name=operations.generator_load_testing_schedule \
+  -Dflow.id=FLOW_AGENT_OPS -Dresult.path=/tmp/ops-result.json \
+  cc.eamon.open.flow.FLOW_AGENT.UltraAgentRunner
+```
+
+三个任务的 `-Dflow.id`：`FLOW_AGENT_ULTRA`（sales）、`FLOW_AGENT_OPS`
+（operations）、`FLOW_AGENT_SUPPORT`（support）。消融变体：`_NOREPAIR`、`_OPS_SEQ`。
+
+重新生成任务二 PDF：
+
+```bash
+scripts/build_task2_pdf.sh    # -> Task2-Structured-Agent-Report.pdf
+```

@@ -120,6 +120,7 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 ```
 automationbench-baseline/
 ├── AutomationBench-Baseline-Report.pdf   # 任务一 PDF 交付物
+├── Task2-Structured-Agent-Report.pdf     # 任务二 PDF 交付物
 ├── README.md
 ├── configs/                 # smoke / small / medium / full 配置
 ├── scripts/
@@ -138,7 +139,9 @@ automationbench-baseline/
 │   ├── dataset_stats.py     # 重算数据集规模/复杂度
 │   ├── inspect_task.py      # 查看一道题的 prompt/工具/断言
 │   ├── build_report.py      # 从结果 CSV 生成 LaTeX 表格/图
-│   ├── build_pdf.sh         # 用 XeLaTeX 编译 PDF
+│   ├── build_pdf.sh         # 用 XeLaTeX 编译任务一 PDF
+│   ├── build_task2_pdf.sh   # 用 XeLaTeX 编译任务二 PDF
+│   ├── build_task2_report.py # 生成任务二节点/断言附录
 │   ├── world_bridge.py      # 把 AutomationBench WorldState 暴露为本地 HTTP
 │   ├── gen_ultra_flow.py    # 生成 sales 的 S0–S7 flow JSON
 │   ├── gen_task_flows.py    # 生成 operations/support 的 flow JSON
@@ -154,11 +157,11 @@ automationbench-baseline/
 │   ├── experiment-tables.md # 表 1/2/3/4 模板
 │   ├── structure-validation-plan.md # 在 rsi-flow 里验证结构的方案
 │   ├── rsi-flow-internals.md # rsi-flow 引擎结构/路由/async/scope 笔记
-│   ├── agent-architecture-design.md # 任务二 S0–S7 超长 Agent 设计稿（待讨论）
+│   ├── agent-architecture-design.md # 任务二 S0–S7 设计与三任务落地
 │   ├── config-audit.md      # 官方配置 vs 本仓库逐项核对 + 实测证据
 │   ├── reproduce.md         # 从零复现步骤
 │   └── report-template.md   # 报告模板
-├── experiments/             # smoke / small / medium 的实验记录与失败案例
+├── experiments/             # smoke / small / medium / structured 实验记录
 ├── data/annotation/         # 60 题标注表与标签 JSON
 ├── results/                 # 运行结果 JSON（不入 git）
 ├── logs/                    # 运行日志（不入 git）
@@ -291,7 +294,10 @@ python scripts/run_batch.py --name full --domains all --per-domain 100
 - [x] 完整轨迹归档（max / calibration / refusal）
 - [x] 从零复现文档
 - [ ] 全量 600 题（上界约 $1,200；缓存折扣后约 $350，待预算）
-- [x] 任务二最小节点：rsi-flow `test` 分支 `LlmNode`/`ToolNode`/`FinalActionNode`/`VerifierNode`，20/20 测试通过
+- [x] 任务二引擎节点：rsi-flow `test` 分支 14 个节点（含 `RowsNode`/`WhereNode`），22/22 测试通过
 - [x] 任务二设计稿：S0–S7 超长 Agent 结构、3 任务实例化、H1–H4
-- [x] 任务二 v0：WorldState bridge + `FLOW_AGENT_ULTRA`（36 节点）；`sales.multi_hop_lookup` 2/2 次 1.000（direct 0.333）
-- [ ] 任务二完整对比：另外两个任务 + 3 次重复 + 节点消融/步数对照
+- [x] 任务二三个 flow：`FLOW_AGENT_ULTRA`（36 节点）、`FLOW_AGENT_OPS`（37）、`FLOW_AGENT_SUPPORT`（60）
+- [x] 三任务结果：direct 0.333/0.857/0.750，structured 全 1.000；sales 3 次重复
+- [x] 节点消融：去掉 repair / 串行读取 / 去掉 Case 去重（0.9375）
+- [x] 19 页任务二 PDF 报告（根目录）
+- [ ] operations/support 各补 2 次重复；等步数对照
