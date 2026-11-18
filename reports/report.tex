@@ -1056,12 +1056,18 @@ LLM 节点、工具节点、循环、动态扇出、重试/降级、状态映射
   \item M6 收尾校验 $\rightarrow$ \texttt{VerifierNode}。
 \end{itemize}
 
-截至 2026-11-18，最小闭环的四个节点已在 rsi-flow 的 \texttt{test} 分支实现：
-\texttt{LlmNode}、\texttt{ToolNode}、\texttt{FinalActionNode}、\texttt{VerifierNode}
-（含 \texttt{ToolRegistry} / \texttt{FinalActionRegistry}），
-\texttt{mvn-rsi.sh -pl flow-test -am test} 为 \textbf{20/20} 通过。
-尚未完成的是 AutomationBench \texttt{WorldState} 的工具桥接、3 个任务的 flow JSON，
-以及 direct vs structured 对比；验证假设与判定标准见
+截至 2026-11-18，S0--S7 v0 已在 rsi-flow 的 \texttt{test} 分支实现：
+\texttt{LlmNode}、\texttt{ToolNode}、\texttt{FinalActionNode}、\texttt{VerifierNode}、
+\texttt{RuleNode}、\texttt{FilterNode}、\texttt{AuditNode}、
+\texttt{ContextSnapshotNode}、\texttt{JsonFieldNode}、
+\texttt{Template}，以及 AutomationBench \texttt{WorldState} 的本地 HTTP bridge；
+\texttt{mvn-rsi.sh -pl flow-test -am test} 为 \textbf{21/21} 通过。
+\texttt{FLOW\_AGENT\_ULTRA} 为 36 节点、44 路由、1 个 async all/close 并行组。
+
+在 \code{sales.multi_hop_lookup} 上：direct max 为 0.333（1/3 断言），
+structured v0 两次均为 \textbf{1.000（3/3）}。
+但这是 n=2 的 v0，没有节点消融、步数对照与 3 次重复；
+另外两个任务的 flow JSON 尚未实现。验证假设与判定标准见
 \texttt{docs/structure-validation-plan.md}：
 
 \begin{itemize}
@@ -1096,9 +1102,9 @@ LLM 节点、工具节点、循环、动态扇出、重试/降级、状态映射
 \subsection{下一步}
 
 \begin{enumerate}
-  \item 四个最小节点已在 rsi-flow \texttt{test} 分支实现（20/20 测试通过）；
-  下一步写 \texttt{flow-multi-hop.json}、接 AutomationBench \texttt{WorldState}，
-  先对 \code{sales.multi_hop_lookup} 做最小对比；
+  \item S0--S7 v0 已在 rsi-flow \texttt{test} 分支实现（21/21 测试通过）；
+  \code{sales.multi_hop_lookup} 上 direct max 0.333，structured 两次 1.000；
+  下一步补 3 次重复、节点消融与另外两个任务；
   \item 对 3 个任务各跑 3 次 direct vs structured，做节点消融与步数对照；
   \item 补 M1--M6 的第二人复核（至少 5 个案例 + 5 道 P4b 标签）；
   \item 决定是否跑全量 600 题，或改用更便宜的模型（如 \texttt{gpt-5.6-terra}）；

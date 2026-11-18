@@ -145,12 +145,13 @@ FlowEngine.run(flowId)
 
 1. **上下文是浅拷贝**：`FlowContextExtractor` 复制的是
    `Map<String, FlowScopeContext>` 的引用，分支之间共享同一个
-   `FlowScopeContext` / `HashMap`，并发写不是线程安全的。
+   `FlowScopeContext`。我们把 `variableMap` 改成了 `ConcurrentHashMap`，
+   避免并发写破坏结构；但语义上仍是共享、last-write-wins。
 2. **异常被吞**：`FlowSupplier.get()` / `FlowThread.run()` 捕获异常后
    `printStackTrace()`，异步分支失败不一定会让主流程失败；只能靠下游
    `notnull` 结果校验暴露。
-3. **close 可能重复入队**：`Executor.addExecuteNode` 只在“等于队首”时去重，
-   多个分支同时 close 时可能把 JOIN 入队多次；JOIN 必须幂等。
+3. **close 可能重复入队**：`Executor.addExecuteNode` 原来只在“等于队首”时去重。
+   已改为整队去重，避免多个 close 分支把 JOIN 入队多次；JOIN 仍应幂等。
 4. **any 不保证其它分支结束**：不要在 any 分支里做有副作用的写操作。
 
 ## 6. 变量域（scope）的真实行为
@@ -205,8 +206,12 @@ FlowEngine.run(flowId)
 - `ToolNode` + `ToolRegistry`：`TOOL_CALL`，工具由调用方注册；
 - `FinalActionNode` + `FinalActionRegistry`：`FINAL_ACTION`；
 - `VerifierNode`：`VERIFY_CONTAINS`，返回 `{passed, missing}`；
-- `FLOW_AGENT_TOOL` / `FLOW_AGENT_LLM` 两个 smoke flow；
-- `FlowAgentTest` 3 个测试，套件 20/20。
+- `RuleNode` / `FilterNode` / `AuditNode` / `ContextSnapshotNode` / `JsonFieldNode`；
+- `Template`：`{{var}}` 文本/JSON 模板；
+- `BridgeToolHandler` / `BridgeScoreHandler`：接 `scripts/world_bridge.py`；
+- `FLOW_AGENT_TOOL` / `FLOW_AGENT_LLM` smoke flow；
+- `FLOW_AGENT_ULTRA`：36 节点、44 路由的 S0–S7 v0；
+- `FlowAgentTest`：套件 **21/21**。
 
 这些是“节点层”；任务二的“结构层”还应在它们之上组织 S0–S7 阶段、
 嵌套子流程、并行取证、条件路由、校验与有界修复。

@@ -178,23 +178,30 @@ start
 
 ## 9. 实现进度（2026-11-18）
 
-已在 rsi-flow **`test` 分支**（`2b7beab`）落地最小节点（未动 `dev_rsi`）：
+已在 rsi-flow **`test` 分支**落地 S0–S7 v0（未动 `dev_rsi`）：
 
 | 组件 | 文件 | 状态 |
 |---|---|---|
-| `LlmNode` | `flow-core/.../agent/LlmNode.java` | 已实现；OpenAI-compatible Chat Completions，支持 env / system property 配置 |
-| `ToolNode` + registry | `agent/ToolNode.java`、`ToolRegistry.java` | 已实现；工具由调用方注册，app/action 固定 |
-| `FinalActionNode` + registry | `agent/FinalActionNode.java`、`FinalActionRegistry.java` | 已实现；未注册动作会失败，防止流程提前结束 |
-| `VerifierNode` | `agent/VerifierNode.java` | 已实现；检查 expected fragments 并返回 `{passed, missing}` |
-| 测试 | `FLOW_AGENT/FlowAgentTest.java` | 3 个测试：tool flow、LLM mock、final+verifier |
-| 构建 | `../scripts/mvn-rsi.sh -pl flow-test -am test` | **20/20 通过**（原 17 + 新增 3） |
+| `LlmNode` | `flow-core/.../agent/LlmNode.java` | OpenAI-compatible Chat Completions；env / system property 配置 |
+| `ToolNode` + registry | `agent/ToolNode.java`、`ToolRegistry.java` | 固定 app/action，工具由调用方注册 |
+| `FinalActionNode` + registry | `agent/FinalActionNode.java`、`FinalActionRegistry.java` | 未注册动作会失败，防止提前结束 |
+| `VerifierNode` | `agent/VerifierNode.java` | 检查 expected fragments，返回 `{passed, missing}` |
+| `RuleNode` / `FilterNode` | `agent/RuleNode.java`、`FilterNode.java` | JEXL 规则 / JSON 数组过滤 |
+| `AuditNode` / `ContextSnapshotNode` / `JsonFieldNode` | `agent/` | 审计、上下文快照、JSON 字段提取 |
+| `Template` | `agent/Template.java` | `{{var}}` 文本/JSON 模板 |
+| WorldState bridge | `scripts/world_bridge.py` + `BridgeToolHandler` | 本地 HTTP 暴露 AutomationBench WorldState |
+| `FLOW_AGENT_ULTRA` | `flow-test/.../FLOW_AGENT/flow-agent-ultra.json` | 36 节点、44 路由、async all/close |
+| 测试 | `FLOW_AGENT/FlowAgentTest.java` | **21/21 通过** |
+
+**v0 结果**：`sales.multi_hop_lookup` 上 direct max 为 0.333（1/3），
+structured v0 两次均为 **1.000（3/3）**。细节见
+`reports/structured-multi-hop.md`。
 
 **还没做**：
 
-- AutomationBench `WorldState` 与 ToolRegistry 的桥接（需要把 47 个模拟 SaaS 工具映射成 handler）；
-- 3 个任务的 flow JSON（`flow-multi-hop.json` 等）；
-- direct vs structured 的 3 次对比、节点消融与步数对照；
-- 循环/动态扇出/checkpoint 仍是缺口（当前 3 个任务先写死节点数）。
+- 3 次重复、节点消融、步数对照；
+- 另外两个任务（`operations.generator_load_testing_schedule`、
+  `support.zendesk_sf_case_sync`）的 flow JSON；
+- 循环/动态扇出/checkpoint 仍是缺口（当前写死节点数）；
+- S6 修复目前是“重发”，不是“只修 missing”。
 
-下一步先写 `sales.multi_hop_lookup` 的 flow JSON，把一个 AutomationBench 任务
-端到端跑通，再扩到另外两个任务。

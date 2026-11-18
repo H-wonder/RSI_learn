@@ -324,3 +324,31 @@ rsi-flow 没有循环、动态扇出、重试、checkpoint。设计上用：
 3. 是否允许修改 `FlowScopeContext.variableMap` 为 `ConcurrentHashMap`（修复 async 并发）？
 4. ToolRegistry 是先接真实 WorldState，还是先用 mock 工具验证结构？
 5. 3 任务 × 2 条件 × 3 次的预算是否按 $18–54 执行？
+
+## 11. v0 实现结果（2026-11-18）
+
+已在 `test` 分支落地 S0–S7 的第一版：
+
+- `FLOW_AGENT_ULTRA`：36 个节点、44 条路由、1 个 async all/close 并行组；
+- 新增 `RuleNode`、`FilterNode`、`AuditNode`、`ContextSnapshotNode`、
+  `JsonFieldNode`、`Template`、`BridgeToolHandler`、`BridgeScoreHandler`；
+- `AutomationBench WorldState` 通过 `scripts/world_bridge.py` 以本地 HTTP 暴露，
+  Java `ToolNode` 通过 registry 调用；
+- `FlowScopeContext` 改为 `ConcurrentHashMap`，`Executor` 队列按整队去重，
+  修复 async 并行/close 的基础问题；
+- 测试：`mvn-rsi.sh -pl flow-test -am test` **21/21**。
+
+结果（同一题 `sales.multi_hop_lookup`）：
+
+| 条件 | 分数 | 断言 |
+|---|---:|---:|
+| direct agent（max，60 题中的该题） | 0.333 | 1/3 |
+| structured v0 run 1 | **1.000** | **3/3** |
+| structured v0 run 2 | **1.000** | **3/3** |
+
+关键发现：让 LLM 生成完整 `api_fetch` args 会失败（相对 URL、Gmail `body` 而非
+`raw`）；把 LLM 限制在语义层、由确定性节点构造 tool args 后，两次都通过。
+
+**当前限制**：只有 1 个任务、2 次重复；没有节点消融、步数对照、3 次重复；
+S3 因中转站 524 用了 `high` 而不是 `max`；修复轮次是简单重发，不是“只修 missing”。
+这些是下一步，不把 v0 说成完整实验。

@@ -93,6 +93,7 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 - **运行配置与成本**：[reports/run-manifest.md](reports/run-manifest.md)
 - **完整轨迹**：[reports/raw-results-2026-11-18.tar.gz](reports/raw-results-2026-11-18.tar.gz)（含 max / calibration / refusal 的完整对话 JSON）
 - **14 个失败案例**：PDF 第 8 章
+- **任务二 v0 结果**：[reports/structured-multi-hop.md](reports/structured-multi-hop.md)
 
 ## 目录
 
@@ -267,5 +268,6 @@ python scripts/run_batch.py --name full --domains all --per-domain 100
 - [x] 从零复现文档
 - [ ] 全量 600 题（上界约 $1,200；缓存折扣后约 $350，待预算）
 - [x] 任务二最小节点：rsi-flow `test` 分支 `LlmNode`/`ToolNode`/`FinalActionNode`/`VerifierNode`，20/20 测试通过
-- [x] 任务二设计稿：S0–S7 超长 Agent 结构、3 任务实例化、H1–H4（待讨论）
-- [ ] 任务二完整对比：3 个 flow + AutomationBench WorldState 桥接 + direct vs structured
+- [x] 任务二设计稿：S0–S7 超长 Agent 结构、3 任务实例化、H1–H4
+- [x] 任务二 v0：WorldState bridge + `FLOW_AGENT_ULTRA`（36 节点）；`sales.multi_hop_lookup` 2/2 次 1.000（direct 0.333）
+- [ ] 任务二完整对比：另外两个任务 + 3 次重复 + 节点消融/步数对照
