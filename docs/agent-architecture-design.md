@@ -361,7 +361,7 @@ S3 因中转站 524 用了 `high` 而不是 `max`；修复轮次是简单重发�
 |---|---|---:|---:|---|
 | `FLOW_AGENT_ULTRA` | sales.multi_hop_lookup | 36 / 44 | 3 | 并行证据、受限 LLM、条件分支、repair |
 | `FLOW_AGENT_OPS` | operations.generator_load_testing_schedule | 37 / 41 | 0 | `RowsNode` + `WhereNode` 规则过滤、逐条确定性执行 |
-| `FLOW_AGENT_SUPPORT` | support.zendesk_sf_case_sync | 60 / 70 | 1 | 8 路并行读取、单次 LLM 归一化、确定性写入 |
+| `FLOW_AGENT_SUPPORT` | support.zendesk_sf_case_sync | 60 / 70 | 1 | 9 路并行读取、单次 LLM 归一化、确定性写入 |
 
 新增通用节点 `RowsNode`（Sheets `values` → 行对象）与
 `WhereNode`（行级 JEXL 过滤，支持模板变量），

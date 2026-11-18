@@ -15,7 +15,7 @@
 |---|---:|---:|---|
 | `sales.multi_hop_lookup` | 0.333（1/3 断言，9 步） | **1.000（3/3）**，连续 3 次 | 并行证据 + LLM 抽取/规划 + 分支 + 两轮 repair |
 | `operations.generator_load_testing_schedule` | 0.857（6/7，13 步） | **1.000（7/7）** | 全确定性：并行读取 + Rows/Where 规则过滤 + 逐条执行 |
-| `support.zendesk_sf_case_sync` | 0.750（12/16，11 步） | **1.000（16/16）** | 并行读取 8 个数据源 + 1 次 LLM 归一化 + 确定性写入 |
+| `support.zendesk_sf_case_sync` | 0.750（12/16，11 步） | **1.000（16/16）** | 并行读取 9 个数据源 + 1 次 LLM 归一化 + 确定性写入 |
 
 三个任务 direct 都是 `task_completed_correctly = 0`，structured 都是 `1.0`。
 direct 的失败不是“步数不够”：三个任务分别只用了 9/13/11 步（预算 50），
@@ -95,7 +95,7 @@ Status != 'Under Repair'
 
 ```text
 S_START
-8 个并行读取：blocklist / SLA / config / tickets / users / orgs / contacts / accounts / cases
+9 个并行读取：blocklist / SLA / config / tickets / users / orgs / contacts / accounts / cases
 S_JOIN → S_EVIDENCE（只拼关键证据，避免上下文噪声）
 S_FACTS(LLM max)：输出 {create:[...5], skip:[...6]}
 S_SHAPE_GATE：create.size() == 5
