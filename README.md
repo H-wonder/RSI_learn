@@ -128,6 +128,8 @@ automationbench-baseline/
 │   ├── how-to-review-labels.md # 怎么复核 P1–P9 标注
 │   ├── experiment-tables.md # 表 1/2/3/4 模板
 │   ├── structure-validation-plan.md # 在 rsi-flow 里验证结构的方案
+│   ├── rsi-flow-internals.md # rsi-flow 引擎结构/路由/async/scope 笔记
+│   ├── agent-architecture-design.md # 任务二 S0–S7 超长 Agent 设计稿（待讨论）
 │   ├── config-audit.md      # 官方配置 vs 本仓库逐项核对 + 实测证据
 │   ├── reproduce.md         # 从零复现步骤
 │   └── report-template.md   # 报告模板
@@ -265,4 +267,5 @@ python scripts/run_batch.py --name full --domains all --per-domain 100
 - [x] 从零复现文档
 - [ ] 全量 600 题（上界约 $1,200；缓存折扣后约 $350，待预算）
 - [x] 任务二最小节点：rsi-flow `test` 分支 `LlmNode`/`ToolNode`/`FinalActionNode`/`VerifierNode`，20/20 测试通过
+- [x] 任务二设计稿：S0–S7 超长 Agent 结构、3 任务实例化、H1–H4（待讨论）
 - [ ] 任务二完整对比：3 个 flow + AutomationBench WorldState 桥接 + direct vs structured
