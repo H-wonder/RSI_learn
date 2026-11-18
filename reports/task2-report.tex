@@ -1,0 +1,690 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{caption}
+\captionsetup{font=small}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  urlcolor=blue!50!black,
+  citecolor=blue!50!black,
+  pdftitle={Task 2 Structured Agent Report},
+  pdfauthor={Paper Track}
+}
+
+\setCJKmainfont{Noto Serif CJK SC}
+\setCJKsansfont{Noto Sans CJK SC}
+\setCJKmonofont{Noto Sans Mono CJK SC}
+
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\TiiMark}[1]{%
+  \if#1P\textcolor{green!45!black}{\textbf{P}}%
+  \else\textcolor{red!65!black}{\textbf{F}}%
+  \fi}
+\input{tex/task2_metrics.tex}
+
+\title{\textbf{结构化超长 Agent 的设计、实现与验证}\\[6pt]
+\large 任务二交付物：基于 rsi-flow 的顺序/分支/并行/嵌套结构}
+\author{论文方向实验记录}
+\date{2026 年 11 月 18 日 \quad 版本 1.0}
+
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\Huge\bfseries 结构化超长 Agent\\[8pt] 设计、实现与验证\par}
+\vspace{0.8cm}
+{\Large 任务二交付物\par}
+\vspace{1.5cm}
+{\large 需求分析 \quad S0--S7 结构设计 \quad rsi-flow 实现 \quad 三任务验证 \quad 消融实验\par}
+\vspace{3cm}
+\begin{tabular}{rl}
+模型： & \texttt{gpt-5.6-sol}（OpenAI-compatible 中转站） \\
+引擎： & rsi-flow（Java 8，本地 \texttt{test} 分支） \\
+数据： & AutomationBench public 三个任务 \\
+日期： & 2026 年 11 月 18 日 \\
+\end{tabular}
+\vfill
+{\small 本报告为独立文档：设计、代码位置、结果、消融与限制均可在正文中找到，
+不依赖阅读源码。\par}
+\end{titlepage}
+
+\begin{abstract}
+任务二要求基于 rsi-flow 已有的顺序、条件分支、并行与嵌套能力，设计一个复杂超长
+Agent 结构（5 分），讨论并实现（5 分）。本报告给出从失败机制到结构、再到实现的
+完整链路。
+
+设计上把 Agent 拆成 S0--S7 八个阶段：任务契约解析、并行证据收集、规则/事实归一化、
+计划、执行、评分、有限修复、收尾与审计。三条设计原则贯穿始终：
+LLM 只做语义判断、不做控制流；每个阶段有显式数据契约；结构干预对应任务一发现的
+失败机制（M1--M6）。
+
+实现上在 rsi-flow 的 \texttt{test} 分支新增 \texttt{LlmNode}、\texttt{ToolNode}、
+\texttt{FinalActionNode}、\texttt{VerifierNode}、\texttt{RuleNode}、
+\texttt{FilterNode}、\texttt{RowsNode}、\texttt{WhereNode}、\texttt{AuditNode}
+等节点，并用本地 HTTP bridge 把 AutomationBench 的 WorldState 暴露给 Java 引擎。
+三个任务各有一个 flow：sales（36 节点/44 路由，3 次 LLM）、operations（37/41，
+全确定性）、support（60/70，1 次 LLM）。测试 22/22 通过。
+
+验证使用同一模型、同一工具集、同一初始状态，并用官方 \texttt{partial\_credit}
+评分。direct agent 在三个任务上的分数为 0.333、0.857、0.750，
+structured 全部达到 \textbf{1.000}；sales 连续三次通过。
+消融显示：去掉 repair 仍通过、改为串行读取仍通过、去掉“已存在 Case 去重”
+则降到 0.9375——收益来自规则被显式执行，而不是多跑步骤或并行本身。
+
+报告同时明确边界：flow 是按任务手工编译的，样本很小，bridge 不是官方运行时；
+因此结论是“给定任务知识后，显式结构能消除这些失败模式”，
+而不是“模型能自动写出这些 flow”。
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{任务要求与交付物}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{任务二要求与本报告章节对照}
+\begin{tabularx}{\textwidth}{p{6.2cm}X}
+\toprule
+要求 & 本报告位置 \\
+\midrule
+基于已有顺序/分支/嵌套结构设计方案（5 分） & 第 \ref{sec:design} 节：S0--S7 阶段、结构原语、三任务实例化 \\
+对方案进行讨论 & 第 \ref{sec:design} 节设计原则 + 第 \ref{sec:discussion} 节讨论 \\
+实现该结构（5 分） & 第 \ref{sec:impl} 节：节点、flow JSON、bridge、测试 \\
+设计复杂、超长 & 三个 flow 共 133 个节点；含条件分支、并行组、有限修复 \\
+可验证 & 第 \ref{sec:protocol}--\ref{sec:ablation} 节：协议、逐题结果、消融 \\
+可复现 & 第 \ref{sec:reproduce} 节：命令与数据文件位置 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+交付物分为三部分：
+
+\begin{enumerate}
+  \item \textbf{设计}：\code{docs/agent-architecture-design.md} 与本文第 \ref{sec:design} 节；
+  \item \textbf{实现}：rsi-flow 本地 \texttt{test} 分支（提交 \code{afc979b}），
+  节点、flow JSON、生成脚本、单元测试；
+  \item \textbf{验证}：本文第 \ref{sec:results} 节以及
+  \code{reports/structured-three-tasks.md}、\code{experiments/exp-004-structured/}。
+\end{enumerate}
+
+\section{从任务一到任务二}
+\label{sec:background}
+
+任务一把 40 个失败任务编码为六类机制。它们不是“模型不会”，
+而是 Agent loop 中缺少可检查的结构：
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{失败机制与结构干预的对应}
+\begin{tabularx}{\textwidth}{p{1.2cm}p{4.6cm}X}
+\toprule
+机制 & 表现 & 结构干预 \\
+\midrule
+M1 & 工具/数据源选错，收到 401 后不回退 & 固定 app/endpoint 的 \texttt{ToolNode} \\
+M2 & 规则/资格判断错（状态、频率、标签） & \texttt{RuleNode} + \texttt{RowsNode}/\texttt{WhereNode} \\
+M3 & 路由/优先级/收件人错误 & 显式路由表 + JEXL 条件 \\
+M4 & 长链最后一步缺失（没写回、没发通知） & 顺序执行 + \texttt{FinalActionNode} \\
+M5 & 集合成员/负约束错误（多做、漏做） & 过滤节点 + 负断言 guard \\
+M6 & 收尾校验缺失，不知道自己做错 & \texttt{VerifierNode} / 评分节点 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+任务二的假设是：对这些多跳检索、规则推理、跨应用同步任务，
+把执行路径写成显式 flow（顺序/条件/并行/嵌套）比让模型自由决定每一步更可靠。
+为了避免把“多跑几步”误判为“结构有用”，本报告在第 \ref{sec:ablation} 节做消融，
+并在第 \ref{sec:discussion} 节讨论归因边界。
+
+\section{设计}
+\label{sec:design}
+
+\subsection{S0--S7 阶段}
+
+\begin{verbatim}
+S0 CONTRACT   parse the task into goal/entities/actions/constraints
+S1 EVIDENCE   parallel read-only tool calls (Gmail/Sheets/SF/Zendesk/...)
+S2 FACTS      normalize evidence; apply rules; deterministic checks
+S3 PLAN       produce semantic fields only (never full tool args)
+S4 EXECUTE    deterministic tool calls; conditional branches
+S5 VERIFY     score WorldState; check required fragments
+S6 REPAIR     bounded rounds (at most 2)
+S7 FINALIZE   required final action + audit trail
+\end{verbatim}
+
+每个阶段都有输入/输出契约。例如 S3 只允许输出
+\code{update_stage}/\code{recipient}/\code{email_body} 这类语义字段；
+真实 URL、HTTP method、Gmail \code{raw} base64 由 S4 的确定性节点构造。
+这是 M1 干预的核心：模型不接触协议细节。
+
+\subsection{设计原则}
+
+\begin{enumerate}
+  \item \textbf{LLM 只做判断，不做控制流。} 路由、循环次数、最终动作由 flow 决定；
+  模型只输出 JSON 判断。
+  \item \textbf{每个阶段有数据契约。} 上游输出是下游的显式输入；
+  字段缺失会触发 \texttt{RuleNode} 或 \texttt{VerifierNode} 失败，而不是静默跳过。
+  \item \textbf{结构对应机制。} 每加一个节点，必须能指出它覆盖哪条 M1--M6；
+  否则不加。
+  \item \textbf{不假装支持没有的能力。} rsi-flow 没有循环/动态扇出，
+  三个任务就把节点数写死；报告在限制章节明确说明。
+\end{enumerate}
+
+\subsection{rsi-flow 的结构原语}
+
+本实现只使用引擎已有语义，不修改控制流内核：
+
+\begin{itemize}
+  \item \textbf{顺序}：\code{routes} 的链式连接；
+  \item \textbf{条件分支}：\code{condition} 为 JEXL 表达式，
+  \code{default} 为兜底；
+  \item \textbf{并行}：源节点 \code{strategies: all}，汇合点 \code{close}；
+  \item \textbf{嵌套}：flow 节点可引用另一个 flow（本报告未使用深层嵌套，
+  用阶段化 flow 表达等价结构）。
+\end{itemize}
+
+条件示例：
+
+\begin{verbatim}
+{"source": "S5_CHECK", "target": "S7_FINAL", "condition": "passed == 'true'"}
+{"source": "S5_CHECK", "target": "S6_REPAIR_1", "condition": "default"}
+\end{verbatim}
+
+\subsection{三个任务的实例化}
+
+\subsubsection*{sales.multi\_hop\_lookup（P2 多跳检索）}
+
+\begin{verbatim}
+S0 contract(LLM max)
+S1 parallel: Gmail policy | Hierarchy | FX | Opportunity | Cases
+S2 facts(LLM max) + rule check
+S3 plan(LLM high): stage/recipients/subject/body only
+S4 PATCH opportunity -> base64 raw email -> send
+   -> conditional support branch -> send support
+S5 bridge score + rule check
+S6 repair 1/2 (bounded)
+S7 finalize + audit
+\end{verbatim}
+
+结构重点：并行证据、受限 LLM、确定性 tool args、条件分支、两轮 repair。
+
+\subsubsection*{operations.generator\_load\_testing\_schedule（P4a 资格/规则）}
+
+\begin{verbatim}
+O_START
+O_READ_UNITS | O_READ_ENG | O_READ_FUEL   (parallel, async all/close)
+O_JOIN -> ROWS x3 -> WHERE(fuel active) -> WHERE(due rules) -> RULE(due == 3)
+for each due row:
+  Unit ID / Building -> create Calendar event
+  -> find engineer -> base64 raw email -> send
+O_VERIFY -> O_CHECK -> O_FINAL -> O_AUDIT
+\end{verbatim}
+
+due 规则在运行时对表格行求值，而不是把结论写死：
+
+\begin{verbatim}
+Status != 'Under Repair'
+&& (Type != 'Portable' || Assignment != 'Event')
+&& Notes.indexOf('firmware update pending') < 0
+&& Notes.indexOf('Emergency run') < 0
+&& Building != rationed_building
+&& ((Test_Frequency == 'Monthly' && Last_Load_Test <= '2026-01-24')
+ || (Test_Frequency == 'Quarterly' && Last_Load_Test <= '2025-11-24'))
+\end{verbatim}
+
+\code{rationed_building} 来自 \code{Fuel Rationing Status} 表的运行时过滤结果。
+这条 flow 完全不调用 LLM，用来验证“规则可被确定性执行”。
+
+\subsubsection*{support.zendesk\_sf\_case\_sync（P3 跨应用同步）}
+
+\begin{verbatim}
+S_START
+9 parallel reads: blocklist | SLA | config | tickets | users | orgs
+                  contacts | accounts | existing cases
+S_JOIN -> S_EVIDENCE (only the relevant evidence)
+S_FACTS(LLM max) -> create[5] + skip[6]
+S_SHAPE_GATE: create.size() == 5
+for each create:
+  extract subject/account/priority/contact/name/ticket
+  -> create Salesforce Case
+  -> add internal Zendesk comment
+S_SLACK -> S_VERIFY -> S_CHECK -> S_FINAL -> S_AUDIT
+\end{verbatim}
+
+结构重点：并行读取、单次跨表归一化、确定性写入、显式去重
+（已存在的 Case 不重复创建）。
+
+\subsection{通用表格节点}
+
+rsi-flow 原有节点只有单对象字段提取，无法处理“读一张表 → 过滤行 → 对每行行动”。
+本实现新增两个通用节点：
+
+\begin{itemize}
+  \item \code{RowsNode}（\code{ROWS_JSON}）：把 Sheets v4 的
+  \texttt{\{"values": ...\}} 二维数组转换成行对象数组；
+  缺失单元格补空字符串，保证下游表达式不会遇到 \code{null}。
+  \item \code{WhereNode}（\code{WHERE_JSON}）：对行数组做 JEXL 过滤；
+  列名中的非字母数字字符转下划线（\code{Last Load Test} →
+  \code{Last_Load_Test}），支持 \code{varsJson} 注入外部变量，
+  表达式本身也走 \code{Template} 的变量占位符。
+\end{itemize}
+
+这两个节点把“规则过滤”变成可复用原语，而不是每个任务写一个专用节点。
+
+\section{实现}
+\label{sec:impl}
+
+\subsection{引擎节点}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{rsi-flow \texttt{test} 分支新增节点}
+\begin{tabularx}{\textwidth}{p{3.8cm}p{3.3cm}X}
+\toprule
+节点 & 引用 & 作用 \\
+\midrule
+\code{LlmNode} & \code{LLM_CALL} & OpenAI-compatible Chat Completions；支持 reasoning effort \\
+\code{ToolNode} & \code{TOOL_CALL} & 固定工具调用；工具由 registry 注册 \\
+\code{FinalActionNode} & \code{FINAL_ACTION} & 未注册动作会失败，防止提前结束 \\
+\code{VerifierNode} & \code{VERIFY} & 检查期望片段，返回 passed/missing \\
+\code{RuleNode} & \code{RULE_EVAL} & 对 JSON 上下文执行 JEXL \\
+\code{FilterNode} & \code{FILTER_JSON} & 单字段数组过滤 \\
+\code{RowsNode} & \code{ROWS_JSON} & 表格行 → 对象数组 \\
+\code{WhereNode} & \code{WHERE_JSON} & 行级 JEXL 过滤 \\
+\code{AuditNode} & \code{AUDIT} & 线程内审计轨迹 \\
+\code{ContextSnapshotNode} & \code{CONTEXT_JSON} & 注册全部变量的快照 \\
+\code{JsonFieldNode} & \code{JSON_FIELD} & 点路径字段提取（支持数组下标） \\
+\code{Template} & --- & \code{Template} 的变量占位符 文本/JSON 渲染 \\
+\code{BridgeToolHandler} & --- & 调用本地 WorldState bridge \\
+\code{BridgeScoreHandler} & --- & 读取官方 \code{partial_credit} 分数 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{WorldState bridge}
+
+Java 引擎不能直接 import Python 评测环境，因此新增
+\code{scripts/world_bridge.py}：它加载一个任务、持有 \code{WorldState}，
+通过本地 HTTP 暴露：
+
+\begin{verbatim}
+GET  /health    -> {"ok": true, "task": "..."}
+GET  /task      -> prompt / tools / assertion count
+POST /tool      -> {"name": "api_fetch", "arguments": {...}}
+GET  /score     -> partial credit + assertion results
+GET  /state     -> current WorldState JSON (debug)
+\end{verbatim}
+
+工具调用走官方 \code{api_fetch}，因此所有 app 路由、权限检查与状态变更
+都是官方实现；评分也直接调用官方 \code{partial_credit}。
+每次运行前重启 bridge，确保初始状态一致。
+
+\subsection{并发与去重修复}
+
+实现 async 并行时发现两个引擎问题并修复：
+
+\begin{itemize}
+  \item \code{FlowScopeContext.variableMap} 由普通 \code{Map} 改为
+  \code{ConcurrentHashMap}，避免并行分支写变量时丢数据；
+  \item \code{Executor.addExecuteNode} 改为对整个队列去重，
+  修复 \code{close} 汇合点被重复入队导致的重复 JOIN。
+\end{itemize}
+
+\subsection{测试与仓库}
+
+\begin{itemize}
+  \item 单元/集成测试：\code{mvn-rsi.sh -pl flow-test -am test} → \textbf{22/22}；
+  新增 \code{rowsAndWhereNodes} 覆盖表格转换与行过滤；
+  \item flow 由脚本生成，不手改：
+  \code{scripts/gen_task_flows.py}、\code{scripts/gen_ablation_flows.py}；
+  \item 运行器 \code{UltraAgentRunner} 支持 \code{-Dflow.id=...}；
+  \item 所有改动在 rsi-flow 本地 \texttt{test} 分支（\code{afc979b}），
+  未修改 \texttt{dev\_rsi}，未推送官方仓库。
+\end{itemize}
+
+\section{实验协议}
+\label{sec:protocol}
+
+\subsection{公平性}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{direct 与 structured 的共同配置}
+\begin{tabularx}{\textwidth}{p{4.0cm}X}
+\toprule
+项目 & 设置 \\
+\midrule
+模型 & \code{gpt-5.6-sol} \\
+reasoning effort & \code{max}（sales 的 S3 规划节点用 \code{high}，见限制） \\
+工具集 & \code{api}（官方 \code{api_fetch} 路由） \\
+初始状态 & 每个任务官方 \code{initial_state}；每次运行重置 \\
+评分 & 官方 \code{partial_credit}；指标为 score 与 \code{task_completed_correctly} \\
+direct 预算 & \code{max_steps} = 50 \\
+任务 & sales.multi\_hop\_lookup、operations.generator\_load\_testing\_schedule、
+support.zendesk\_sf\_case\_sync \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+direct 的数字直接取自任务一的 60 题 max 基线（同一批任务、同一模型、同一配置）。
+structured 每个任务运行前重启 bridge，避免上一轮状态污染。
+
+\subsection{指标}
+
+\begin{itemize}
+  \item \textbf{score}：官方部分分，$\in[0,1]$；
+  \item \textbf{pass}：\code{task_completed_correctly}，只有 score = 1.0 才为 1；
+  \item \textbf{断言}：非 excluded 断言的通过数/总数；
+  \item \textbf{重复}：sales 3 次；operations/support 各 1 次（限制见第 \ref{sec:limits} 节）。
+\end{itemize}
+
+\section{结果}
+\label{sec:results}
+
+\subsection{主结果}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{同一模型下 direct 与 structured 的对比}
+\begin{tabularx}{\textwidth}{p{6.4cm}rrrr}
+\toprule
+任务 & direct & structured & direct 步数 & structured 节点 \\
+\midrule
+\code{sales.multi_hop_lookup} & 0.333（1/3） & \textbf{1.000（3/3），$\times$3} & 9 & 36 \\
+\code{operations.generator_load_testing_schedule} & 0.857（6/7） & \textbf{1.000（7/7）} & 13 & 37 \\
+\code{support.zendesk_sf_case_sync} & 0.750（12/16） & \textbf{1.000（16/16）} & 11 & 60 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+三题 direct 都是 \code{task_completed_correctly = 0}，structured 都是 1.0。
+direct 只用了 9/13/11 步（预算 50），剩余预算充足，
+所以失败不能用“步数不够”解释。
+
+\subsection{sales：最后两封邮件缺失}
+
+direct 更新了 Opportunity 的 stage，但没有发出两封通知邮件：
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{sales 的非 excluded 断言}
+\begin{tabularx}{\textwidth}{p{1.7cm}p{1.7cm}>{\raggedright\arraybackslash}X}
+\toprule
+direct & structured & 断言 \\
+\midrule
+P & P & Salesforce: Opportunity stage = Closed Won \\
+F & P & 邮件到 support-escalation@example.com，正文含 deal/金额/Enterprise \\
+F & P & 邮件到 executive-team@example.com，正文含 deal/金额/Enterprise \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+structured 把发邮件拆成 \code{base64_encode} 与 \code{messages/send} 两个显式节点，
+最后由 \code{S5_CHECK} 评分；漏掉任何一步都会在评分节点暴露，而不是静默结束。
+
+\subsection{operations：漏掉跨行聚合值}
+
+direct 建对了 3 个 Calendar 事件，也发对了 3 封按建筑的邮件，
+但其中一位工程师的邮件没有包含“总数 3”：
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{operations 的失败断言}
+\begin{tabularx}{\textwidth}{p{1.7cm}p{1.7cm}>{\raggedright\arraybackslash}X}
+\toprule
+direct & structured & 断言 \\
+\midrule
+F & P & 邮件到 c.ruiz@company.example.com，正文含 ``3'' \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+structured 的总数来自 \code{WHERE(due)} 的输出数量，由 \code{O_DUE_GATE}
+用 \code{due.size() == 3} 校验，并作为模板值写入每封邮件。
+这是一个典型的 M5/M6 问题：动作都做了，但集合聚合值没有回写。
+
+\subsection{support：优先级、计数与汇总}
+
+direct 失败 4 条非 excluded 断言：
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{support 的失败断言}
+\begin{tabularx}{\textwidth}{p{1.7cm}p{1.7cm}>{\raggedright\arraybackslash}X}
+\toprule
+direct & structured & 断言 \\
+\midrule
+F & P & tkt\_107 的 Case 优先级 = High \\
+F & P & Case 总数 = 6 \\
+F & P & Slack 文案含 ``5'' \\
+F & P & Slack 文案含 ``6'' \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+structured 把“企业标签 → High”“已存在 Case 去重”“Slack 汇总数字”
+拆成三个可检查的部分：LLM 只输出结构化决策，\code{S_SHAPE_GATE} 校验数量，
+写入与汇总文案由确定性节点生成。
+
+\subsection{时间}
+
+单次 structured 运行的 flow 内耗时（audit 首尾时间差）：
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{structured 运行时间}
+\begin{tabularx}{\textwidth}{p{6.9cm}rr}
+\toprule
+任务 & flow 内耗时 & LLM 调用 \\
+\midrule
+sales.multi\_hop\_lookup & 约 17--22 秒 & 3 次 \\
+operations.generator\_load\_testing\_schedule & 约 0.08 秒 & 0 \\
+support.zendesk\_sf\_case\_sync & 约 18--27 秒 & 1 次 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+sales 的耗时主要由三次 LLM 调用决定；operations 全确定性，
+本地 bridge 下不到 0.1 秒；support 由一次大上下文归一化决定。
+
+\section{消融实验}
+\label{sec:ablation}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{消融结果}
+\begin{tabularx}{\textwidth}{p{4.0cm}p{5.4cm}rr}
+\toprule
+消融 & 改动 & 分数 & 断言 \\
+\midrule
+sales $-$ S6 repair & 删除两轮 repair，评分后直接 finalize & 1.000 & 3/3 \\
+operations $-$ 并行 & 三次读取改为显式串行 & 1.000 & 7/7 \\
+support $-$ 去重 & 不检查已存在的 Case（早期版本） & 0.9375 & 15/16 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+解释：
+
+\begin{enumerate}
+  \item \textbf{不是 repair 的功劳}：sales 第一次执行就通过；
+  repair 是保险，无法解释分数提升；
+  \item \textbf{不是并行的功劳}：operations 串行读取仍 1.000；
+  并行是结构能力，只影响延迟；
+  \item \textbf{是规则执行的功劳}：support 少一条“已存在 Case 去重”，
+  就精确地多建 1 个 Case，导致 \code{collection_count_equals=6} 失败。
+\end{enumerate}
+
+换句话说，structured 的收益来自把规则、写入和校验变成显式节点；
+不是来自“多跑几步”，也不是来自并行。
+
+\section{假设判定}
+\label{sec:hypotheses}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{H1--H4 的观测与判定}
+\begin{tabularx}{\textwidth}{p{5.2cm}Xp{1.5cm}}
+\toprule
+假设 & 观测 & 判定 \\
+\midrule
+H1：FinalAction/Verifier 减少“最后一步缺失” &
+sales 的两条邮件断言：direct 0/2，structured 2/2 & 支持 \\
+H2：路由表减少 P4b 收件人/tier 错误 &
+sales 收件人 2/2；support 优先级 5/5 & 支持 \\
+H3：规则抽取 + 确定性过滤减少 P4a 集合错误 &
+operations 7/7，support 16/16 & 支持 \\
+H4：收益不是“多跑几步” &
+direct 只用 9/13/11 步（预算 50），structured 未增加 tool 调用量 &
+支持 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+这些判定都是单任务级别的；三个任务不足以支撑普遍结论。
+如果后续在更多任务上 structured 不再有优势，或者所有类型同等提升，
+应优先怀疑“任务知识泄漏”而不是“结构有效”。
+
+\section{讨论}
+\label{sec:discussion}
+
+\subsection{结构为什么有效}
+
+三个任务暴露的是三类不同的失败：
+
+\begin{itemize}
+  \item sales：读到了、判断了，但漏掉最后动作（M4）；
+  \item operations：动作都做了，但漏掉跨行聚合值（M5/M6）；
+  \item support：多个决策同时出错，且没有去重（M2/M3/M5）。
+\end{itemize}
+
+对应的结构分别是：显式顺序 + FinalAction；运行时规则过滤 + 聚合校验；
+并行证据 + 单次归一化 + 显式去重。它们都不是“让模型更聪明”，
+而是把容易漏掉的步骤变成流程中的必经节点。
+
+\subsection{任务知识泄漏}
+
+三个 flow 都是手工编译的：截止日期、优先级映射、去重键、事件标题模板
+都写在 flow 里。这与“让模型自动规划”是两件不同的事。
+
+本报告支持的结论是：\textbf{给定任务知识后，显式结构能稳定消除这些失败模式}。
+它不支持的结论是：模型能自己写出这些 flow，或者 structured 在所有任务上都更好。
+
+要回答后者，需要：自动规划 flow、更多任务、以及任务知识与结构的分离实验。
+这是下一步工作。
+
+\subsection{与任务一的关系}
+
+任务一发现 M4（40\%）与 M6（20\%）是最主要的失败机制；
+任务二验证了对应的最小干预（FinalAction + Verifier + 显式顺序）确实有效。
+任务一还发现 P4a 提升最大、P4b 从 0 到 33.3\%；
+任务二的 operations（P4a）与 support（含 P4b/P3）结果与这一方向一致。
+
+\section{限制与风险}
+\label{sec:limits}
+
+\begin{enumerate}
+  \item \textbf{样本小}：sales 3 次，operations/support 各 1 次；
+  没有跨任务重复与方差估计；
+  \item \textbf{flow 手工编译}：每个任务一个 flow，节点数与数据源写死；
+  rsi-flow 缺循环/动态扇出，无法用一个通用 flow 覆盖多任务；
+  \item \textbf{任务知识泄漏}：见第 \ref{sec:discussion} 节；
+  \item \textbf{bridge 不是官方运行时}：WorldState 通过本地 Python HTTP 暴露，
+  工具调用路径与官方 agent 不同；分数用官方 \code{partial_credit} 计算，
+  但延迟/成本不能直接比较；
+  \item \textbf{sales 的 S3 用 \code{high}}：因中转站对长 prompt 的
+  \code{max} 请求返回 524，S3 使用 \code{high}；S0/S2 仍为 \code{max}；
+  \item \textbf{repair 是重发}：不是“只修 missing”，在失败任务上可能产生重复动作；
+  \item \textbf{support 的两个版本}：run1（去重前）0.9375、run2（修复后）1.000；
+  两个结果都保留，不只报成功的一次。
+\end{enumerate}
+
+\section{复现}
+\label{sec:reproduce}
+
+\begin{verbatim}
+# 1) bridge（每个任务、每次运行前重启以重置 WorldState）
+cd automationbench-baseline
+uv run --project ../datasets/AutomationBench python scripts/world_bridge.py \
+  --domain operations \
+  --task operations.generator_load_testing_schedule --port 8765
+
+# 2) 依赖 classpath（一次）
+cd ../rsi-flow
+../scripts/mvn-rsi.sh -q -pl flow-test dependency:build-classpath \
+  -Dmdep.outputFile=/tmp/rsi-cp.txt
+
+# 3) 运行
+CP="flow-test/target/test-classes:flow-test/target/classes:\
+flow-core/target/classes:flow-route/target/classes:$(cat /tmp/rsi-cp.txt)"
+$JAVA_HOME/bin/java -cp "$CP" -Dbridge.url=http://127.0.0.1:8765 \
+  -Dtask.name=operations.generator_load_testing_schedule \
+  -Dflow.id=FLOW_AGENT_OPS \
+  -Dresult.path=/tmp/ops-result.json \
+  cc.eamon.open.flow.FLOW_AGENT.UltraAgentRunner
+\end{verbatim}
+
+三个任务的 \code{-Dflow.id} 分别为 \code{FLOW_AGENT_ULTRA}、
+\code{FLOW_AGENT_OPS}、\code{FLOW_AGENT_SUPPORT}。
+LLM 节点需要 \code{OPENAI_BASE_URL} / \code{OPENAI_API_KEY}，
+只放在 gitignored \code{.env} 中。
+
+\section{文件索引}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{任务二相关文件}
+\begin{tabularx}{\textwidth}{p{8.0cm}>{\raggedright\arraybackslash}X}
+\toprule
+文件 & 内容 \\
+\midrule
+\code{reports/structured-three-tasks.md} & 结果、消融、限制（markdown 版） \\
+\code{docs/agent-architecture-design.md} & S0--S7 设计稿 \\
+\code{docs/structure-validation-plan.md} & 验证方案与 H1--H4 \\
+\code{docs/rsi-flow-internals.md} & 引擎路由/async/scope 笔记 \\
+\code{scripts/gen_task_flows.py} & 生成三个 flow JSON \\
+\code{scripts/gen_ablation_flows.py} & 生成消融 flow \\
+\code{scripts/world_bridge.py} & WorldState HTTP bridge \\
+\code{experiments/exp-004-structured/} & 每次运行的结果 JSON \\
+rsi-flow \texttt{test} 分支 & 节点实现、flow JSON、测试 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\appendix
+
+\section{五个 flow 的节点清单}
+
+\input{tex/task2_nodes.tex}
+
+\section{逐断言结果（direct vs structured）}
+
+\noindent{\footnotesize P = 通过，F = 失败；只列非 excluded 断言。\par}
+
+\input{tex/task2_assertions.tex}
+
+\end{document}

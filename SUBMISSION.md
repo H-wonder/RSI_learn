@@ -16,7 +16,7 @@
 | 详细分析为什么跑不满 | 断言级分类 + M1–M6 机制编码 + 14 个案例 | PDF 失败分析章、[docs/failure-mechanisms.md](docs/failure-mechanisms.md)、[reports/medium-max.mechanisms.md](reports/medium-max.mechanisms.md) | 完成 |
 | 默认 vs max 对照 | 同一批 60 题的配对对比、McNemar、bootstrap CI | [reports/compare-default-vs-max.md](reports/compare-default-vs-max.md) | 完成 |
 | refusal 敏感性 | 含 refusal / 排除 / 重跑替换三种口径；重跑 0.8、无 refusal | `results/refusal-retry/`、PDF 失败分析章 | 完成 |
-| 熟悉 rsi-flow、下一步验证结构 | 引擎笔记、S0–S7 设计稿、WorldState bridge、三个任务的 flow 与结果 | [docs/rsi-flow-internals.md](docs/rsi-flow-internals.md)、[docs/agent-architecture-design.md](docs/agent-architecture-design.md)、[reports/structured-three-tasks.md](reports/structured-three-tasks.md) | 完成；3 个任务 direct 0.333/0.857/0.750，structured 全 1.000；含重复与消融 |
+| 熟悉 rsi-flow、下一步验证结构 | 任务二 PDF、引擎笔记、S0–S7 设计稿、WorldState bridge、三个任务的 flow 与结果 | [Task2-Structured-Agent-Report.pdf](Task2-Structured-Agent-Report.pdf)、[docs/rsi-flow-internals.md](docs/rsi-flow-internals.md)、[docs/agent-architecture-design.md](docs/agent-architecture-design.md)、[reports/structured-three-tasks.md](reports/structured-three-tasks.md) | 完成；3 个任务 direct 0.333/0.857/0.750，structured 全 1.000；含重复与消融 |
 | 配置对齐官方 | public 600 表、max effort、toolset、max_steps、API 路径逐项核对 | [docs/config-audit.md](docs/config-audit.md)、PDF 第 4/7 章 | 完成 |
 | 可复现 | 从零复现步骤、run manifest、原始轨迹 | [docs/reproduce.md](docs/reproduce.md)、[reports/raw-results-2026-11-18.tar.gz](reports/raw-results-2026-11-18.tar.gz) | 完成 |
 
@@ -42,7 +42,8 @@
 
 ```text
 automationbench-baseline/
-├── AutomationBench-Baseline-Report.pdf   # 主报告
+├── AutomationBench-Baseline-Report.pdf   # 任务一主报告
+├── Task2-Structured-Agent-Report.pdf     # 任务二报告
 ├── README.md                             # 导航
 ├── SUBMISSION.md                         # 本清单
 ├── configs/                              # 精确配置

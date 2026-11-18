@@ -1,5 +1,7 @@
 # 任务二：结构化 Agent 在三个任务上的验证
 
+> PDF 版：[Task2-Structured-Agent-Report.pdf](../Task2-Structured-Agent-Report.pdf)（19 页）。
+>
 > 任务二要求：基于 rsi-flow 已有的顺序/分支/嵌套/async 结构，设计一个复杂超长
 > Agent 结构（5 分），讨论并实现（5 分）。
 >
