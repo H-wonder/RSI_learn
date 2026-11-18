@@ -16,7 +16,7 @@
 | 详细分析为什么跑不满 | 断言级分类 + M1–M6 机制编码 + 14 个案例 | PDF 失败分析章、[docs/failure-mechanisms.md](docs/failure-mechanisms.md)、[reports/medium-max.mechanisms.md](reports/medium-max.mechanisms.md) | 完成 |
 | 默认 vs max 对照 | 同一批 60 题的配对对比、McNemar、bootstrap CI | [reports/compare-default-vs-max.md](reports/compare-default-vs-max.md) | 完成 |
 | refusal 敏感性 | 含 refusal / 排除 / 重跑替换三种口径；重跑 0.8、无 refusal | `results/refusal-retry/`、PDF 失败分析章 | 完成 |
-| 熟悉 rsi-flow、下一步验证结构 | 引擎笔记、S0–S7 设计稿、WorldState bridge、v0 实现 | [docs/rsi-flow-internals.md](docs/rsi-flow-internals.md)、[docs/agent-architecture-design.md](docs/agent-architecture-design.md)、[reports/structured-multi-hop.md](reports/structured-multi-hop.md) | 设计稿完成；v0 已实现，`sales.multi_hop_lookup` 2/2 次 1.000（direct 0.333）；3 次重复/消融待做 |
+| 熟悉 rsi-flow、下一步验证结构 | 引擎笔记、S0–S7 设计稿、WorldState bridge、三个任务的 flow 与结果 | [docs/rsi-flow-internals.md](docs/rsi-flow-internals.md)、[docs/agent-architecture-design.md](docs/agent-architecture-design.md)、[reports/structured-three-tasks.md](reports/structured-three-tasks.md) | 完成；3 个任务 direct 0.333/0.857/0.750，structured 全 1.000；含重复与消融 |
 | 配置对齐官方 | public 600 表、max effort、toolset、max_steps、API 路径逐项核对 | [docs/config-audit.md](docs/config-audit.md)、PDF 第 4/7 章 | 完成 |
 | 可复现 | 从零复现步骤、run manifest、原始轨迹 | [docs/reproduce.md](docs/reproduce.md)、[reports/raw-results-2026-11-18.tar.gz](reports/raw-results-2026-11-18.tar.gz) | 完成 |
 
@@ -31,8 +31,12 @@
   - [scripts/compare_runs.py](scripts/compare_runs.py)：默认 effort vs max 的配对对比（McNemar + bootstrap CI）；
   - [scripts/check_aborts.py](scripts/check_aborts.py)：中断任务检查；
   - 60 题标注、失败案例、报告与 PDF。
-- **任务二**：在 rsi-flow 里实现 `LlmNode`/`ToolNode`/`FinalActionNode`/`VerifierNode`，
-  做 direct vs structured 对比；计划见 [docs/structure-validation-plan.md](docs/structure-validation-plan.md)。
+- **任务二**：在 rsi-flow 的 `test` 分支实现 `LlmNode`/`ToolNode`/`FinalActionNode`/
+  `VerifierNode`/`RuleNode`/`FilterNode`/`RowsNode`/`WhereNode`/`AuditNode`，
+  三个任务各一个 flow（36/37/60 节点），通过 `scripts/world_bridge.py` 调用官方
+  WorldState 并用官方 `partial_credit` 评分；结果、消融、限制见
+  [reports/structured-three-tasks.md](reports/structured-three-tasks.md)，
+  方案见 [docs/structure-validation-plan.md](docs/structure-validation-plan.md)。
 
 ## 3. 提交包结构
 
@@ -49,6 +53,7 @@ automationbench-baseline/
 │   ├── medium-max/                       # max 60 题结果（生成后）
 │   ├── compare-default-vs-max.md         # 配置配对对比
 │   ├── run-manifest.md                   # 配置/命令/成本
+│   ├── structured-three-tasks.md         # 任务二：三个任务结果 + 消融
 │   └── raw-results-2026-11-18.tar.gz     # 原始轨迹
 ├── experiments/exp-002-small/issues.md   # 小批量过程记录
 └── docs/

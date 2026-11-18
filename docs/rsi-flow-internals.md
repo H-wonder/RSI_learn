@@ -202,6 +202,9 @@ FlowEngine.run(flowId)
 
 ## 10. 已实现的 Agent 节点（test 分支）
 
+- `RowsNode`：`ROWS_JSON`，Sheets `values` → 行对象数组（表头行作为字段名）；
+- `WhereNode`：`WHERE_JSON`，行级 JEXL 过滤；列名中的非字母数字字符转为下划线
+  （`Last Load Test` → `Last_Load_Test`），支持 `varsJson` 注入外部变量与模板；
 - `LlmNode`：`LLM_CALL`，OpenAI-compatible Chat Completions；
 - `ToolNode` + `ToolRegistry`：`TOOL_CALL`，工具由调用方注册；
 - `FinalActionNode` + `FinalActionRegistry`：`FINAL_ACTION`；
@@ -210,8 +213,12 @@ FlowEngine.run(flowId)
 - `Template`：`{{var}}` 文本/JSON 模板；
 - `BridgeToolHandler` / `BridgeScoreHandler`：接 `scripts/world_bridge.py`；
 - `FLOW_AGENT_TOOL` / `FLOW_AGENT_LLM` smoke flow；
-- `FLOW_AGENT_ULTRA`：36 节点、44 路由的 S0–S7 v0；
-- `FlowAgentTest`：套件 **21/21**。
+- `FLOW_AGENT_ULTRA`：36 节点、44 路由的 S0–S7 v0（sales）；
+- `FLOW_AGENT_OPS`：37 节点、41 路由，全确定性（operations）；
+- `FLOW_AGENT_SUPPORT`：60 节点、70 路由，1 次 LLM（support）；
+- 消融变体 `FLOW_AGENT_ULTRA_NOREPAIR`、`FLOW_AGENT_OPS_SEQ`；
+- `UltraAgentRunner` 支持 `-Dflow.id=...`；
+- `FlowAgentTest`：套件 **22/22**。
 
 这些是“节点层”；任务二的“结构层”还应在它们之上组织 S0–S7 阶段、
 嵌套子流程、并行取证、条件路由、校验与有界修复。

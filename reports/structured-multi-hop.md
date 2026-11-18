@@ -2,6 +2,8 @@
 
 > 任务二实现记录（第一版）。目标不是一次性做完三个任务，而是先把
 > S0–S7 结构在一个真实 AutomationBench 任务上端到端跑通。
+>
+> **最终结果与另外两个任务见 [structured-three-tasks.md](structured-three-tasks.md)。**
 
 ## 结构
 
@@ -27,15 +29,17 @@ S7 final action + audit
 
 | 运行 | 分数 | 断言 | 说明 |
 |---|---:|---:|---|
-| direct agent（max，60 题中的该题） | 0.333 | 1/3 | 只更新了 stage，邮件 subject/格式不对 |
+| direct agent（max，60 题中的该题） | 0.333 | 1/3 | 只更新了 stage，两封邮件都没发 |
 | structured v0 run 1 | **1.000** | **3/3** | 端到端通过 |
 | structured v0 run 2 | **1.000** | **3/3** | 重置 WorldState 后重复，稳定通过 |
+| structured v0 run 3 | **1.000** | **3/3** | 第三次重复；n=3 全通过 |
+| 消融：去掉 S6 repair | **1.000** | **3/3** | 首次执行即通过，repair 贡献为 0 |
 
 ## 成本/时间
 
-- 每次 structured run 约 2–3 分钟；
+- 每次 structured run 约 2 分钟（3 次 LLM 调用，其中 S0/S2 用 max、S3 用 high）；
 - LLM 调用：S0（max）、S2（max）、S3（high）各 1 次；
-- 未做 3 次重复与消融；这是 v0，只验证结构可行。
+- 消融与三次重复见 [structured-three-tasks.md](structured-three-tasks.md)。
 
 ## 复现
 

@@ -191,17 +191,29 @@ start
 | `Template` | `agent/Template.java` | `{{var}}` 文本/JSON 模板 |
 | WorldState bridge | `scripts/world_bridge.py` + `BridgeToolHandler` | 本地 HTTP 暴露 AutomationBench WorldState |
 | `FLOW_AGENT_ULTRA` | `flow-test/.../FLOW_AGENT/flow-agent-ultra.json` | 36 节点、44 路由、async all/close |
-| 测试 | `FLOW_AGENT/FlowAgentTest.java` | **21/21 通过** |
+| `RowsNode` / `WhereNode` | `agent/RowsNode.java`、`WhereNode.java` | 表格行转换 + 行级 JEXL 过滤 |
+| `FLOW_AGENT_OPS` | `flow-agent-ops.json` | 37 节点、41 路由，全确定性 |
+| `FLOW_AGENT_SUPPORT` | `flow-agent-support.json` | 60 节点、70 路由，1 次 LLM |
+| 消融变体 | `flow-agent-ultra-norepair.json`、`flow-agent-ops-seq.json` | 生成，不手改 |
+| 测试 | `FLOW_AGENT/FlowAgentTest.java` | **22/22 通过** |
 
-**v0 结果**：`sales.multi_hop_lookup` 上 direct max 为 0.333（1/3），
-structured v0 两次均为 **1.000（3/3）**。细节见
-`reports/structured-multi-hop.md`。
+**结果**（direct 均来自 60 题 max 基线，structured 通过 bridge 评分）：
+
+| 任务 | direct | structured |
+|---|---:|---:|
+| `sales.multi_hop_lookup` | 0.333（1/3） | **1.000（3/3），×3** |
+| `operations.generator_load_testing_schedule` | 0.857（6/7） | **1.000（7/7）** |
+| `support.zendesk_sf_case_sync` | 0.750（12/16） | **1.000（16/16）** |
+
+消融：sales 去掉 repair 仍 1.000；operations 串行读取仍 1.000；
+support 去掉“已存在 Case 去重”降到 0.9375（多建 1 个 Case）。
+完整记录见 [../reports/structured-three-tasks.md](../reports/structured-three-tasks.md)。
 
 **还没做**：
 
-- 3 次重复、节点消融、步数对照；
-- 另外两个任务（`operations.generator_load_testing_schedule`、
-  `support.zendesk_sf_case_sync`）的 flow JSON；
+- operations/support 各补 2 次重复（当前各 1 次）；
+- 步数匹配对照（direct 预算 50 步、实际只用 9/13/11 步，但尚未做等步数运行）；
 - 循环/动态扇出/checkpoint 仍是缺口（当前写死节点数）；
-- S6 修复目前是“重发”，不是“只修 missing”。
+- S6 修复目前是“重发”，不是“只修 missing”；
+- 通用 flow 抽象（公共骨架 + 任务子 flow）尚未实现。
 

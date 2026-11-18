@@ -352,3 +352,26 @@ rsi-flow 没有循环、动态扇出、重试、checkpoint。设计上用：
 **当前限制**：只有 1 个任务、2 次重复；没有节点消融、步数对照、3 次重复；
 S3 因中转站 524 用了 `high` 而不是 `max`；修复轮次是简单重发，不是“只修 missing”。
 这些是下一步，不把 v0 说成完整实验。
+
+## 12. 三个任务全部落地（2026-11-18）
+
+在 v0 基础上补齐另外两个任务，并完成重复与消融：
+
+| flow | 任务 | 节点/路由 | LLM 调用 | 结构重点 |
+|---|---|---:|---:|---|
+| `FLOW_AGENT_ULTRA` | sales.multi_hop_lookup | 36 / 44 | 3 | 并行证据、受限 LLM、条件分支、repair |
+| `FLOW_AGENT_OPS` | operations.generator_load_testing_schedule | 37 / 41 | 0 | `RowsNode` + `WhereNode` 规则过滤、逐条确定性执行 |
+| `FLOW_AGENT_SUPPORT` | support.zendesk_sf_case_sync | 60 / 70 | 1 | 8 路并行读取、单次 LLM 归一化、确定性写入 |
+
+新增通用节点 `RowsNode`（Sheets `values` → 行对象）与
+`WhereNode`（行级 JEXL 过滤，支持模板变量），
+让“读表 → 按规则过滤 → 行动”可以完整落在 flow 里，而不是把结论写死。
+
+结果与消融见 [../reports/structured-three-tasks.md](../reports/structured-three-tasks.md)：
+
+- direct 三题分别 0.333 / 0.857 / 0.750，structured 全部 1.000；
+- sales 三次重复全通过；去掉 S6 repair 仍 1.000；
+- operations 串行读取仍 1.000；support 去掉“已存在 Case 去重”降到 0.9375。
+
+仍然存在的限制：flow 按任务手工编译、节点数写死；rsi-flow 没有循环/动态扇出；
+样本小；bridge 不是官方运行时。

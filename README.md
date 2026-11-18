@@ -93,7 +93,24 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 - **运行配置与成本**：[reports/run-manifest.md](reports/run-manifest.md)
 - **完整轨迹**：[reports/raw-results-2026-11-18.tar.gz](reports/raw-results-2026-11-18.tar.gz)（含 max / calibration / refusal 的完整对话 JSON）
 - **14 个失败案例**：PDF 第 8 章
-- **任务二 v0 结果**：[reports/structured-multi-hop.md](reports/structured-multi-hop.md)
+- **任务二最终结果（三个任务 + 消融）**：[reports/structured-three-tasks.md](reports/structured-three-tasks.md)
+- **任务二单任务早期记录**：[reports/structured-multi-hop.md](reports/structured-multi-hop.md)
+
+## 任务二交付物（结构化 Agent）
+
+在 rsi-flow 的 `test` 分支实现，三个 flow 均通过 `scripts/world_bridge.py`
+调用官方 WorldState 并用官方 `partial_credit` 评分：
+
+| 任务 | direct（max） | structured | flow |
+|---|---:|---:|---|
+| `sales.multi_hop_lookup` | 0.333 | **1.000（3/3），×3** | 36 节点 / 44 路由 |
+| `operations.generator_load_testing_schedule` | 0.857 | **1.000（7/7）** | 37 节点 / 41 路由 |
+| `support.zendesk_sf_case_sync` | 0.750 | **1.000（16/16）** | 60 节点 / 70 路由 |
+
+新增引擎节点 `LlmNode`、`ToolNode`、`FinalActionNode`、`VerifierNode`、
+`RuleNode`、`FilterNode`、`RowsNode`、`WhereNode`、`AuditNode` 等；
+测试 22/22。设计稿：[docs/agent-architecture-design.md](docs/agent-architecture-design.md)；
+结果、消融与限制：[reports/structured-three-tasks.md](reports/structured-three-tasks.md)。
 
 ## 目录
 
@@ -118,7 +135,11 @@ automationbench-baseline/
 │   ├── dataset_stats.py     # 重算数据集规模/复杂度
 │   ├── inspect_task.py      # 查看一道题的 prompt/工具/断言
 │   ├── build_report.py      # 从结果 CSV 生成 LaTeX 表格/图
-│   └── build_pdf.sh         # 用 XeLaTeX 编译 PDF
+│   ├── build_pdf.sh         # 用 XeLaTeX 编译 PDF
+│   ├── world_bridge.py      # 把 AutomationBench WorldState 暴露为本地 HTTP
+│   ├── gen_ultra_flow.py    # 生成 sales 的 S0–S7 flow JSON
+│   ├── gen_task_flows.py    # 生成 operations/support 的 flow JSON
+│   └── gen_ablation_flows.py # 生成消融变体
 ├── docs/
 │   ├── workflow.md          # 小批量→记录→放量
 │   ├── failure-taxonomy.md  # 失败分类标准

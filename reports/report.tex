@@ -106,7 +106,7 @@ P4b 从 0 到 33.3\%，但 P2 多跳只有 10\%、P9 长链仍为 0\%；
   \item 分析 AutomationBench：800 个任务、9,855 条断言、38.5\% 负断言；整理出 P1--P9
   九类问题（P4 拆成 P4a/P4b），并完成 60 题人工标注（AI 初标 + 用户复核）。
   \item 跑 18 题小批量：只用于暴露工具/数据源/收尾问题，不作为最终比例；
-  逐题记录见 \texttt{experiments/exp-002-small/issues.md}。
+  逐题记录见 \texttt{experiments/\allowbreak exp-002-small/\allowbreak issues.md}。
   \item 做配置核对：官方要求最高可用 reasoning effort；用 3 题校准确认 \texttt{max}
   确实生效，然后用 \texttt{max} + \texttt{chat\_completions} 重跑全部 60 题。
   \item 统计 max 60 题的通过率、部分分、分域、P1--P9、失败类别与高频断言；
@@ -451,8 +451,8 @@ McNemar 检验与失误复盘见第 \ref{sec:config} 节。官方排名榜使用
 \end{enumerate}
 
 采样记录：18 题里有 6 题（每域 index 50）不在 60 题标注样本内；后续改用
-\texttt{data/tasks/small\_from\_annotation.csv} 对齐。逐题记录见
-\texttt{experiments/exp-002-small/issues.md}。
+\texttt{data/tasks/\allowbreak small\_from\_annotation.csv} 对齐。逐题记录见
+\texttt{experiments/\allowbreak exp-002-small/\allowbreak issues.md}。
 
 决策：小批量暴露的是“工具/流程”问题，不是模型完全不可用；因此进入 60 题放量，
 并把 reasoning effort 对齐官方 \texttt{max}。由于小批量与主结果配置不同，
@@ -1056,26 +1056,48 @@ LLM 节点、工具节点、循环、动态扇出、重试/降级、状态映射
   \item M6 收尾校验 $\rightarrow$ \texttt{VerifierNode}。
 \end{itemize}
 
-截至 2026-11-18，S0--S7 v0 已在 rsi-flow 的 \texttt{test} 分支实现：
+截至 2026-11-18，S0--S7 已在 rsi-flow 的 \texttt{test} 分支实现：
 \texttt{LlmNode}、\texttt{ToolNode}、\texttt{FinalActionNode}、\texttt{VerifierNode}、
-\texttt{RuleNode}、\texttt{FilterNode}、\texttt{AuditNode}、
-\texttt{ContextSnapshotNode}、\texttt{JsonFieldNode}、
+\texttt{RuleNode}、\texttt{FilterNode}、\texttt{RowsNode}、\texttt{WhereNode}、
+\texttt{AuditNode}、\texttt{ContextSnapshotNode}、\texttt{JsonFieldNode}、
 \texttt{Template}，以及 AutomationBench \texttt{WorldState} 的本地 HTTP bridge；
-\texttt{mvn-rsi.sh -pl flow-test -am test} 为 \textbf{21/21} 通过。
-\texttt{FLOW\_AGENT\_ULTRA} 为 36 节点、44 路由、1 个 async all/close 并行组。
+\texttt{mvn-rsi.sh -pl flow-test -am test} 为 \textbf{22/22} 通过。
+三个任务各有一个 flow：\texttt{FLOW\_AGENT\_ULTRA}（sales，36 节点/44 路由，
+3 次 LLM）、\texttt{FLOW\_AGENT\_OPS}（operations，37 节点/41 路由，全确定性）、
+\texttt{FLOW\_AGENT\_SUPPORT}（support，60 节点/70 路由，1 次 LLM）。
 
-在 \code{sales.multi_hop_lookup} 上：direct max 为 0.333（1/3 断言），
-structured v0 两次均为 \textbf{1.000（3/3）}。
-但这是 n=2 的 v0，没有节点消融、步数对照与 3 次重复；
-另外两个任务的 flow JSON 尚未实现。验证假设与判定标准见
-\texttt{docs/structure-validation-plan.md}：
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{任务二：同一模型下 direct 与 structured 的对比（direct 来自 60 题 max 基线）}
+\begin{tabularx}{\textwidth}{p{7.4cm}rr}
+\toprule
+任务 & direct 分数 & structured 分数 \\
+\midrule
+\code{sales.multi_hop_lookup} & 0.333（1/3） & \textbf{1.000（3/3），$\times$3} \\
+\code{operations.generator_load_testing_schedule} & 0.857（6/7） & \textbf{1.000（7/7）} \\
+\code{support.zendesk_sf_case_sync} & 0.750（12/16） & \textbf{1.000（16/16）} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\begin{itemize}
-  \item H1：FinalAction/Verifier 减少“最后一步缺失”；
-  \item H2：路由表减少 P4b 的收件人/tier 错误；
-  \item H3：规则抽取 + 确定性过滤减少 P4a 的集合成员错误；
-  \item H4：收益不是“多跑几步”——需要步数/token 对照与节点消融。
-\end{itemize}
+direct 的失败不是步数不够：三题分别只用 9/13/11 步（预算 50），
+失败点是漏发最后两封邮件、漏算跨行总数、优先级与去重规则。
+structured 的收益有明确边界：flow 是按任务手工编译的，不是自动规划出来的；
+它证明“给定任务知识后，显式结构能消除这些失败模式”，
+不证明模型能自己写出这些 flow。
+
+消融实验（见 \texttt{reports/structured-three-tasks.md}）：
+sales 去掉 S6 repair 仍为 1.000（repair 贡献为 0）；
+operations 改为串行读取仍为 1.000（并行只影响延迟）；
+support 去掉“已存在 Case 去重”降到 0.9375（多建 1 个 Case，计数断言失败）。
+这说明收益来自“规则被显式执行”，而不是多跑步骤或并行本身。
+
+验证假设与判定标准见 \texttt{docs/structure-validation-plan.md}：
+H1（FinalAction/Verifier 减少最后一步缺失）、H2（路由表减少 P4b 收件人/tier 错误）、
+H3（规则抽取 + 确定性过滤减少 P4a 集合错误）在三个单任务上均得到支持；
+H4（收益不是“多跑几步”）也得到支持——direct 远未耗尽步数预算。
+但样本只有 3 个任务（1 个任务 3 次、2 个任务各 1 次），不能外推为普遍结论。
 
 \section{结论与下一步}
 \label{sec:conclusion}
@@ -1102,14 +1124,15 @@ structured v0 两次均为 \textbf{1.000（3/3）}。
 \subsection{下一步}
 
 \begin{enumerate}
-  \item S0--S7 v0 已在 rsi-flow \texttt{test} 分支实现（21/21 测试通过）；
-  \code{sales.multi_hop_lookup} 上 direct max 0.333，structured 两次 1.000；
-  下一步补 3 次重复、节点消融与另外两个任务；
-  \item 对 3 个任务各跑 3 次 direct vs structured，做节点消融与步数对照；
+  \item S0--S7 已在 rsi-flow \texttt{test} 分支实现（22/22 测试通过）；
+  三个任务（sales/operations/support）direct 分别为 0.333/0.857/0.750，
+  structured 均为 1.000；sales 三次重复全通过；
+  \item 已完成节点消融（去掉 repair、改为串行、去掉去重）；
+  下一步给 operations/support 各补 2 次重复，并做等步数对照；
   \item 补 M1--M6 的第二人复核（至少 5 个案例 + 5 道 P4b 标签）；
   \item 决定是否跑全量 600 题，或改用更便宜的模型（如 \texttt{gpt-5.6-terra}）；
-  \item 任务一代码与报告已 push 到远程；任务二代码保留在 rsi-flow 本地
-  \texttt{test} 分支（官方仓库无写权限，不 push）。
+  \item 任务一代码、报告与任务二结果已 push 到远程；任务二引擎代码保留在
+  rsi-flow 本地 \texttt{test} 分支（官方仓库无写权限，不 push）。
 \end{enumerate}
 
 \appendix
