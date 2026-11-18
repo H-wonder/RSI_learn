@@ -1,0 +1,33 @@
+{
+  "id": "FLOW_AGENT_TOOL",
+  "type": "flow",
+  "name": "Agent tool node smoke",
+  "params": [
+    { "name": "toolName", "type": "String" },
+    { "name": "argumentsJson", "type": "String" },
+    { "name": "resultName", "type": "String" }
+  ],
+  "results": [
+    { "name": "toolResult", "type": "String" }
+  ],
+  "nodes": [
+    {
+      "id": "TOOL",
+      "type": "event",
+      "name": "tool",
+      "reference": "TOOL_CALL",
+      "params": [
+        { "name": "toolName", "type": "String" },
+        { "name": "argumentsJson", "type": "String" },
+        { "name": "resultName", "type": "String" }
+      ],
+      "results": [
+        { "name": "toolResult", "type": "String" }
+      ]
+    }
+  ],
+  "routes": [
+    { "source": "start", "target": "TOOL" },
+    { "source": "TOOL", "target": "end" }
+  ]
+}

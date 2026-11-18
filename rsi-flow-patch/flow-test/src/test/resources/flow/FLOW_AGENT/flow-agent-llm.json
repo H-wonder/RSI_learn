@@ -1,0 +1,31 @@
+{
+  "id": "FLOW_AGENT_LLM",
+  "type": "flow",
+  "name": "Agent LLM node smoke",
+  "params": [
+    { "name": "requestJson", "type": "String" },
+    { "name": "resultName", "type": "String" }
+  ],
+  "results": [
+    { "name": "llmResult", "type": "String" }
+  ],
+  "nodes": [
+    {
+      "id": "LLM",
+      "type": "event",
+      "name": "llm",
+      "reference": "LLM_CALL",
+      "params": [
+        { "name": "requestJson", "type": "String" },
+        { "name": "resultName", "type": "String" }
+      ],
+      "results": [
+        { "name": "llmResult", "type": "String" }
+      ]
+    }
+  ],
+  "routes": [
+    { "source": "start", "target": "LLM" },
+    { "source": "LLM", "target": "end" }
+  ]
+}

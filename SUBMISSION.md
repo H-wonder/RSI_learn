@@ -34,7 +34,8 @@
 - **任务二**：在 rsi-flow 的 `test` 分支实现 `LlmNode`/`ToolNode`/`FinalActionNode`/
   `VerifierNode`/`RuleNode`/`FilterNode`/`RowsNode`/`WhereNode`/`AuditNode`，
   三个任务各一个 flow（36/37/60 节点），通过 `scripts/world_bridge.py` 调用官方
-  WorldState 并用官方 `partial_credit` 评分；结果、消融、限制见
+  WorldState 并用官方 `partial_credit` 评分；全部 Java 源码与测试镜像在
+  [rsi-flow-patch/](rsi-flow-patch/)；结果、消融、限制见
   [reports/structured-three-tasks.md](reports/structured-three-tasks.md)，
   方案见 [docs/structure-validation-plan.md](docs/structure-validation-plan.md)。
 
@@ -44,6 +45,7 @@
 automationbench-baseline/
 ├── AutomationBench-Baseline-Report.pdf   # 任务一主报告
 ├── Task2-Structured-Agent-Report.pdf     # 任务二报告
+├── rsi-flow-patch/                       # 任务二引擎源码镜像
 ├── README.md                             # 导航
 ├── SUBMISSION.md                         # 本清单
 ├── configs/                              # 精确配置

@@ -2,7 +2,8 @@
 
 > 状态：**已实现并在三个任务上验证**（2026-11-18）。本文件保留设计过程；
 > 实现与结果见 [../reports/structured-three-tasks.md](../reports/structured-three-tasks.md)
-> 和根目录 `Task2-Structured-Agent-Report.pdf`。对应任务二的 5 分“方案”部分，原计划在
+> 和根目录 `Task2-Structured-Agent-Report.pdf`；Java 源码镜像在
+> [../rsi-flow-patch/](../rsi-flow-patch/)。对应任务二的 5 分“方案”部分，原计划在
 > rsi-flow `test` 分支实现（5 分“实现”部分）。
 >
 > 设计基于 rsi-flow 现有的顺序（routes）、条件分支（JEXL condition）、
