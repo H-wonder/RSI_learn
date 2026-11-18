@@ -100,6 +100,8 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 
 - **任务二 PDF（根目录）**：[Task2-Structured-Agent-Report.pdf](Task2-Structured-Agent-Report.pdf)（19 页）
 - **Markdown 版结果与消融**：[reports/structured-three-tasks.md](reports/structured-three-tasks.md)
+- **flow JSON 镜像**：[experiments/exp-004-structured/flows/](experiments/exp-004-structured/flows/)（五个 flow，可直接阅读）
+- **逐次运行结果**：[experiments/exp-004-structured/](experiments/exp-004-structured/)
 
 在 rsi-flow 的 `test` 分支实现，三个 flow 均通过 `scripts/world_bridge.py`
 调用官方 WorldState 并用官方 `partial_credit` 评分：

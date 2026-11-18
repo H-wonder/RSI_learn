@@ -1,0 +1,1397 @@
+{
+  "id": "FLOW_AGENT_OPS",
+  "type": "flow",
+  "name": "Deterministic generator load-test scheduling (P4a)",
+  "params": [
+    {
+      "name": "taskPrompt",
+      "type": "String"
+    },
+    {
+      "name": "taskName",
+      "type": "String"
+    }
+  ],
+  "results": [
+    {
+      "name": "auditJson",
+      "type": "String"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "O_START",
+      "type": "event",
+      "title": "Audit O_START",
+      "reference": "AUDIT",
+      "params": [
+        {
+          "name": "O_START_stage",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "OPS_START"
+        },
+        {
+          "name": "O_START_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "O_START_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_audit_start"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_audit_start",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_READ_UNITS",
+      "type": "event",
+      "title": "Tool O_READ_UNITS",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_READ_UNITS_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "O_READ_UNITS_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://sheets.googleapis.com/v4/spreadsheets/ss_generators/values/Generator Units!A1:Z100\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "O_READ_UNITS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_ev_units"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_ev_units",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_READ_ENG",
+      "type": "event",
+      "title": "Tool O_READ_ENG",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_READ_ENG_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "O_READ_ENG_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://sheets.googleapis.com/v4/spreadsheets/ss_generators/values/Facilities Engineers!A1:Z100\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "O_READ_ENG_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_ev_eng"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_ev_eng",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_READ_FUEL",
+      "type": "event",
+      "title": "Tool O_READ_FUEL",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_READ_FUEL_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "O_READ_FUEL_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://sheets.googleapis.com/v4/spreadsheets/ss_generators/values/Fuel Rationing Status!A1:Z100\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "O_READ_FUEL_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_ev_fuel"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_ev_fuel",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_JOIN",
+      "type": "event",
+      "title": "Audit O_JOIN",
+      "reference": "AUDIT",
+      "params": [
+        {
+          "name": "O_JOIN_stage",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "OPS_EVIDENCE_READY"
+        },
+        {
+          "name": "O_JOIN_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "O_JOIN_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_audit_join"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_audit_join",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_ROWS_UNITS",
+      "type": "event",
+      "title": "Rows O_ROWS_UNITS",
+      "reference": "ROWS_JSON",
+      "params": [
+        {
+          "name": "O_ROWS_UNITS_valuesJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_ev_units}}"
+        },
+        {
+          "name": "O_ROWS_UNITS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_units_rows"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_units_rows",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_ROWS_ENG",
+      "type": "event",
+      "title": "Rows O_ROWS_ENG",
+      "reference": "ROWS_JSON",
+      "params": [
+        {
+          "name": "O_ROWS_ENG_valuesJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_ev_eng}}"
+        },
+        {
+          "name": "O_ROWS_ENG_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_eng_rows"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_eng_rows",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_ROWS_FUEL",
+      "type": "event",
+      "title": "Rows O_ROWS_FUEL",
+      "reference": "ROWS_JSON",
+      "params": [
+        {
+          "name": "O_ROWS_FUEL_valuesJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_ev_fuel}}"
+        },
+        {
+          "name": "O_ROWS_FUEL_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_fuel_rows"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_fuel_rows",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_WHERE_FUEL",
+      "type": "event",
+      "title": "Where O_WHERE_FUEL",
+      "reference": "WHERE_JSON",
+      "params": [
+        {
+          "name": "O_WHERE_FUEL_itemsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_fuel_rows}}"
+        },
+        {
+          "name": "O_WHERE_FUEL_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "Rationing_Status == 'Active'"
+        },
+        {
+          "name": "O_WHERE_FUEL_varsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "O_WHERE_FUEL_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_rationed_rows"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_rationed_rows",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_RATIONED_BLDG",
+      "type": "event",
+      "title": "Field O_RATIONED_BLDG",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_RATIONED_BLDG_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_rationed_rows}}"
+        },
+        {
+          "name": "O_RATIONED_BLDG_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.Building"
+        },
+        {
+          "name": "O_RATIONED_BLDG_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_rationed_building"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_rationed_building",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_WHERE_DUE",
+      "type": "event",
+      "title": "Where O_WHERE_DUE",
+      "reference": "WHERE_JSON",
+      "params": [
+        {
+          "name": "O_WHERE_DUE_itemsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_units_rows}}"
+        },
+        {
+          "name": "O_WHERE_DUE_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "Status != 'Under Repair' && (Type != 'Portable' || Assignment != 'Event') && Notes.indexOf('firmware update pending') < 0 && Notes.indexOf('Emergency run') < 0 && Building != rationed_building && ((Test_Frequency == 'Monthly' && Last_Load_Test <= '2026-01-24') || (Test_Frequency == 'Quarterly' && Last_Load_Test <= '2025-11-24'))"
+        },
+        {
+          "name": "O_WHERE_DUE_varsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"rationed_building\": \"{{ops_rationed_building}}\"}"
+        },
+        {
+          "name": "O_WHERE_DUE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_due_rows"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_due_rows",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_DUE_GATE",
+      "type": "event",
+      "title": "Rule O_DUE_GATE",
+      "reference": "RULE_EVAL",
+      "params": [
+        {
+          "name": "O_DUE_GATE_contextJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"due\": {{ops_due_rows}}}"
+        },
+        {
+          "name": "O_DUE_GATE_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "due.size() == 3"
+        },
+        {
+          "name": "O_DUE_GATE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_due_ok"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_due_ok",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_U0_ID",
+      "type": "event",
+      "title": "Field O_U0_ID",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_U0_ID_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_due_rows}}"
+        },
+        {
+          "name": "O_U0_ID_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.Unit ID"
+        },
+        {
+          "name": "O_U0_ID_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_unit_id_0"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_unit_id_0",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_U0_BLDG",
+      "type": "event",
+      "title": "Field O_U0_BLDG",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_U0_BLDG_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_due_rows}}"
+        },
+        {
+          "name": "O_U0_BLDG_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.Building"
+        },
+        {
+          "name": "O_U0_BLDG_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_unit_bldg_0"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_unit_bldg_0",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_EVENT0",
+      "type": "event",
+      "title": "Tool O_EVENT0",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_EVENT0_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "O_EVENT0_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://www.googleapis.com/calendar/v3/calendars/primary/events\", \"params\": null, \"body\": \"{\\\"summary\\\":\\\"Generator Load Test - {{ops_unit_id_0}}\\\",\\\"start\\\":{\\\"dateTime\\\":\\\"2026-02-10T06:00:00\\\"},\\\"end\\\":{\\\"dateTime\\\":\\\"2026-02-10T08:00:00\\\"}}\"}"
+        },
+        {
+          "name": "O_EVENT0_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_event_0"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_event_0",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_ENG0",
+      "type": "event",
+      "title": "Where O_ENG0",
+      "reference": "WHERE_JSON",
+      "params": [
+        {
+          "name": "O_ENG0_itemsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_eng_rows}}"
+        },
+        {
+          "name": "O_ENG0_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "Building == '{{ops_unit_bldg_0}}'"
+        },
+        {
+          "name": "O_ENG0_varsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "O_ENG0_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_eng_0_rows"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_eng_0_rows",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_EMAIL0",
+      "type": "event",
+      "title": "Field O_EMAIL0",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_EMAIL0_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_eng_0_rows}}"
+        },
+        {
+          "name": "O_EMAIL0_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.Email"
+        },
+        {
+          "name": "O_EMAIL0_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_eng_email_0"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_eng_email_0",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_MAILRAW0",
+      "type": "event",
+      "title": "Tool O_MAILRAW0",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_MAILRAW0_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "base64_encode"
+        },
+        {
+          "name": "O_MAILRAW0_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"text\": \"To: {{ops_eng_email_0}}\\nSubject: Generator Load Test - {{ops_unit_id_0}}\\n\\n{{ops_unit_id_0}} at {{ops_unit_bldg_0}} is scheduled for load testing on 2026-02-10 06:00-08:00.\\nTotal generators scheduled for testing: 3.\\n\"}"
+        },
+        {
+          "name": "O_MAILRAW0_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_mail_raw_0"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_mail_raw_0",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_SEND0",
+      "type": "event",
+      "title": "Tool O_SEND0",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_SEND0_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "O_SEND0_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://gmail.googleapis.com/gmail/v1/users/me/messages/send\", \"params\": null, \"body\": \"{\\\"raw\\\":\\\"{{ops_mail_raw_0}}\\\"}\"}"
+        },
+        {
+          "name": "O_SEND0_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_send_0"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_send_0",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_U1_ID",
+      "type": "event",
+      "title": "Field O_U1_ID",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_U1_ID_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_due_rows}}"
+        },
+        {
+          "name": "O_U1_ID_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "1.Unit ID"
+        },
+        {
+          "name": "O_U1_ID_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_unit_id_1"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_unit_id_1",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_U1_BLDG",
+      "type": "event",
+      "title": "Field O_U1_BLDG",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_U1_BLDG_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_due_rows}}"
+        },
+        {
+          "name": "O_U1_BLDG_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "1.Building"
+        },
+        {
+          "name": "O_U1_BLDG_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_unit_bldg_1"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_unit_bldg_1",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_EVENT1",
+      "type": "event",
+      "title": "Tool O_EVENT1",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_EVENT1_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "O_EVENT1_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://www.googleapis.com/calendar/v3/calendars/primary/events\", \"params\": null, \"body\": \"{\\\"summary\\\":\\\"Generator Load Test - {{ops_unit_id_1}}\\\",\\\"start\\\":{\\\"dateTime\\\":\\\"2026-02-10T06:00:00\\\"},\\\"end\\\":{\\\"dateTime\\\":\\\"2026-02-10T08:00:00\\\"}}\"}"
+        },
+        {
+          "name": "O_EVENT1_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_event_1"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_event_1",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_ENG1",
+      "type": "event",
+      "title": "Where O_ENG1",
+      "reference": "WHERE_JSON",
+      "params": [
+        {
+          "name": "O_ENG1_itemsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_eng_rows}}"
+        },
+        {
+          "name": "O_ENG1_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "Building == '{{ops_unit_bldg_1}}'"
+        },
+        {
+          "name": "O_ENG1_varsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "O_ENG1_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_eng_1_rows"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_eng_1_rows",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_EMAIL1",
+      "type": "event",
+      "title": "Field O_EMAIL1",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_EMAIL1_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_eng_1_rows}}"
+        },
+        {
+          "name": "O_EMAIL1_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.Email"
+        },
+        {
+          "name": "O_EMAIL1_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_eng_email_1"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_eng_email_1",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_MAILRAW1",
+      "type": "event",
+      "title": "Tool O_MAILRAW1",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_MAILRAW1_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "base64_encode"
+        },
+        {
+          "name": "O_MAILRAW1_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"text\": \"To: {{ops_eng_email_1}}\\nSubject: Generator Load Test - {{ops_unit_id_1}}\\n\\n{{ops_unit_id_1}} at {{ops_unit_bldg_1}} is scheduled for load testing on 2026-02-10 06:00-08:00.\\nTotal generators scheduled for testing: 3.\\n\"}"
+        },
+        {
+          "name": "O_MAILRAW1_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_mail_raw_1"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_mail_raw_1",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_SEND1",
+      "type": "event",
+      "title": "Tool O_SEND1",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_SEND1_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "O_SEND1_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://gmail.googleapis.com/gmail/v1/users/me/messages/send\", \"params\": null, \"body\": \"{\\\"raw\\\":\\\"{{ops_mail_raw_1}}\\\"}\"}"
+        },
+        {
+          "name": "O_SEND1_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_send_1"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_send_1",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_U2_ID",
+      "type": "event",
+      "title": "Field O_U2_ID",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_U2_ID_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_due_rows}}"
+        },
+        {
+          "name": "O_U2_ID_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "2.Unit ID"
+        },
+        {
+          "name": "O_U2_ID_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_unit_id_2"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_unit_id_2",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_U2_BLDG",
+      "type": "event",
+      "title": "Field O_U2_BLDG",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_U2_BLDG_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_due_rows}}"
+        },
+        {
+          "name": "O_U2_BLDG_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "2.Building"
+        },
+        {
+          "name": "O_U2_BLDG_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_unit_bldg_2"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_unit_bldg_2",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_EVENT2",
+      "type": "event",
+      "title": "Tool O_EVENT2",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_EVENT2_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "O_EVENT2_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://www.googleapis.com/calendar/v3/calendars/primary/events\", \"params\": null, \"body\": \"{\\\"summary\\\":\\\"Generator Load Test - {{ops_unit_id_2}}\\\",\\\"start\\\":{\\\"dateTime\\\":\\\"2026-02-10T06:00:00\\\"},\\\"end\\\":{\\\"dateTime\\\":\\\"2026-02-10T08:00:00\\\"}}\"}"
+        },
+        {
+          "name": "O_EVENT2_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_event_2"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_event_2",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_ENG2",
+      "type": "event",
+      "title": "Where O_ENG2",
+      "reference": "WHERE_JSON",
+      "params": [
+        {
+          "name": "O_ENG2_itemsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_eng_rows}}"
+        },
+        {
+          "name": "O_ENG2_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "Building == '{{ops_unit_bldg_2}}'"
+        },
+        {
+          "name": "O_ENG2_varsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "O_ENG2_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_eng_2_rows"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_eng_2_rows",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_EMAIL2",
+      "type": "event",
+      "title": "Field O_EMAIL2",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "O_EMAIL2_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_eng_2_rows}}"
+        },
+        {
+          "name": "O_EMAIL2_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.Email"
+        },
+        {
+          "name": "O_EMAIL2_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_eng_email_2"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_eng_email_2",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_MAILRAW2",
+      "type": "event",
+      "title": "Tool O_MAILRAW2",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_MAILRAW2_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "base64_encode"
+        },
+        {
+          "name": "O_MAILRAW2_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"text\": \"To: {{ops_eng_email_2}}\\nSubject: Generator Load Test - {{ops_unit_id_2}}\\n\\n{{ops_unit_id_2}} at {{ops_unit_bldg_2}} is scheduled for load testing on 2026-02-10 06:00-08:00.\\nTotal generators scheduled for testing: 3.\\n\"}"
+        },
+        {
+          "name": "O_MAILRAW2_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_mail_raw_2"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_mail_raw_2",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_SEND2",
+      "type": "event",
+      "title": "Tool O_SEND2",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_SEND2_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "O_SEND2_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://gmail.googleapis.com/gmail/v1/users/me/messages/send\", \"params\": null, \"body\": \"{\\\"raw\\\":\\\"{{ops_mail_raw_2}}\\\"}\"}"
+        },
+        {
+          "name": "O_SEND2_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_send_2"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_send_2",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_VERIFY",
+      "type": "event",
+      "title": "Tool O_VERIFY",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "O_VERIFY_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "bridge_score"
+        },
+        {
+          "name": "O_VERIFY_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "O_VERIFY_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_score"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_score",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_CHECK",
+      "type": "event",
+      "title": "Rule O_CHECK",
+      "reference": "RULE_EVAL",
+      "params": [
+        {
+          "name": "O_CHECK_contextJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{ops_score}}"
+        },
+        {
+          "name": "O_CHECK_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "task_completed_correctly == 1"
+        },
+        {
+          "name": "O_CHECK_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_passed"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_passed",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_FINAL",
+      "type": "event",
+      "title": "Final O_FINAL",
+      "reference": "FINAL_ACTION",
+      "params": [
+        {
+          "name": "O_FINAL_actionName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "finalize"
+        },
+        {
+          "name": "O_FINAL_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"passed\":\"{{ops_passed}}\"}"
+        },
+        {
+          "name": "O_FINAL_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "ops_final"
+        }
+      ],
+      "results": [
+        {
+          "name": "ops_final",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "O_AUDIT",
+      "type": "event",
+      "title": "Audit O_AUDIT",
+      "reference": "AUDIT",
+      "params": [
+        {
+          "name": "O_AUDIT_stage",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "OPS_DONE"
+        },
+        {
+          "name": "O_AUDIT_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "O_AUDIT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "auditJson"
+        }
+      ],
+      "results": [
+        {
+          "name": "auditJson",
+          "type": "String"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "source": "O_DUE_GATE",
+      "target": "O_U0_ID",
+      "condition": "ops_due_ok == 'true'"
+    },
+    {
+      "source": "O_U0_ID",
+      "target": "O_U0_BLDG"
+    },
+    {
+      "source": "O_U0_BLDG",
+      "target": "O_EVENT0"
+    },
+    {
+      "source": "O_EVENT0",
+      "target": "O_ENG0"
+    },
+    {
+      "source": "O_ENG0",
+      "target": "O_EMAIL0"
+    },
+    {
+      "source": "O_EMAIL0",
+      "target": "O_MAILRAW0"
+    },
+    {
+      "source": "O_MAILRAW0",
+      "target": "O_SEND0"
+    },
+    {
+      "source": "O_SEND0",
+      "target": "O_U1_ID"
+    },
+    {
+      "source": "O_U1_ID",
+      "target": "O_U1_BLDG"
+    },
+    {
+      "source": "O_U1_BLDG",
+      "target": "O_EVENT1"
+    },
+    {
+      "source": "O_EVENT1",
+      "target": "O_ENG1"
+    },
+    {
+      "source": "O_ENG1",
+      "target": "O_EMAIL1"
+    },
+    {
+      "source": "O_EMAIL1",
+      "target": "O_MAILRAW1"
+    },
+    {
+      "source": "O_MAILRAW1",
+      "target": "O_SEND1"
+    },
+    {
+      "source": "O_SEND1",
+      "target": "O_U2_ID"
+    },
+    {
+      "source": "O_U2_ID",
+      "target": "O_U2_BLDG"
+    },
+    {
+      "source": "O_U2_BLDG",
+      "target": "O_EVENT2"
+    },
+    {
+      "source": "O_EVENT2",
+      "target": "O_ENG2"
+    },
+    {
+      "source": "O_ENG2",
+      "target": "O_EMAIL2"
+    },
+    {
+      "source": "O_EMAIL2",
+      "target": "O_MAILRAW2"
+    },
+    {
+      "source": "O_MAILRAW2",
+      "target": "O_SEND2"
+    },
+    {
+      "source": "O_SEND2",
+      "target": "O_VERIFY"
+    },
+    {
+      "source": "start",
+      "target": "O_START"
+    },
+    {
+      "source": "O_START",
+      "target": "O_READ_UNITS"
+    },
+    {
+      "source": "O_START",
+      "target": "O_READ_ENG"
+    },
+    {
+      "source": "O_START",
+      "target": "O_READ_FUEL"
+    },
+    {
+      "source": "O_READ_UNITS",
+      "target": "O_JOIN"
+    },
+    {
+      "source": "O_READ_ENG",
+      "target": "O_JOIN"
+    },
+    {
+      "source": "O_READ_FUEL",
+      "target": "O_JOIN"
+    },
+    {
+      "source": "O_JOIN",
+      "target": "O_ROWS_UNITS"
+    },
+    {
+      "source": "O_ROWS_UNITS",
+      "target": "O_ROWS_ENG"
+    },
+    {
+      "source": "O_ROWS_ENG",
+      "target": "O_ROWS_FUEL"
+    },
+    {
+      "source": "O_ROWS_FUEL",
+      "target": "O_WHERE_FUEL"
+    },
+    {
+      "source": "O_WHERE_FUEL",
+      "target": "O_RATIONED_BLDG"
+    },
+    {
+      "source": "O_RATIONED_BLDG",
+      "target": "O_WHERE_DUE"
+    },
+    {
+      "source": "O_WHERE_DUE",
+      "target": "O_DUE_GATE"
+    },
+    {
+      "source": "O_DUE_GATE",
+      "target": "O_VERIFY",
+      "condition": "default"
+    },
+    {
+      "source": "O_VERIFY",
+      "target": "O_CHECK"
+    },
+    {
+      "source": "O_CHECK",
+      "target": "O_FINAL"
+    },
+    {
+      "source": "O_FINAL",
+      "target": "O_AUDIT"
+    },
+    {
+      "source": "O_AUDIT",
+      "target": "end"
+    }
+  ],
+  "strategies": [
+    {
+      "source": "O_START",
+      "strategy": "all"
+    },
+    {
+      "target": "O_JOIN",
+      "strategy": "close"
+    }
+  ]
+}

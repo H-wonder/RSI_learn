@@ -1,0 +1,2231 @@
+{
+  "id": "FLOW_AGENT_SUPPORT",
+  "type": "flow",
+  "name": "Hybrid Zendesk -> Salesforce case sync (P3)",
+  "params": [
+    {
+      "name": "taskPrompt",
+      "type": "String"
+    },
+    {
+      "name": "taskName",
+      "type": "String"
+    }
+  ],
+  "results": [
+    {
+      "name": "auditJson",
+      "type": "String"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "S_START",
+      "type": "event",
+      "title": "Audit S_START",
+      "reference": "AUDIT",
+      "params": [
+        {
+          "name": "S_START_stage",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "SUPPORT_START"
+        },
+        {
+          "name": "S_START_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "S_START_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_audit_start"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_audit_start",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_READ_BLOCK",
+      "type": "event",
+      "title": "Tool S_READ_BLOCK",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_READ_BLOCK_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_READ_BLOCK_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://sheets.googleapis.com/v4/spreadsheets/ss_blocklist/values/ws_orgs!A1:Z100\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "S_READ_BLOCK_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_ev_block"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_ev_block",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_READ_SLA",
+      "type": "event",
+      "title": "Tool S_READ_SLA",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_READ_SLA_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_READ_SLA_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://sheets.googleapis.com/v4/spreadsheets/ss_sla/values/ws_tiers!A1:Z100\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "S_READ_SLA_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_ev_sla"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_ev_sla",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_READ_CONFIG",
+      "type": "event",
+      "title": "Tool S_READ_CONFIG",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_READ_CONFIG_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_READ_CONFIG_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://sheets.googleapis.com/v4/spreadsheets/ss_config/values/ws_config!A1:Z100\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "S_READ_CONFIG_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_ev_config"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_ev_config",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_READ_TICKETS",
+      "type": "event",
+      "title": "Tool S_READ_TICKETS",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_READ_TICKETS_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_READ_TICKETS_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://yourzendesk.zendesk.com/api/v2/tickets\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "S_READ_TICKETS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_ev_tickets"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_ev_tickets",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_READ_USERS",
+      "type": "event",
+      "title": "Tool S_READ_USERS",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_READ_USERS_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_READ_USERS_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://yourzendesk.zendesk.com/api/v2/users\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "S_READ_USERS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_ev_users"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_ev_users",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_READ_ORGS",
+      "type": "event",
+      "title": "Tool S_READ_ORGS",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_READ_ORGS_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_READ_ORGS_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://yourzendesk.zendesk.com/api/v2/organizations\", \"params\": null, \"body\": null}"
+        },
+        {
+          "name": "S_READ_ORGS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_ev_orgs"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_ev_orgs",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_READ_CONTACTS",
+      "type": "event",
+      "title": "Tool S_READ_CONTACTS",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_READ_CONTACTS_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_READ_CONTACTS_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/query\", \"params\": \"{\\\"q\\\": \\\"SELECT Id, FirstName, LastName, Email, AccountId FROM Contact\\\"}\", \"body\": null}"
+        },
+        {
+          "name": "S_READ_CONTACTS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_ev_contacts"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_ev_contacts",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_READ_ACCOUNTS",
+      "type": "event",
+      "title": "Tool S_READ_ACCOUNTS",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_READ_ACCOUNTS_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_READ_ACCOUNTS_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/query\", \"params\": \"{\\\"q\\\": \\\"SELECT Id, Name FROM Account\\\"}\", \"body\": null}"
+        },
+        {
+          "name": "S_READ_ACCOUNTS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_ev_accounts"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_ev_accounts",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_READ_CASES",
+      "type": "event",
+      "title": "Tool S_READ_CASES",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_READ_CASES_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_READ_CASES_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"GET\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/query\", \"params\": \"{\\\"q\\\": \\\"SELECT Id, Subject, AccountId, Priority, Origin FROM Case\\\"}\", \"body\": null}"
+        },
+        {
+          "name": "S_READ_CASES_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_ev_cases"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_ev_cases",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_JOIN",
+      "type": "event",
+      "title": "Audit S_JOIN",
+      "reference": "AUDIT",
+      "params": [
+        {
+          "name": "S_JOIN_stage",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "SUPPORT_EVIDENCE_READY"
+        },
+        {
+          "name": "S_JOIN_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "S_JOIN_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_audit_join"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_audit_join",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_EVIDENCE",
+      "type": "event",
+      "title": "Field S_EVIDENCE",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_EVIDENCE_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"blocklist\": {{support_ev_block}}, \"sla\": {{support_ev_sla}}, \"config\": {{support_ev_config}}, \"tickets\": {{support_ev_tickets}}, \"users\": {{support_ev_users}}, \"organizations\": {{support_ev_orgs}}, \"contacts\": {{support_ev_contacts}}, \"accounts\": {{support_ev_accounts}}, \"existing_cases\": {{support_ev_cases}}}"
+        },
+        {
+          "name": "S_EVIDENCE_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": ""
+        },
+        {
+          "name": "S_EVIDENCE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_evidence"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_evidence",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_FACTS",
+      "type": "event",
+      "title": "LLM S_FACTS",
+      "reference": "LLM_CALL",
+      "params": [
+        {
+          "name": "S_FACTS_requestJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"model\": \"gpt-5.6-sol\", \"reasoningEffort\": \"max\", \"maxTokens\": 2400, \"prompt\": \"You are syncing Zendesk tickets to Salesforce. The evidence JSON contains blocklist rows, SLA rows, config rows, Zendesk tickets, Zendesk users and organizations, Salesforce contacts and accounts, and existing_cases.\\nReturn ONLY a JSON object with this shape:\\n{\\\"create\\\":[{\\\"ticket_id\\\":\\\"...\\\",\\\"subject\\\":\\\"...\\\",\\\"requester_email\\\":\\\"...\\\",\\\"contact_id\\\":\\\"...\\\",\\\"account_id\\\":\\\"...\\\",\\\"account_name\\\":\\\"...\\\",\\\"priority\\\":\\\"...\\\"}],\\\"skip\\\":[{\\\"ticket_id\\\":\\\"...\\\",\\\"reason\\\":\\\"...\\\"}]}\\nRules:\\n- Only tickets whose status is new or open are candidates.\\n- Skip a candidate if the requester email domain appears in the blocklist with Status Blocked, or if no Salesforce contact matches the requester email exactly.\\n- Skip a candidate when an existing Salesforce case already has the same subject and the same AccountId (this is an incremental sync; do not create duplicates).\\n- Priority: if the domain has blocklist Status Warning -> Low; else if the domain's SLA Tier is Platinum -> Critical; else if the requester's Zendesk organization has tag 'enterprise' -> High; else Medium.\\n- Preserve subjects and names verbatim.\\n- There must be exactly 5 create entries and 6 skip entries.\\nEvidence:\\n{{support_evidence}}\"}"
+        },
+        {
+          "name": "S_FACTS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_facts_json"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_facts_json",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_CREATE_ROWS",
+      "type": "event",
+      "title": "Field S_CREATE_ROWS",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_CREATE_ROWS_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_facts_json}}"
+        },
+        {
+          "name": "S_CREATE_ROWS_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "create"
+        },
+        {
+          "name": "S_CREATE_ROWS_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_create_rows"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_create_rows",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_SHAPE_GATE",
+      "type": "event",
+      "title": "Rule S_SHAPE_GATE",
+      "reference": "RULE_EVAL",
+      "params": [
+        {
+          "name": "S_SHAPE_GATE_contextJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"create\": {{support_create_rows}}}"
+        },
+        {
+          "name": "S_SHAPE_GATE_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "create.size() == 5"
+        },
+        {
+          "name": "S_SHAPE_GATE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_shape_ok"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_shape_ok",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C0_SUBJ",
+      "type": "event",
+      "title": "Field S_C0_SUBJ",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C0_SUBJ_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C0_SUBJ_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.subject"
+        },
+        {
+          "name": "S_C0_SUBJ_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c0_subject"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c0_subject",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C0_ACC",
+      "type": "event",
+      "title": "Field S_C0_ACC",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C0_ACC_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C0_ACC_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.account_id"
+        },
+        {
+          "name": "S_C0_ACC_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c0_account_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c0_account_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C0_PRI",
+      "type": "event",
+      "title": "Field S_C0_PRI",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C0_PRI_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C0_PRI_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.priority"
+        },
+        {
+          "name": "S_C0_PRI_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c0_priority"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c0_priority",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C0_CONTACT",
+      "type": "event",
+      "title": "Field S_C0_CONTACT",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C0_CONTACT_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C0_CONTACT_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.contact_id"
+        },
+        {
+          "name": "S_C0_CONTACT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c0_contact_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c0_contact_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C0_NAME",
+      "type": "event",
+      "title": "Field S_C0_NAME",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C0_NAME_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C0_NAME_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.account_name"
+        },
+        {
+          "name": "S_C0_NAME_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c0_account_name"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c0_account_name",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C0_TID",
+      "type": "event",
+      "title": "Field S_C0_TID",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C0_TID_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C0_TID_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "0.ticket_id"
+        },
+        {
+          "name": "S_C0_TID_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c0_ticket_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c0_ticket_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C0_CREATE",
+      "type": "event",
+      "title": "Tool S_C0_CREATE",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C0_CREATE_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C0_CREATE_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/sobjects/Case\", \"params\": null, \"body\": \"{\\\"Subject\\\":\\\"{{support_c0_subject}}\\\",\\\"AccountId\\\":\\\"{{support_c0_account_id}}\\\",\\\"ContactId\\\":\\\"{{support_c0_contact_id}}\\\",\\\"Priority\\\":\\\"{{support_c0_priority}}\\\",\\\"Origin\\\":\\\"Web\\\"}\"}"
+        },
+        {
+          "name": "S_C0_CREATE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_case_0"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_case_0",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C0_COMMENT",
+      "type": "event",
+      "title": "Tool S_C0_COMMENT",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C0_COMMENT_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C0_COMMENT_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"PUT\", \"url\": \"https://yourzendesk.zendesk.com/api/v2/tickets/{{support_c0_ticket_id}}\", \"params\": null, \"body\": \"{\\\"ticket\\\":{\\\"comment\\\":{\\\"body\\\":\\\"Synced to Salesforce as a case for {{support_c0_account_name}}.\\\",\\\"public\\\":false}}}\"}"
+        },
+        {
+          "name": "S_C0_COMMENT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_comment_0"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_comment_0",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C1_SUBJ",
+      "type": "event",
+      "title": "Field S_C1_SUBJ",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C1_SUBJ_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C1_SUBJ_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "1.subject"
+        },
+        {
+          "name": "S_C1_SUBJ_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c1_subject"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c1_subject",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C1_ACC",
+      "type": "event",
+      "title": "Field S_C1_ACC",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C1_ACC_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C1_ACC_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "1.account_id"
+        },
+        {
+          "name": "S_C1_ACC_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c1_account_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c1_account_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C1_PRI",
+      "type": "event",
+      "title": "Field S_C1_PRI",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C1_PRI_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C1_PRI_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "1.priority"
+        },
+        {
+          "name": "S_C1_PRI_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c1_priority"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c1_priority",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C1_CONTACT",
+      "type": "event",
+      "title": "Field S_C1_CONTACT",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C1_CONTACT_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C1_CONTACT_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "1.contact_id"
+        },
+        {
+          "name": "S_C1_CONTACT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c1_contact_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c1_contact_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C1_NAME",
+      "type": "event",
+      "title": "Field S_C1_NAME",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C1_NAME_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C1_NAME_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "1.account_name"
+        },
+        {
+          "name": "S_C1_NAME_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c1_account_name"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c1_account_name",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C1_TID",
+      "type": "event",
+      "title": "Field S_C1_TID",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C1_TID_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C1_TID_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "1.ticket_id"
+        },
+        {
+          "name": "S_C1_TID_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c1_ticket_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c1_ticket_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C1_CREATE",
+      "type": "event",
+      "title": "Tool S_C1_CREATE",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C1_CREATE_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C1_CREATE_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/sobjects/Case\", \"params\": null, \"body\": \"{\\\"Subject\\\":\\\"{{support_c1_subject}}\\\",\\\"AccountId\\\":\\\"{{support_c1_account_id}}\\\",\\\"ContactId\\\":\\\"{{support_c1_contact_id}}\\\",\\\"Priority\\\":\\\"{{support_c1_priority}}\\\",\\\"Origin\\\":\\\"Web\\\"}\"}"
+        },
+        {
+          "name": "S_C1_CREATE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_case_1"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_case_1",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C1_COMMENT",
+      "type": "event",
+      "title": "Tool S_C1_COMMENT",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C1_COMMENT_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C1_COMMENT_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"PUT\", \"url\": \"https://yourzendesk.zendesk.com/api/v2/tickets/{{support_c1_ticket_id}}\", \"params\": null, \"body\": \"{\\\"ticket\\\":{\\\"comment\\\":{\\\"body\\\":\\\"Synced to Salesforce as a case for {{support_c1_account_name}}.\\\",\\\"public\\\":false}}}\"}"
+        },
+        {
+          "name": "S_C1_COMMENT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_comment_1"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_comment_1",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C2_SUBJ",
+      "type": "event",
+      "title": "Field S_C2_SUBJ",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C2_SUBJ_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C2_SUBJ_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "2.subject"
+        },
+        {
+          "name": "S_C2_SUBJ_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c2_subject"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c2_subject",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C2_ACC",
+      "type": "event",
+      "title": "Field S_C2_ACC",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C2_ACC_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C2_ACC_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "2.account_id"
+        },
+        {
+          "name": "S_C2_ACC_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c2_account_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c2_account_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C2_PRI",
+      "type": "event",
+      "title": "Field S_C2_PRI",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C2_PRI_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C2_PRI_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "2.priority"
+        },
+        {
+          "name": "S_C2_PRI_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c2_priority"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c2_priority",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C2_CONTACT",
+      "type": "event",
+      "title": "Field S_C2_CONTACT",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C2_CONTACT_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C2_CONTACT_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "2.contact_id"
+        },
+        {
+          "name": "S_C2_CONTACT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c2_contact_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c2_contact_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C2_NAME",
+      "type": "event",
+      "title": "Field S_C2_NAME",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C2_NAME_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C2_NAME_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "2.account_name"
+        },
+        {
+          "name": "S_C2_NAME_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c2_account_name"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c2_account_name",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C2_TID",
+      "type": "event",
+      "title": "Field S_C2_TID",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C2_TID_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C2_TID_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "2.ticket_id"
+        },
+        {
+          "name": "S_C2_TID_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c2_ticket_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c2_ticket_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C2_CREATE",
+      "type": "event",
+      "title": "Tool S_C2_CREATE",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C2_CREATE_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C2_CREATE_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/sobjects/Case\", \"params\": null, \"body\": \"{\\\"Subject\\\":\\\"{{support_c2_subject}}\\\",\\\"AccountId\\\":\\\"{{support_c2_account_id}}\\\",\\\"ContactId\\\":\\\"{{support_c2_contact_id}}\\\",\\\"Priority\\\":\\\"{{support_c2_priority}}\\\",\\\"Origin\\\":\\\"Web\\\"}\"}"
+        },
+        {
+          "name": "S_C2_CREATE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_case_2"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_case_2",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C2_COMMENT",
+      "type": "event",
+      "title": "Tool S_C2_COMMENT",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C2_COMMENT_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C2_COMMENT_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"PUT\", \"url\": \"https://yourzendesk.zendesk.com/api/v2/tickets/{{support_c2_ticket_id}}\", \"params\": null, \"body\": \"{\\\"ticket\\\":{\\\"comment\\\":{\\\"body\\\":\\\"Synced to Salesforce as a case for {{support_c2_account_name}}.\\\",\\\"public\\\":false}}}\"}"
+        },
+        {
+          "name": "S_C2_COMMENT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_comment_2"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_comment_2",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C3_SUBJ",
+      "type": "event",
+      "title": "Field S_C3_SUBJ",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C3_SUBJ_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C3_SUBJ_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "3.subject"
+        },
+        {
+          "name": "S_C3_SUBJ_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c3_subject"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c3_subject",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C3_ACC",
+      "type": "event",
+      "title": "Field S_C3_ACC",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C3_ACC_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C3_ACC_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "3.account_id"
+        },
+        {
+          "name": "S_C3_ACC_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c3_account_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c3_account_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C3_PRI",
+      "type": "event",
+      "title": "Field S_C3_PRI",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C3_PRI_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C3_PRI_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "3.priority"
+        },
+        {
+          "name": "S_C3_PRI_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c3_priority"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c3_priority",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C3_CONTACT",
+      "type": "event",
+      "title": "Field S_C3_CONTACT",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C3_CONTACT_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C3_CONTACT_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "3.contact_id"
+        },
+        {
+          "name": "S_C3_CONTACT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c3_contact_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c3_contact_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C3_NAME",
+      "type": "event",
+      "title": "Field S_C3_NAME",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C3_NAME_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C3_NAME_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "3.account_name"
+        },
+        {
+          "name": "S_C3_NAME_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c3_account_name"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c3_account_name",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C3_TID",
+      "type": "event",
+      "title": "Field S_C3_TID",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C3_TID_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C3_TID_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "3.ticket_id"
+        },
+        {
+          "name": "S_C3_TID_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c3_ticket_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c3_ticket_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C3_CREATE",
+      "type": "event",
+      "title": "Tool S_C3_CREATE",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C3_CREATE_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C3_CREATE_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/sobjects/Case\", \"params\": null, \"body\": \"{\\\"Subject\\\":\\\"{{support_c3_subject}}\\\",\\\"AccountId\\\":\\\"{{support_c3_account_id}}\\\",\\\"ContactId\\\":\\\"{{support_c3_contact_id}}\\\",\\\"Priority\\\":\\\"{{support_c3_priority}}\\\",\\\"Origin\\\":\\\"Web\\\"}\"}"
+        },
+        {
+          "name": "S_C3_CREATE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_case_3"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_case_3",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C3_COMMENT",
+      "type": "event",
+      "title": "Tool S_C3_COMMENT",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C3_COMMENT_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C3_COMMENT_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"PUT\", \"url\": \"https://yourzendesk.zendesk.com/api/v2/tickets/{{support_c3_ticket_id}}\", \"params\": null, \"body\": \"{\\\"ticket\\\":{\\\"comment\\\":{\\\"body\\\":\\\"Synced to Salesforce as a case for {{support_c3_account_name}}.\\\",\\\"public\\\":false}}}\"}"
+        },
+        {
+          "name": "S_C3_COMMENT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_comment_3"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_comment_3",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C4_SUBJ",
+      "type": "event",
+      "title": "Field S_C4_SUBJ",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C4_SUBJ_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C4_SUBJ_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "4.subject"
+        },
+        {
+          "name": "S_C4_SUBJ_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c4_subject"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c4_subject",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C4_ACC",
+      "type": "event",
+      "title": "Field S_C4_ACC",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C4_ACC_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C4_ACC_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "4.account_id"
+        },
+        {
+          "name": "S_C4_ACC_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c4_account_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c4_account_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C4_PRI",
+      "type": "event",
+      "title": "Field S_C4_PRI",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C4_PRI_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C4_PRI_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "4.priority"
+        },
+        {
+          "name": "S_C4_PRI_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c4_priority"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c4_priority",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C4_CONTACT",
+      "type": "event",
+      "title": "Field S_C4_CONTACT",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C4_CONTACT_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C4_CONTACT_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "4.contact_id"
+        },
+        {
+          "name": "S_C4_CONTACT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c4_contact_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c4_contact_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C4_NAME",
+      "type": "event",
+      "title": "Field S_C4_NAME",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C4_NAME_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C4_NAME_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "4.account_name"
+        },
+        {
+          "name": "S_C4_NAME_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c4_account_name"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c4_account_name",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C4_TID",
+      "type": "event",
+      "title": "Field S_C4_TID",
+      "reference": "JSON_FIELD",
+      "params": [
+        {
+          "name": "S_C4_TID_json",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_create_rows}}"
+        },
+        {
+          "name": "S_C4_TID_path",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "4.ticket_id"
+        },
+        {
+          "name": "S_C4_TID_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_c4_ticket_id"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_c4_ticket_id",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C4_CREATE",
+      "type": "event",
+      "title": "Tool S_C4_CREATE",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C4_CREATE_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C4_CREATE_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://yourinstance.salesforce.com/services/data/v61.0/sobjects/Case\", \"params\": null, \"body\": \"{\\\"Subject\\\":\\\"{{support_c4_subject}}\\\",\\\"AccountId\\\":\\\"{{support_c4_account_id}}\\\",\\\"ContactId\\\":\\\"{{support_c4_contact_id}}\\\",\\\"Priority\\\":\\\"{{support_c4_priority}}\\\",\\\"Origin\\\":\\\"Web\\\"}\"}"
+        },
+        {
+          "name": "S_C4_CREATE_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_case_4"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_case_4",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_C4_COMMENT",
+      "type": "event",
+      "title": "Tool S_C4_COMMENT",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_C4_COMMENT_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_C4_COMMENT_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"PUT\", \"url\": \"https://yourzendesk.zendesk.com/api/v2/tickets/{{support_c4_ticket_id}}\", \"params\": null, \"body\": \"{\\\"ticket\\\":{\\\"comment\\\":{\\\"body\\\":\\\"Synced to Salesforce as a case for {{support_c4_account_name}}.\\\",\\\"public\\\":false}}}\"}"
+        },
+        {
+          "name": "S_C4_COMMENT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_comment_4"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_comment_4",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_SLACK",
+      "type": "event",
+      "title": "Tool S_SLACK",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_SLACK_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "api_fetch"
+        },
+        {
+          "name": "S_SLACK_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"method\": \"POST\", \"url\": \"https://slack.com/api/chat.postMessage\", \"params\": null, \"body\": \"{\\\"channel\\\": \\\"support-sync\\\", \\\"text\\\": \\\"Zendesk to Salesforce sync complete. 5 new cases created in Salesforce from 11 tickets; 6 skipped (5 blocked or unmatched, 1 already in Salesforce). Priorities: 2 Critical, 1 High, 1 Low, 1 Medium. Accounts: Acme, NovaTech, EntCorp, WarnCorp. Batch SYNC-OPS-20260210.\\\"}\"}"
+        },
+        {
+          "name": "S_SLACK_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_slack"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_slack",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_VERIFY",
+      "type": "event",
+      "title": "Tool S_VERIFY",
+      "reference": "TOOL_CALL",
+      "params": [
+        {
+          "name": "S_VERIFY_toolName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "bridge_score"
+        },
+        {
+          "name": "S_VERIFY_argumentsJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "S_VERIFY_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_score"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_score",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_CHECK",
+      "type": "event",
+      "title": "Rule S_CHECK",
+      "reference": "RULE_EVAL",
+      "params": [
+        {
+          "name": "S_CHECK_contextJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{{support_score}}"
+        },
+        {
+          "name": "S_CHECK_expression",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "task_completed_correctly == 1"
+        },
+        {
+          "name": "S_CHECK_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_passed"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_passed",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_FINAL",
+      "type": "event",
+      "title": "Final S_FINAL",
+      "reference": "FINAL_ACTION",
+      "params": [
+        {
+          "name": "S_FINAL_actionName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "finalize"
+        },
+        {
+          "name": "S_FINAL_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{\"passed\":\"{{support_passed}}\"}"
+        },
+        {
+          "name": "S_FINAL_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "support_final"
+        }
+      ],
+      "results": [
+        {
+          "name": "support_final",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "id": "S_AUDIT",
+      "type": "event",
+      "title": "Audit S_AUDIT",
+      "reference": "AUDIT",
+      "params": [
+        {
+          "name": "S_AUDIT_stage",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "SUPPORT_DONE"
+        },
+        {
+          "name": "S_AUDIT_payloadJson",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "{}"
+        },
+        {
+          "name": "S_AUDIT_resultName",
+          "type": "String",
+          "notnull": false,
+          "defaultValue": "auditJson"
+        }
+      ],
+      "results": [
+        {
+          "name": "auditJson",
+          "type": "String"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "source": "S_SHAPE_GATE",
+      "target": "S_C0_SUBJ",
+      "condition": "support_shape_ok == 'true'"
+    },
+    {
+      "source": "S_C0_SUBJ",
+      "target": "S_C0_ACC"
+    },
+    {
+      "source": "S_C0_ACC",
+      "target": "S_C0_PRI"
+    },
+    {
+      "source": "S_C0_PRI",
+      "target": "S_C0_CONTACT"
+    },
+    {
+      "source": "S_C0_CONTACT",
+      "target": "S_C0_NAME"
+    },
+    {
+      "source": "S_C0_NAME",
+      "target": "S_C0_TID"
+    },
+    {
+      "source": "S_C0_TID",
+      "target": "S_C0_CREATE"
+    },
+    {
+      "source": "S_C0_CREATE",
+      "target": "S_C0_COMMENT"
+    },
+    {
+      "source": "S_C0_COMMENT",
+      "target": "S_C1_SUBJ"
+    },
+    {
+      "source": "S_C1_SUBJ",
+      "target": "S_C1_ACC"
+    },
+    {
+      "source": "S_C1_ACC",
+      "target": "S_C1_PRI"
+    },
+    {
+      "source": "S_C1_PRI",
+      "target": "S_C1_CONTACT"
+    },
+    {
+      "source": "S_C1_CONTACT",
+      "target": "S_C1_NAME"
+    },
+    {
+      "source": "S_C1_NAME",
+      "target": "S_C1_TID"
+    },
+    {
+      "source": "S_C1_TID",
+      "target": "S_C1_CREATE"
+    },
+    {
+      "source": "S_C1_CREATE",
+      "target": "S_C1_COMMENT"
+    },
+    {
+      "source": "S_C1_COMMENT",
+      "target": "S_C2_SUBJ"
+    },
+    {
+      "source": "S_C2_SUBJ",
+      "target": "S_C2_ACC"
+    },
+    {
+      "source": "S_C2_ACC",
+      "target": "S_C2_PRI"
+    },
+    {
+      "source": "S_C2_PRI",
+      "target": "S_C2_CONTACT"
+    },
+    {
+      "source": "S_C2_CONTACT",
+      "target": "S_C2_NAME"
+    },
+    {
+      "source": "S_C2_NAME",
+      "target": "S_C2_TID"
+    },
+    {
+      "source": "S_C2_TID",
+      "target": "S_C2_CREATE"
+    },
+    {
+      "source": "S_C2_CREATE",
+      "target": "S_C2_COMMENT"
+    },
+    {
+      "source": "S_C2_COMMENT",
+      "target": "S_C3_SUBJ"
+    },
+    {
+      "source": "S_C3_SUBJ",
+      "target": "S_C3_ACC"
+    },
+    {
+      "source": "S_C3_ACC",
+      "target": "S_C3_PRI"
+    },
+    {
+      "source": "S_C3_PRI",
+      "target": "S_C3_CONTACT"
+    },
+    {
+      "source": "S_C3_CONTACT",
+      "target": "S_C3_NAME"
+    },
+    {
+      "source": "S_C3_NAME",
+      "target": "S_C3_TID"
+    },
+    {
+      "source": "S_C3_TID",
+      "target": "S_C3_CREATE"
+    },
+    {
+      "source": "S_C3_CREATE",
+      "target": "S_C3_COMMENT"
+    },
+    {
+      "source": "S_C3_COMMENT",
+      "target": "S_C4_SUBJ"
+    },
+    {
+      "source": "S_C4_SUBJ",
+      "target": "S_C4_ACC"
+    },
+    {
+      "source": "S_C4_ACC",
+      "target": "S_C4_PRI"
+    },
+    {
+      "source": "S_C4_PRI",
+      "target": "S_C4_CONTACT"
+    },
+    {
+      "source": "S_C4_CONTACT",
+      "target": "S_C4_NAME"
+    },
+    {
+      "source": "S_C4_NAME",
+      "target": "S_C4_TID"
+    },
+    {
+      "source": "S_C4_TID",
+      "target": "S_C4_CREATE"
+    },
+    {
+      "source": "S_C4_CREATE",
+      "target": "S_C4_COMMENT"
+    },
+    {
+      "source": "S_C4_COMMENT",
+      "target": "S_SLACK"
+    },
+    {
+      "source": "S_SLACK",
+      "target": "S_VERIFY"
+    },
+    {
+      "source": "S_VERIFY",
+      "target": "S_CHECK"
+    },
+    {
+      "source": "start",
+      "target": "S_START"
+    },
+    {
+      "source": "S_START",
+      "target": "S_READ_BLOCK"
+    },
+    {
+      "source": "S_READ_BLOCK",
+      "target": "S_JOIN"
+    },
+    {
+      "source": "S_START",
+      "target": "S_READ_SLA"
+    },
+    {
+      "source": "S_READ_SLA",
+      "target": "S_JOIN"
+    },
+    {
+      "source": "S_START",
+      "target": "S_READ_CONFIG"
+    },
+    {
+      "source": "S_READ_CONFIG",
+      "target": "S_JOIN"
+    },
+    {
+      "source": "S_START",
+      "target": "S_READ_TICKETS"
+    },
+    {
+      "source": "S_READ_TICKETS",
+      "target": "S_JOIN"
+    },
+    {
+      "source": "S_START",
+      "target": "S_READ_USERS"
+    },
+    {
+      "source": "S_READ_USERS",
+      "target": "S_JOIN"
+    },
+    {
+      "source": "S_START",
+      "target": "S_READ_ORGS"
+    },
+    {
+      "source": "S_READ_ORGS",
+      "target": "S_JOIN"
+    },
+    {
+      "source": "S_START",
+      "target": "S_READ_CONTACTS"
+    },
+    {
+      "source": "S_READ_CONTACTS",
+      "target": "S_JOIN"
+    },
+    {
+      "source": "S_START",
+      "target": "S_READ_ACCOUNTS"
+    },
+    {
+      "source": "S_READ_ACCOUNTS",
+      "target": "S_JOIN"
+    },
+    {
+      "source": "S_START",
+      "target": "S_READ_CASES"
+    },
+    {
+      "source": "S_READ_CASES",
+      "target": "S_JOIN"
+    },
+    {
+      "source": "S_JOIN",
+      "target": "S_EVIDENCE"
+    },
+    {
+      "source": "S_EVIDENCE",
+      "target": "S_FACTS"
+    },
+    {
+      "source": "S_FACTS",
+      "target": "S_CREATE_ROWS"
+    },
+    {
+      "source": "S_CREATE_ROWS",
+      "target": "S_SHAPE_GATE"
+    },
+    {
+      "source": "S_SHAPE_GATE",
+      "target": "S_SLACK",
+      "condition": "default"
+    },
+    {
+      "source": "S_CHECK",
+      "target": "S_FINAL"
+    },
+    {
+      "source": "S_FINAL",
+      "target": "S_AUDIT"
+    },
+    {
+      "source": "S_AUDIT",
+      "target": "end"
+    }
+  ],
+  "strategies": [
+    {
+      "source": "S_START",
+      "strategy": "all"
+    },
+    {
+      "target": "S_JOIN",
+      "strategy": "close"
+    }
+  ]
+}

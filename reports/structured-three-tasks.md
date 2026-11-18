@@ -202,6 +202,8 @@ Flow 与生成器：
 - `.../flow-agent-ops.json`
 - `.../flow-agent-support.json`
 - 消融变体：`flow-agent-ultra-norepair.json`、`flow-agent-ops-seq.json`
+- flow JSON 已镜像到 [../experiments/exp-004-structured/flows/](../experiments/exp-004-structured/flows/)，
+  不打开 rsi-flow 也能直接阅读；
 - 生成器：[../scripts/gen_task_flows.py](../scripts/gen_task_flows.py)、
   [../scripts/gen_ablation_flows.py](../scripts/gen_ablation_flows.py)
 - 运行器：`UltraAgentRunner`，支持 `-Dflow.id=...`

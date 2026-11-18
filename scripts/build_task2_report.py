@@ -21,8 +21,12 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "reports" / "tex"
 OUT.mkdir(parents=True, exist_ok=True)
 
-FLOW_DIR = (ROOT.parent / "rsi-flow" / "flow-test" / "src" / "test"
-            / "resources" / "flow" / "FLOW_AGENT")
+# The flow JSONs are committed under experiments/ so the appendices rebuild
+# from a fresh clone; fall back to the rsi-flow working tree when present.
+_LOCAL_FLOWS = ROOT / "experiments" / "exp-004-structured" / "flows"
+FLOW_DIR = _LOCAL_FLOWS if _LOCAL_FLOWS.is_dir() else (
+    ROOT.parent / "rsi-flow" / "flow-test" / "src" / "test"
+    / "resources" / "flow" / "FLOW_AGENT")
 
 
 def tex_escape(value: object) -> str:
