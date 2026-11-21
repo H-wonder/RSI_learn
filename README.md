@@ -6,6 +6,8 @@ AutomationBench 基线实验的代码、运行记录和分析报告。仓库只�
 
 提交清单（要求 → 文件 → 状态）：[SUBMISSION.md](SUBMISSION.md)
 
+汇报讲稿（数据集 / 任务一 / 任务二 / rsi-flow / Q&A）：[docs/presentation-guide.md](docs/presentation-guide.md)
+
 ## 任务一交付物
 
 - **PDF 报告（根目录）**：[AutomationBench-Baseline-Report.pdf](AutomationBench-Baseline-Report.pdf)（30 页）
@@ -164,6 +166,7 @@ automationbench-baseline/
 │   ├── agent-architecture-design.md # 任务二 S0–S7 设计与三任务落地
 │   ├── config-audit.md      # 官方配置 vs 本仓库逐项核对 + 实测证据
 │   ├── reproduce.md         # 从零复现步骤
+│   ├── presentation-guide.md # 汇报讲解手册（数据集/任务一/任务二/rsi-flow/Q&A）
 │   └── report-template.md   # 报告模板
 ├── experiments/             # smoke / small / medium / structured 实验记录
 ├── data/annotation/         # 60 题标注表与标签 JSON
