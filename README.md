@@ -1,5 +1,9 @@
 # AutomationBench Baseline
 
+> **归档说明（2026-11-23）**：本仓库是**任务一 / 任务二**的交付物，已完成并推送到
+> GitHub。当前轮（AutomationBench + 人工循环结构）请看工作区根目录 `README.md`
+> 和 `notes/current-round.md`；本仓库的数字与结论只作历史参考。
+
 AutomationBench 基线实验的代码、运行记录和分析报告。仓库只包含我们自己写的代码与结果摘要，不包含数据集本身。
 
 远程仓库：[https://github.com/H-wonder/RSI_learn](https://github.com/H-wonder/RSI_learn)
